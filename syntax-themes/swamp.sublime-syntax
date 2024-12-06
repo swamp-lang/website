@@ -29,7 +29,7 @@ contexts:
       scope: keyword.declaration
 
     - match: '\bmut\b'
-      scope: storage.modifier.mut
+      scope:  storage.type.mut, storage.modifier.mut, entity.name.tag, support.constant
 
     - match: '\bself\b'
       scope: variable.language.self.rust
@@ -38,6 +38,9 @@ contexts:
       # scope: variable.language.this
       # scope: storage.modifier.self
       # scope: keyword.other.self
+
+    - match: '\bnone\b'
+      scope: constant.language.none, support.constant
 
     # Types
     - match: '\b(Int|Float|String|Bool)\b'
@@ -103,7 +106,7 @@ contexts:
 
     # Booleans and Unit
     - match: '\b(true|false|\(\))\b'
-      scope: constant.language
+      scope: constant.language,  support.constant
 
 
 
