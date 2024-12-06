@@ -93,12 +93,32 @@ x = if a == 3 {
 }
 ```
 
+Note that the optional operator has a special meaning in if conditions. If the condition is a single optional variable, it will be unwrapped and used directly in the condition.
+
+```swamp
+x = 10
+if x? {
+    print(x)
+}
+```
+
+Another way you can use it is in an assignment expression:
+
+```swamp
+if result = some_function_that_returns_optional()? {
+    print(result)
+}
+```
+The unwrapped value is assigned to `result` and is introduced as a shadow variable in the the true_block scope.
+
+
 #### If-Statement
 ```swamp
 if a == 3 {
     print('a is 3')
 }
 ```
+Note that the optional operator has a special meaning in if conditions, see [if-expression](#if-expression).
 
 ### `while` statement
 
@@ -144,6 +164,35 @@ fn add_one(x: Int) -> Int {
 }
 ```
 
+## Types
+
+### Type Annotations
+
+#### Optional Type
+
+```swamp
+x: Int?
+```
+
+#### Array Type
+
+```swamp
+arr: [Int]
+```
+
+#### Map Type
+
+```swamp
+arr: [Int: String]
+```
+
+#### Function Type
+
+```swamp
+fn: (Int, String) -> Int
+``` 
+
+
 ## Expressions
 
 ### Access or Lookup Expressions
@@ -173,6 +222,18 @@ arr = [4.2, 4.4, 4.6, 4.8, 5.0]
 print(arr[0])  // Outputs: 4.2
 ```
 
+#### Map Access
+
+Accesses an element in an array. The index can be almost any Swamp value.
+
+```swamp
+arr = [4: 'hello', -1: 'world']
+
+print(arr[4])  // Outputs: "hello"
+print(arr[-1])  // Outputs: "world"
+```
+
+
 #### Variable Access
 
 Accesses a variable. Returns the value that is assigned to the variable.
@@ -196,6 +257,13 @@ x = 10
 ```swamp
 mut arr = [1, 2, 3, 4, 5]
 arr[0] = 10
+```
+
+### Map Assignment
+
+```swamp
+mut arr = [1: 'hello', 2: 'world']
+arr[1] = 'goodbye'
 ```
 
 ### Struct Field Assignment
@@ -247,6 +315,21 @@ p.x = 10
 
 - Negate
 - LogicalNot
+
+### Suffix Operators
+
+```swamp
+?
+```
+
+#### Optional Operator
+
+```swamp
+x?
+```
+It tries to access the value of `x`. If `x` is `none`, it returns `none`. Otherwise, it returns the value of `x`.
+Note that it has a special syntax in [if statement](#if-expression) and [pattern matching](#match).
+
 
 ## Function Calls
 
@@ -316,6 +399,12 @@ p = Point { x: 1, y: 2 }
 
 ```swamp
 arr = [1, 2, 3, 4, 5]
+```
+
+### Map Construction
+
+```swamp
+arr = [1: 'hello', 2: 'world']
 ```
 
 ### Tuple Construction

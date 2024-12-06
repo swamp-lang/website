@@ -41,51 +41,6 @@ match some_struct {
 }
 ```
 
-- [ ] Map type
-- Type
-
-```swamp
-fn returns_map() -> {| String, String |} {
-    {| 'key1': 'value1', 'key2': 'value2' |}
-}
-```
-
-or maybe with keyword `map` or `Map`
-
-```swamp
-fn returns_map() -> Map<String, String> {
-    {| 'key1': 'value1', 'key2': 'value2' |}
-}
-```
-
-
-- Literal
-```swamp
-some_map = {|
-    'key1': 'value1',
-    'key2': 'value2'
-|}
-```
-
-- Iterator
-```swamp
-for (key, value) in some_map {
-    print(key, value)
-}
-```
-
-- Assignment
-```swamp
-some_map['key1'] = 'new_value'
-```
-
-- Lookup
-```swamp
-value = some_map['key1']
-if value? {
-    print(value)
-}
-```
 
 # Iterators
 - [ ] Inclusive Range. `0..=10`
@@ -93,7 +48,7 @@ if value? {
 - [ ] Maps. Key value pairs.
 
 
-- [ ] Pipes `<|` and `|>`.
+- [ ] Pipes `<|` and `|>` ?
 - [ ] Operator implementation
 
 ```swamp
