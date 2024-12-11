@@ -5,7 +5,7 @@ description = "Detailed specification of the Swamp programming language"
 
 ## Comments
 
-Comments help you explain your code. Swamp has three types: regular line comments (`//`) for quick notes, block comments (`/* */`) for longer explanations, and documentation comments (`///`) that automatically generate readable documentation for your code. Documentation comments are special because they help others understand how to use your code and appear in tooltips in your editor.
+Comments help you explain your code. **Swamp** has three types: regular line comments (`//`) for quick notes, block comments (`/* */`) for longer explanations, and documentation comments (`///`) that automatically generate readable documentation for your code. Documentation comments are special because they help others understand how to use your code and appear in tooltips in your editor.
 
 ```swamp
 // Regular line comments - for implementation notes
@@ -34,8 +34,8 @@ struct Player {
 
 ## Variables and Mutability
 
-In Swamp, variables are immutable (unchangeable) by default, which helps prevent accidental changes.
- When you need to change a value, just add mut before the variable name. This makes it
+Variables are immutable (unchangeable) by default, which helps prevent accidental changes.
+ When you need to change a value, just add `mut` before the variable name. This makes it
   clear which values can change and which can't.
 
 ### Variable Declaration
@@ -54,7 +54,7 @@ health = 101
 Functions can choose whether they want to modify their parameters by using `mut`.
  This helps make it clear which functions will change the values passed to them and which will just read them.
 
- In Swamp, it is generally recommended to use immutable parameters and return the result, unless there are big types that can cause performance issues.
+It is generally recommended to use immutable parameters and return the result, unless there are big types that can cause performance issues.
 
 ```swamp
 // Mutable parameter example
@@ -104,7 +104,7 @@ When the scope ends, the variable is automatically cleaned up.
 
 ## Basic Types
 
-Swamp provides fundamental types for storing different kinds of data: Integers (Int) for whole numbers, Floating-point numbers (are in fact Fixed Point numbers) for decimal values, Booleans (Bool) for true/false conditions, and Strings (String) for text.
+**Swamp** provides fundamental types for storing different kinds of data: Integers (Int) for whole numbers, Floating-point numbers (are in fact Fixed Point numbers) for decimal values, Booleans (Bool) for true/false conditions, and Strings (String) for text.
 
 ### Integers
 ```swamp
@@ -188,18 +188,18 @@ spawn_points: [Point]
 #### Construction
 ```swamp
 // Initialize positions
-spawn_points = [Point{x: 0, y: 0}, Point{x: 10, y: 10}, Point{x: -10, y: 5}]
+spawn_points = [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 }, Point { x: -10, y: 5 } ]
 ```
 
 #### Access
 ```swamp
-waypoints = [Point{x: 0, y: 0}, Point{x: 10, y: 10}]
+waypoints = [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 } ]
 next_pos = waypoints[1]
 ```
 
 #### Assignment
 ```swamp
-mut high_scores = [100, 95, 90, 85, 80]
+mut high_scores = [ 100, 95, 90, 85, 80 ]
 high_scores[0] = 105
 ```
 
@@ -219,21 +219,21 @@ spawn_points: [Int: Point]        // Level ID to spawn point mapping
 ```swamp
 // Spawn points for different level IDs
 spawn_points = [
-    1: Point {x: 0, y: 0},       // Starting point
-    2: Point {x: 100, y: 50},    // Second level
-    3: Point {x: -50, y: 75},    // Secret area
+    1: Point { x: 0, y: 0 },       // Starting point
+    2: Point { x: 100, y: 50 },    // Second level
+    3: Point { x: -50, y: 75 },    // Secret area
 ]
 ```
 
 #### Access
 ```swamp
-spawn_points = [1: Point { x: 0, y: 0 }, 2: Point { x: 100, y: 50 }]
+spawn_points = [ 1: Point { x: 0, y: 0 }, 2: Point { x: 100, y: 50 } ]
 start_pos = spawn_points[1]     // Get starting position
 ```
 
 #### Assignment
 ```swamp
-mut spawn_points = [ 1: Point {x: 0, y: 0} ]
+mut spawn_points = [ 1: Point { x: 0, y: 0 } ]
 spawn_points[1] = Point { x: 10, y: 10 }    // Update spawn point
 ```
 
@@ -406,6 +406,10 @@ The `?` suffix indicates that these variables might not have a value.
 
 #### Usage Examples with Default Values
 
+{% note(type="unimplemented") %}
+Default value operator `??` is not implemented yet.
+{% end %}
+
 ```swamp
 // Using ?? to provide default values
 damage = equipped_weapon?.damage ?? 1     // Default to 1 if no weapon
@@ -446,7 +450,7 @@ spell_power = equipped_weapon?.get_enchantment()?.calculate_power() ?? 0
 
 ### Functions
 
-Swamp has three types of functions that help you organize your code:
+**Swamp** has three types of functions that help you organize your code:
 
 
 
@@ -501,7 +505,7 @@ sword = Weapon::create_sword()
 
 #### Standalone Functions
 
-In Swamp, standalone functions (functions not associated with any type)
+In **Swamp**, standalone functions (functions not associated with any type)
  are rarely used because it's usually better to organize 
  functions as part of a relevant type. However, they can be 
  useful for certain utility operations or when interfacing with
@@ -522,7 +526,7 @@ Control flow determines how your program runs. Swamp provides several ways
 
 ### If Expressions and Statements
 
-In Swamp, every block is an expression that returns a value. This means you can use 
+In **Swamp**, every block is an expression that returns a value. This means you can use 
 them on the right side of assignments. When an `if` doesn't have an `else` block, the missing path automatically returns Unit `()` (representing "nothing").
 
 #### If Expression
@@ -691,8 +695,8 @@ match item {
 
 ### Guard Patterns
 
-{% note(type="warning") %}
-NOT IMPLEMENTED YET
+{% note(type="unimplemented") %}
+Guard patterns are not implemented yet.
 {% end %}
 
 ```swamp
@@ -752,7 +756,7 @@ current_target = find_nearest_enemy()?
 
 ## Iterable Sequences
 
-Swamp provides several ways to work with sequences of values in your game.
+**Swamp** provides several ways to work with sequences of values in your game.
 You can loop through ranges of numbers, collections of items, or any other sequence using for loops.
 
 ### Exclusive Range
@@ -763,21 +767,35 @@ for i in 3..0 {
 }
 ```
 
-### Inclusive Range (not implemented)
+### Inclusive Range
+
+{% note(type="coming_soon") %}
+Inclusive ranges are not implemented yet. Use exclusive ranges for now.
+{% end %}
+
 ```swamp
 for hp in 1..=max_health {
     draw_health_pip(hp)
 }
 ```
 
-### Arrays (not implemented)
+### Arrays
+{% note(type="coming_soon") %}
+Array iteration is not implemented yet.
+{% end %}
+
 ```swamp
 for item in inventory {
     item.draw()
 }
 ```
 
-### Maps (not implemented)
+### Maps
+
+{% note(type="coming_soon") %}
+Map iteration is not implemented yet.
+{% end %}
+
 ```swamp
 for player_id, score in high_scores {
     display_score(player_id, score)
@@ -787,7 +805,7 @@ for player_id, score in high_scores {
 
 ## Type Inference
 
-Swamp automatically determines types from context, so you rarely need to write them explicitly.
+**Swamp** automatically determines types from context, so you rarely need to write them explicitly.
 
 You only need to declare types explicitly when:
 - Declaring function parameters and return types

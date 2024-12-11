@@ -23,24 +23,6 @@ mod local_module
 0..=10
 ```
 
-- [ ] Optional types.
-```swamp
-x: Int?
-
-if x? {
-    print(x)
-}
-```
-
-- [ ] Struct pattern matching.
-The variables named are fetched from the struct.
-
-```swamp
-match some_struct {
-    {b, c} => print(c, b)
-}
-```
-
 
 # Iterators
 - [ ] Inclusive Range. `0..=10`
@@ -49,7 +31,7 @@ match some_struct {
 
 
 - [ ] Pipes `<|` and `|>` ?
-- [ ] Operator implementation
+- [ ] Operator implementation trait
 
 ```swamp
 impl Add for MyOwnType {
