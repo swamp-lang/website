@@ -19,12 +19,13 @@ mod local_module
 ```
 
 - [ ] Add support for inclusive ranges.
+
 ```swamp
 0..=10
 ```
 
+## Iterators
 
-# Iterators
 - [ ] Inclusive Range. `0..=10`
 - [ ] Arrays
 - [ ] Maps. Key value pairs.
@@ -43,3 +44,8 @@ impl Add for MyOwnType {
 
 - [ ] support for `Self` (as an alias for the type itself) in implementation blocks.
 
+## Strings
+
+- [ ] `\n` new line escape code
+- [ ] `\t` tab escape code
+- [ ] `\"` quotation and single quotation mark escape codes

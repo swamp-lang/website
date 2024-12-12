@@ -32,27 +32,91 @@ struct Player {
 }
 ```
 
-## Variables and Mutability
+## Variable Declaration
 
-Variables are immutable (unchangeable) by default, which helps prevent accidental changes.
- When you need to change a value, just add `mut` before the variable name. This makes it
-  clear which values can change and which can't.
+Declaring a variable in Swamp is simple:
 
-### Variable Declaration
+```swamp
+player_name = "Hero"
+```
 
-When you create a variable, it's immutable by default. This means once you set its value, it can't be changed. If you need to change it later, mark it as mutable with `mut`.
+You don't need to declare type, it is implied.
+Use `snake_case`[^snakecase] for variable names.
+
+When you create a variable, it's immutable by default. This means once you set its value, it can't be changed. If you need to change it later, mark it as mutable with `mut` as you declare it.
 
 ```swamp
 player_name = "Hero"    // Immutable - cannot be changed
-
 mut health = 100        // Mutable - can be reassigned
 health = 101
 ```
 
+### Reassignment
+
+Only mutable variables can be given new values. This helps prevent accidental changes and makes your code easier to understand.
+
+```swamp
+// Mutable variables can be reassigned
+mut score = 0       
+score = score + 100 
+score = score * 2   
+```
+
+### Scope and Lifetime
+
+Variables only exist within their scope (the block of code where they're defined). **There are no global variables**, so any variables that you need to access within a function must be given to it as a parameter. However, a variable can be accessed inside a nested scope (such as within an **if** statement or **for** loop).
+When the scope ends, the variable is automatically cleaned up.
+
+```swamp
+{
+    power_up = spawn_powerup()    // Power-up exists in this scope
+    if player.collides_with(power_up) {
+        mut bonus = 100
+        bonus *= 2  // Local multiplication
+        player.score += bonus
+        {
+            {
+                mut new bonus cool thing = power_up
+            }
+        }
+    }
+    // bonus is not accessible here
+}   // power_up is automatically cleaned up here
+```
+
+## Function Declaration
+
+```swamp
+fn my_function(parameter: Type) {
+}
+```
+
+Functions are declared with ´fn´ followed by the function name (in `snake_case`[^snakecase]) and parameters in parentheses. Each parameter also needs a declared Type (upper `CamelCase`[^camelcase]).
+
+### Functions that Return Values
+
+```swamp
+fn add(a: Int, b:int) -> Int {
+    a+b
+}
+```
+
+If the function will return a value, the parameters are followed by a `->`and a Type declaration for the return value. By default, the function will return the *last line* of its declaration.
+
+If you need to, you can write `return` to escape the function with a value before the last line.
+
+```swamp
+fn my_function(a: Int, b:int) -> Int {
+    if a > b {
+        return 100
+    }
+    a+b
+}
+```
+
 ### Parameter Mutability
 
-Functions can choose whether they want to modify their parameters by using `mut`.
- This helps make it clear which functions will change the values passed to them and which will just read them.
+Functions can choose whether they want to modify their parameters by using `mut`.This helps make it clear which functions will change the values passed to them and which will just read them.
 
 It is generally recommended to use immutable parameters and return the result, unless there are big types that can cause performance issues.
 
@@ -73,90 +137,121 @@ fn calculate_distance(player: Point, target: Point) -> Float {
 }
 ```
 
-
-### Reassignment
-
-Only mutable variables can be given new values. This helps prevent accidental changes and makes your code easier to understand.
-
-```swamp
-// Mutable variables can be reassigned
-mut score = 0       
-score = score + 100 
-score = score * 2   
-```
-
-### Scope and Lifetime
-
-Variables only exist within their scope (the block of code where they're defined).
-When the scope ends, the variable is automatically cleaned up.
-
-```swamp
-{
-    power_up = spawn_powerup()    // Power-up exists in this scope
-    if player.collides_with(power_up) {
-        mut bonus = 100
-        bonus *= 2  // Local multiplication
-        player.score += bonus
-    }
-    // bonus is not accessible here
-}   // power_up is automatically cleaned up here
-```
-
 ## Basic Types
 
 **Swamp** provides fundamental types for storing different kinds of data: Integers (Int) for whole numbers, Floating-point numbers (are in fact Fixed Point numbers) for decimal values, Booleans (Bool) for true/false conditions, and Strings (String) for text.
 
 ### Integers
+
 ```swamp
 health = 100     
 ```
-- Operations: `+`, `-`, `*`, `/`, `%`
-- Comparisons: `==`, `!=`, `<`, `<=`, `>`, `>=`
+
+#### Integer Operations
+
+- Add `+`
+- Subtract `-`
+- Multiply `*`
+- Divide `/`
+- Remainder `%`
+  
+#### Integer Comparisons
+
+- Equal `==`
+- Not Equal `!=`
+- Less Than `<`
+- Less or Equal to `<=`
+- More Than `>`
+- More or Equal to `>=`
 
 ### Floats
+
+Floats are always written with one decimal, to keep them apart from Ints.
+
 ```swamp
 speed = 5.5      
 ```
-- Operations: `+`, `-`, `*`, `/`
-- Comparisons: `==`, `!=`, `<`, `<=`, `>`, `>=`
+
+#### Float Operations
+
+- Add `+`
+- Subtract `-`
+- Multiply `*`
+- Divide `/`
+  
+#### Float Comparisons
+
+- Equal `==`
+- Not Equal `!=`
+- Less Than `<`
+- Less or Equal to `<=`
+- More Than `>`
+- More or Equal to `>=`
 
 ### Booleans
+
 ```swamp
 is_jumping = true 
 ```
-- Values: `true`, `false`
-- Operations: `&&`, `||`, `!`
+
+A Boolean can only have two different values,  `true` or `false`.
+
+#### Boolean Operations
+
+- And `&&`
+- Or `||`
+- Not `!`
 
 ### Strings
+
 ```swamp
 player_name = "Hero" 
 ```
-- Operations: `.len()`, `+` (concatenation)
-- Escape sequences: 
-  ```swamp
-  dialog = "Guard: \"Stop right there!\""
-  ```
+
+Strings are written in quotation marks `""`. If you need to use quotation marks within the string, you can use backslashes like this `\"`.
+
+```swamp
+dialog = "Guard: \"Stop right there!\""
+```
+
+#### String Operations & Member Functions
+
+- `.len()` Returns length (in characters).
+- `+` Concatenate two strings into one.
 
 ### String Interpolation
 
-String interpolation lets you embed values and expressions directly in your text using `{}`.
- You can include simple variables, complex expressions, and even format them with special 
- modifiers for precise control over how they appear.
+String interpolation lets you embed values and expressions directly in your text using curly brackets `{}` in a **single quotation mark** declaration.
 
 ```swamp
 // Basic interpolation
 name = "Hero"
 message = 'Welcome, {name}!'
+```
 
+Anything within the curly brackets will be handled like regular code: you can include simple variables, complex expressions, and even format them with special modifiers for precise control over how they appear.
+
+```swamp
 // Expression interpolation
-status = 'HP: {health}/{max_health} ({health * 100 / max_health}%) | Shield: {shield}/{max_shield}'
+status = 'HP: {health * 100 / max_health}'
+```
 
+#### String Interpolation Formatting
+
+You can specify how the interpolation formats itself using by adding `:` after a variable within the brackets.
+
+- Lowercase hexadecimal `:x`
+- Uppercase hexadecimal `:X`
+- Binary `:b`
+- Floating point precision `:.1f` (number indicates how many decimals to show)
+- String padding `:.1s` (number indicates how many digits to show)
+
+```swamp
 // Format specifiers
 number = 255
 hex_lower = 'Item ID: {number:x}'        // "Item ID: ff"
 hex_upper = 'Item ID: {number:X}'        // "Item ID: FF"
 binary = 'Flags: {number:b}'             // "Flags: 11111111"
-debug = 'Entity: {player:?}'             // Debug format
 
 // Floating point precision
 pi = 3.1415
@@ -167,37 +262,43 @@ score = 12
 padded_score = 'Score: {score:.5s}'      // "Score: 00012"
 ```
 
-
-
 ## Composite Types
 
 These are more complex types that let you group data together in different ways.
 
-
-
 ### Arrays
 
-Arrays are ordered lists of items of the same type. You can create them,
- access their elements by position (starting at 0), and modify them if they're mutable.
+Arrays are ordered lists of items of the **same type**. You can create them, access their elements by position (starting at 0), and modify them if they're mutable.
 
-#### Type Declaration
+#### Array Type Declaration
+
 ```swamp
-spawn_points: [Point]
+fn my_function (my_list: [Int]) {}
 ```
 
-#### Construction
+When declaring a list as a parameter, add square brackets `[]` surrounding the Type that the list will take.
+
+#### Array Member Functions
+
+- Add item to end of list (must have same Type) `.add(item)`
+- Remove the item and index `.remove(index)`
+
+#### Array Construction
+
 ```swamp
 // Initialize positions
 spawn_points = [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 }, Point { x: -10, y: 5 } ]
 ```
 
-#### Access
+#### Array Access
+
 ```swamp
 waypoints = [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 } ]
 next_pos = waypoints[1]
 ```
 
-#### Assignment
+#### Array Assignment
+
 ```swamp
 mut high_scores = [ 100, 95, 90, 85, 80 ]
 high_scores[0] = 105
@@ -205,17 +306,18 @@ high_scores[0] = 105
 
 ### Maps
 
-Maps are collections that store pairs of values, where you use one value (the key)
- to look up another (the value).
+Maps are collections that store pairs of values, where you use one value (the key) to look up another (the value).
 
-
-#### Type Declaration
+#### Map Declaration
 
 ```swamp
-spawn_points: [Int: Point]        // Level ID to spawn point mapping
+fn my_function(my_map: [Key: Value]) {} 
 ```
 
-#### Construction
+A map looks similar to a list, but has two types within the square brackets `[]`. The first type is used as the lookup key.
+
+#### Map Construction
+
 ```swamp
 // Spawn points for different level IDs
 spawn_points = [
@@ -225,25 +327,26 @@ spawn_points = [
 ]
 ```
 
-#### Access
+#### Map Access
+
 ```swamp
 spawn_points = [ 1: Point { x: 0, y: 0 }, 2: Point { x: 100, y: 50 } ]
 start_pos = spawn_points[1]     // Get starting position
 ```
 
-#### Assignment
+#### Map Assignment
+
 ```swamp
 mut spawn_points = [ 1: Point { x: 0, y: 0 } ]
 spawn_points[1] = Point { x: 10, y: 10 }    // Update spawn point
 ```
 
-
-
 ### Structs
 
-Structs let you create your own data types by grouping related values together. 
+Structs let you create your own data types by grouping related values together.
 
 #### Definition
+
 ```swamp
 struct Player {
     position: Point,
@@ -813,3 +916,6 @@ You only need to declare types explicitly when:
 - When the compiler needs help understanding your intent
 
 The compiler will tell you when explicit types are needed.
+
+[^snakecase]: [Snake_case Wikipedia](https://en.wikipedia.org/wiki/Snake_case)
+[^camelcase]: [CamelCase Wikipedia](https://en.wikipedia.org/wiki/Camel_case)
