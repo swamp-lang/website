@@ -30,7 +30,6 @@ mod local_module
 - [ ] Arrays
 - [ ] Maps. Key value pairs.
 
-
 - [ ] Pipes `<|` and `|>` ?
 - [ ] Operator implementation trait
 

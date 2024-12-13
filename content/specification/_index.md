@@ -32,7 +32,7 @@ struct Player {
 }
 ```
 
-## Variables 
+## Variables
 
 ### Variable Declaration
 
@@ -411,7 +411,7 @@ spawn_points["Starting Level"] = Point { x: 10, y: 10 }    // Update spawn point
 
 ### Structs
 
-Structs let you create your own data types by grouping related values together. 
+Structs let you create your own data types by grouping related values together.
 
 #### Struct Definition
 
@@ -650,10 +650,10 @@ Control flow determines how your program runs. Swamp provides several ways
 
 ### If Expressions and Statements
 
-In **Swamp**, every block is an expression that returns a value. This means you can use 
-them on the right side of assignments. When an `if` doesn't have an `else` block, the missing path automatically returns Unit `()` (representing "nothing").
+In **Swamp**, every block is an expression that returns a value. This means you can use them on the right side of assignments. When an `if` doesn't have an `else` block, the missing path automatically returns Unit `()` (representing "nothing").
 
 #### If Expression
+
 ```swamp
 // Both paths return Int
 damage = if is_critical_hit {
@@ -673,13 +673,9 @@ value = if has_powerup {
 // 'value' type is unclear: Int or ()
 ```
 
-
-
-
 ### While Loops
 
 While loops keep running their code block as long as a condition is true.
-
 
 ```swamp
 mut projectile = spawn_projectile()
@@ -690,6 +686,7 @@ while projectile.is_active {
 ```
 
 ### For Loops
+
 ```swamp
 // Update all entities
 for enemy in enemies {
@@ -708,6 +705,7 @@ for id, enemy in map_of_enemies {
 ```
 
 ### Break and Continue
+
 ```swamp
 // Find first vulnerable enemy
 for enemy in enemies {
@@ -722,6 +720,7 @@ for enemy in enemies {
 ```
 
 ### Return
+
 ```swamp
 fn find_health_potion(inventory: Inventory) -> Item? {
     for item in inventory.items {
@@ -733,16 +732,12 @@ fn find_health_potion(inventory: Inventory) -> Item? {
 }
 ```
 
-
-
-
-
-
 ## Pattern Matching
 
 Pattern matching is a powerful way to handle different cases in your code. It's like a super-powered if statement that can look inside complex types and handle multiple cases clearly.
 
 ### Basic Patterns
+
 ```swamp
 match game_state {
     Playing => update_game(),
@@ -816,7 +811,6 @@ match item {
 }
 ```
 
-
 ### Guard Patterns
 
 {% note(type="unimplemented") %}
@@ -833,12 +827,10 @@ match player_state {
 }
 ```
 
-
-
-
 ## Operators
 
 ### Binary Operators
+
 ```swamp
 // Arithmetic: +, -, *, /, %
 remaining_health = health - damage
@@ -858,6 +850,7 @@ for frame in 0..animation.frame_count {
 ```
 
 ### Unary Operators
+
 ```swamp
 // Negation (-)
 velocity.x = -velocity.x  // Reverse direction
@@ -869,6 +862,7 @@ if !inventory.is_full {
 ```
 
 ### Suffix Operators
+
 ```swamp
 // Optional unwrap (?)
 if equipped_weapon?.can_fire {
@@ -884,6 +878,7 @@ current_target = find_nearest_enemy()?
 You can loop through ranges of numbers, collections of items, or any other sequence using for loops.
 
 ### Exclusive Range
+
 ```swamp
 // Countdown timer
 for i in 3..0 {
@@ -903,7 +898,8 @@ for hp in 1..=max_health {
 }
 ```
 
-### Arrays
+### Array Iteration
+
 {% note(type="coming_soon") %}
 Array iteration is not implemented yet.
 {% end %}
@@ -914,7 +910,7 @@ for item in inventory {
 }
 ```
 
-### Maps
+### Map Iteration
 
 {% note(type="coming_soon") %}
 Map iteration is not implemented yet.
@@ -926,12 +922,12 @@ for player_id, score in high_scores {
 }
 ```
 
-
 ## Type Inference
 
 **Swamp** automatically determines types from context, so you rarely need to write them explicitly.
 
 You only need to declare types explicitly when:
+
 - Declaring function parameters and return types
 - Creating struct or enum definitions
 - When the compiler needs help understanding your intent
