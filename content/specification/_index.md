@@ -32,7 +32,9 @@ struct Player {
 }
 ```
 
-## Variable Declaration
+## Variables 
+
+### Variable Declaration
 
 Declaring a variable in Swamp is simple:
 
@@ -51,7 +53,7 @@ mut health = 100        // Mutable - can be reassigned
 health = 101
 ```
 
-### Reassignment
+### Variable Reassignment
 
 Only mutable variables can be given new values. This helps prevent accidental changes and makes your code easier to understand.
 
@@ -62,7 +64,7 @@ score = score + 100
 score = score * 2   
 ```
 
-### Scope and Lifetime
+### Variable Scope and Lifetime
 
 Variables only exist within their scope (the block of code where they're defined). **There are no global variables**, so any variables that you need to access within a function must be given to it as a parameter. However, a variable can be accessed inside a nested scope (such as within an **if** statement or **for** loop).
 When the scope ends, the variable is automatically cleaned up.
@@ -84,7 +86,9 @@ When the scope ends, the variable is automatically cleaned up.
 }   // power_up is automatically cleaned up here
 ```
 
-## Function Declaration
+## Functions
+
+### Function Declaration
 
 ```swamp
 fn my_function(parameter: Type) {
@@ -134,6 +138,68 @@ fn calculate_distance(player: Point, target: Point) -> Float {
     dx = target.x - player.x
     dy = target.y - player.y
     (dx * dx + dy * dy).sqrt()
+}
+```
+
+### Types of Functions
+
+**Swamp** has three types of functions that help you organize your code:
+
+#### Member Functions
+
+These operate on an instance of a type, accessed using a dot notation. They can modify the instance if marked with `mut`.
+
+```swamp
+impl Player {
+    /// Reduces player health and handles incapacitation
+    fn take_damage(mut self, amount: Int) {
+        self.health -= amount
+        if self.health <= 0 {
+            self.state = State::Incapacitated
+        }
+    }
+
+    /// Calculates distance to target
+    fn distance_to(self, target: Point) -> Float {
+        dx = target.x - self.position.x
+        dy = target.y - self.position.y
+        (dx * dx + dy * dy).sqrt()
+    }
+}
+
+// Usage:
+player.take_damage(10)
+distance = player.distance_to(enemy.position)
+```
+
+#### Associated Function Calls
+
+These belong to the type itself, not instances.
+They're called using double colon notation (`::`) and are often used as constructors or utility functions.
+
+```swamp
+impl Weapon {
+    // Factory method
+    fn create_sword() -> Weapon {
+        Weapon {
+            damage: 10,
+            range: 2.0,
+            weapon_type: WeaponType::Sword
+        }
+    }
+}
+
+sword = Weapon::create_sword()
+```
+
+#### Standalone Functions
+
+In **Swamp**, standalone functions (functions not associated with any type) are rarely used because it's usually better to organize functions as part of a relevant type. However, they can be useful for certain utility operations or when interfacing with system-level features. Or you want to have a short name to call it with.
+
+```swamp
+/// Logs a debug message to the console
+fn log(message: String) {
+    // ... write to console/file
 }
 ```
 
@@ -319,33 +385,37 @@ A map looks similar to a list, but has two types within the square brackets `[]`
 #### Map Construction
 
 ```swamp
-// Spawn points for different level IDs
+// Spawn points for different level names
 spawn_points = [
-    1: Point { x: 0, y: 0 },       // Starting point
-    2: Point { x: 100, y: 50 },    // Second level
-    3: Point { x: -50, y: 75 },    // Secret area
+    "Starting Level": Point { x: 0, y: 0 },
+    "Second Level": Point { x: 100, y: 50 },   
+    "Secret Area": Point { x: -50, y: 75 },  
 ]
 ```
+
+Remember that each following Key/Value pair must have the same types as the last.
 
 #### Map Access
 
 ```swamp
-spawn_points = [ 1: Point { x: 0, y: 0 }, 2: Point { x: 100, y: 50 } ]
-start_pos = spawn_points[1]     // Get starting position
+spawn_points = [ "Starting Level": Point { x: 0, y: 0 }, "Second Level": Point { x: 100, y: 50 } ]
+start_pos = spawn_points["Starting Level"]     // Get starting position
 ```
 
 #### Map Assignment
 
 ```swamp
-mut spawn_points = [ 1: Point { x: 0, y: 0 } ]
-spawn_points[1] = Point { x: 10, y: 10 }    // Update spawn point
+mut spawn_points = [ "Starting Level": Point { x: 0, y: 0 } ]
+spawn_points["Starting Level"] = Point { x: 10, y: 10 }    // Update spawn point
 ```
 
 ### Structs
 
-Structs let you create your own data types by grouping related values together.
+Structs let you create your own data types by grouping related values together. 
 
-#### Definition
+#### Struct Definition
+
+To define a struct, simply write `struct` followed by the name of your Struct in upper `CamelCase` (as it will become a Type) and some curly brackets `{}`. Inside the brackets, you list each **field** the Struct will contain (and their Types).
 
 ```swamp
 struct Player {
@@ -356,7 +426,10 @@ struct Player {
 }
 ```
 
-#### Construction
+#### Struct Construction
+
+Once a Struct is defined, you can create a an instance of it. When you do, you have to set **each field** of the Struct to a value.
+
 ```swamp
 player = Player {
     position: Point { x: 0.0, y: 0.0 },
@@ -366,14 +439,19 @@ player = Player {
 }
 ```
 
-#### Field Access
+#### Struct Field Access
+
+You can access fields like variables, using a period (`struct.field`).
+
 ```swamp
 // Read field values
 current_health = player.health
 can_cast = player.mana >= 20
 ```
 
-#### Field Assignment
+#### Struct Field Assignment
+
+Using `mut`, you can assign new values to fields, just like variables.
 
 ```swamp
 mut player = Player {
@@ -389,8 +467,24 @@ player.mana -= 20          // Use mana
 player.position = Point { x: 10.0, y: 5.0 }  // Move player
 ```
 
+#### Struct Implementation
 
-#### Implementation
+Using `impl` you can attach [member functions](#member-functions) to Structs.
+
+```swamp
+impl Player {
+    /// Handle taking damage and effects
+    fn take_damage(mut self, amount: Int) {
+        self.health -= amount
+        if self.health <= 0 {
+            self.health = 0
+            self.state = State::Incapacitated
+        }
+    }
+}
+```
+
+`impl` can also be used to attach functions used for [associated function calls](#associated-function-calls).
 
 ```swamp
 impl Player {
@@ -403,46 +497,37 @@ impl Player {
             speed: 5.0
         }
     }
-
-    /// Handle taking damage and effects
-    fn take_damage(mut self, amount: Int) {
-        self.health -= amount
-        if self.health <= 0 {
-            self.health = 0
-            self.state = State::Incapacitated
-        }
-    }
-
-    /// Move in a direction
-    fn move_to(mut self, target: Point) {
-        dx = target.x - self.position.x
-        dy = target.y - self.position.y
-        distance = (dx * dx + dy * dy).sqrt()
-        
-        if distance <= self.speed {
-            self.position = target
-        } else {
-            factor = self.speed / distance
-            self.position.x += dx * factor
-            self.position.y += dy * factor
-        }
-    }
 }
 ```
 
+### Tuples
 
+Tuples are similar to structs, but they are not constructed as you use them, and do not have Type names or field names. To use a Tuple, write one or more values inside regular parentheses `()`.
 
+```swamp
+player_position = (2,1)
+```
+
+```swamp
+fn get_position() -> (Int, Int) {
+    (10, 20)
+}
+
+x, y = get_position()
+```
 
 ### Enums
 
-Enums let you define a type that can be one of several variants. 
-Each variant can optionally carry different types of data. They're great for representing 
-things that can be in different states or categories.
+Enums let you define a Type that can be one of several variants.
+Each variant can optionally carry different types of data. They're great for representing things that can be in different states or categories.
 
-#### Definition
+#### Enum Definition
+
+To define an Enum, write `enum` followed by its name (in uppercase `CamelCase` as it will become a Type) and a pair of curly brackets `{}`. Inside the brackets, you list each Type the Enum can be.
+
 ```swamp
 enum Item {
-    // Simple variants
+    // Simple variants (no data)
     Gold,
     Key,
     
@@ -459,10 +544,16 @@ enum Item {
 }
 ```
 
+#### Enum Declaration
 
+```swamp
+item = Item::Armor { defense: 3, weight: 3.8, durability: 99 }
+```
 
+#### Enum Pattern Matching
 
-#### Pattern Matching
+You can [pattern match](#pattern-matching) an Enum and output different outcomes depending on what Type an Enum.
+
 ```swamp
 match item {
     // Simple variant matching
@@ -492,20 +583,25 @@ match item {
 }
 ```
 
+### Type Aliases
 
+You can make an alias for any Type. This is mostly useful for Tuples, and in most cases you are better of defining a Struct.
 
+```swamp
+type MyAlias = (Int, Int)
+```
 
 ### Optional Types
 
-Optional types handle values that might or might not exist. 
-
+Optional types handle values that might or might not exist.
 
 #### Type Declaration
+
 ```swamp
 target: Entity?            // Current target
 ```
-The `?` suffix indicates that these variables might not have a value.
 
+The `?` suffix indicates that these variables might not have a value.
 
 #### Usage Examples with Default Values
 
@@ -524,7 +620,7 @@ x = spawn_point?.x ?? 0.0                 // Default to 0.0 if no spawn point
 
 ```swamp
 // Using if to bind and check optionals
-if weapon = equipped_weapon? {
+if equipped_weapon? {
     // weapon is now bound and available in this scope
     weapon.attack()
 }
@@ -538,6 +634,7 @@ if target = find_nearest_enemy()? {
 ```
 
 #### Chaining Optionals
+
 ```swamp
 guild_name = player.guild?.get_name() ?? "No Guild"
 
@@ -545,82 +642,6 @@ leader_rank = player.guild?.get_leader()?.get_rank() ?? "No Rank"
 
 spell_power = equipped_weapon?.get_enchantment()?.calculate_power() ?? 0
 ```
-
-
-
-
-
-
-### Functions
-
-**Swamp** has three types of functions that help you organize your code:
-
-
-
-#### Member Functions
-
-These operate on an instance of a type, accessed using 
-a dot notation. They can modify the instance if marked with `mut`.
-
-```swamp
-impl Player {
-    /// Reduces player health and handles incapacitation
-    fn take_damage(mut self, amount: Int) {
-        self.health -= amount
-        if self.health <= 0 {
-            self.state = State::Incapacitated
-        }
-    }
-
-    /// Calculates distance to target
-    fn distance_to(self, target: Point) -> Float {
-        dx = target.x - self.position.x
-        dy = target.y - self.position.y
-        (dx * dx + dy * dy).sqrt()
-    }
-}
-
-// Usage:
-player.take_damage(10)
-distance = player.distance_to(enemy.position)
-```
-
-#### Associated Function Calls
-
-These belong to the type itself, not instances. 
-They're called using double colon notation (`::`) and are often used as 
-constructors or utility functions.
-
-```swamp
-impl Weapon {
-    // Factory method
-    fn create_sword() -> Weapon {
-        Weapon {
-            damage: 10,
-            range: 2.0,
-            weapon_type: WeaponType::Sword
-        }
-    }
-}
-
-sword = Weapon::create_sword()
-```
-
-#### Standalone Functions
-
-In **Swamp**, standalone functions (functions not associated with any type)
- are rarely used because it's usually better to organize 
- functions as part of a relevant type. However, they can be 
- useful for certain utility operations or when interfacing with
-  system-level features. Or you want to have a short name to call it with.
-
-```swamp
-/// Logs a debug message to the console
-fn log(message: String) {
-    // ... write to console/file
-}
-```
-
 
 ## Control Flow
 
