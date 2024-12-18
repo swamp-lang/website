@@ -900,10 +900,6 @@ for hp in 1..=max_health {
 
 ### Array Iteration
 
-{% note(type="coming_soon") %}
-Array iteration is not implemented yet.
-{% end %}
-
 ```swamp
 for item in inventory {
     item.draw()
@@ -911,10 +907,6 @@ for item in inventory {
 ```
 
 ### Map Iteration
-
-{% note(type="coming_soon") %}
-Map iteration is not implemented yet.
-{% end %}
 
 ```swamp
 for player_id, score in high_scores {
