@@ -4,13 +4,15 @@ $link-color: #4a9eff;
 $code-bg: #1d1d1d;
 $header-color: #cccccc;
 $border-color: #444444;
-$inline-code-color: #ffaa8a;
+$inline-code-color: #ff7a7a;
+
+@import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&display=swap');
 
 // Basic reset and typography
 html, body {
     margin: 0;
     padding: 0;
-    font-family: 'Inter', sans-serif;
+    font-family: "Alegreya", serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
@@ -142,9 +144,14 @@ h1, h2, h3, h4, h5, h6 {
 h1 { font-size: 2.5rem; }
 h2 { font-size: 2rem; }
 h3 { font-size: 1.75rem; }
-h4 { font-size: 1.5rem; }
-h5 { font-size: 1.25rem; }
+h4 { font-size: 1.3rem; }
+h5 { font-size: 1.15rem; }
 h6 { font-size: 1rem; }
+
+h2 {
+    border-bottom: 1px solid darken($border-color, 10%);
+    padding-bottom: 0.5rem;
+}
 
 // Links
 a {
@@ -166,6 +173,7 @@ pre {
     
     code {
         font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        font-size: 0.8rem;
         background: none;
         padding: 0;
         color: $text-light;
@@ -184,6 +192,11 @@ code {
 // Basic content spacing
 p, ul, ol {
     margin: 1rem 0;
+}
+
+strong {
+    font-weight: bold;
+    color: lighten($text-light, 10%);
 }
 
 // Article layout
