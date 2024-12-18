@@ -1,0 +1,24 @@
+name = "Swamp"
+description = "A clean, dark theme for technical documentation, designed for the Swamp programming language"
+license = "MIT"
+homepage = "https://github.com/swamp-lang/website"
+min_version = "0.14.1"
+
+[extra]
+show_social = true
+footer_info = "Copyright © 2024. All rights reserved."
+
+[author]
+name = "Peter Bjorklund"
+homepage = "https://github.com/piot"
+
+[taxonomies]
+tags = ["dark", "documentation", "responsive", "technical"]
+
+# Features supported by the theme
+[features]
+toc = true
+search = false
+syntax_highlighting = true
+math = false
+comments = false

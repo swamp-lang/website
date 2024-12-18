@@ -1,9 +1,8 @@
-# The URL the site will be built for
 base_url = "https://swamp-lang.org"
 title = "Swamp Language"
-theme = "deepthought"
+theme = "swamp"
 compile_sass = true
-build_search_index = true
+build_search_index = false
 
 
 [markdown]
@@ -14,11 +13,11 @@ extra_syntaxes_and_themes = ["syntax-themes"]
 
 
 [extra]
-author = "Swamp Team"
+author = "Swamp"
 description = "Official documentation for the Swamp programming language"
 show_social = true
 
-# Navigation - DeepThought
+# Navigation
 navbar_items = [
   { code = "en", nav_items = [
     { url = "/", name = "Home" },
@@ -27,20 +26,9 @@ navbar_items = [
   ]}
 ]
 
-# Footer items - DeepThought
-footer_items = [
-  { code = "en", nav_items = [
-    { url = "/", name = "Home" }
-    # { url = "/docs/", name = "Docs" },
-    # { url = "/blog/", name = "Blog" },
-  ]}
-]
-
-is_dark = true 
-
 
 [extra.footer]
-info = 'Copyright 2024 Peter Bjorklund. All rights reserved. https://github.com/swamp/script'
+info = 'Documentation by [catnipped](https://bsky.app/profile/ossianboren.bsky.social). Swamp Language Copyright &copy; 2024 Peter Bjorklund. All rights reserved.'
 
 [extra.social]
 github = "swamp/script"
