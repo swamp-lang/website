@@ -16,6 +16,7 @@ extra_syntaxes_and_themes = ["syntax-themes"]
 author = "Swamp"
 description = "Official documentation for the Swamp programming language"
 show_social = true
+toc = true
 
 # Navigation
 navbar_items = [

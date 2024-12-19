@@ -1,6 +1,8 @@
 +++
 title = "Language Specification"
 description = "Detailed specification of the Swamp programming language"
+[extra]
+toc = true
 +++
 
 ## Comments
