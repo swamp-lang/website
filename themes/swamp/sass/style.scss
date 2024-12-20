@@ -153,6 +153,33 @@ h2 {
     padding-bottom: 0.5rem;
 }
 
+
+h2[id], h3[id], h4[id] {
+    position: relative;
+
+    &:hover::before {
+        opacity: 1;
+    }
+
+    &::before {
+        content: "#";
+        position: absolute;
+        left: -24px;
+        
+        // HACK: Center vertically relative to the text
+        top: 50%;
+        transform: translateY(-50%);
+        
+        width: 24px;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.2s;
+        color: $link-color;
+        font-size: 0.9em;
+    }
+}
+
+
 // Links
 a {
     color: $link-color;
