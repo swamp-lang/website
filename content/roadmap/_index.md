@@ -1,9 +1,13 @@
 +++
 title = "Roadmap"
 description = "Future plans and development roadmap for Swamp"
+[extra]
+toc = true
 +++
 
-- [ ] `use` statement.
+## Modules
+
+### `use` statement
 
 ```swamp
 use external_module
@@ -12,26 +16,23 @@ use external_module::*
 use external_module::{my_function as my_function_alias, MyStruct as MyStructAlias}
 ```
 
-- [ ] `mod` statement.
+### `mod` statement
 
 ```swamp
 mod local_module
 ```
 
-- [ ] Add support for inclusive ranges.
+
+## Iterators
+
+### Inclusive Range
 
 ```swamp
 0..=10
 ```
 
-## Iterators
-
-- [ ] Inclusive Range. `0..=10`
-- [ ] Arrays
-- [ ] Maps. Key value pairs.
-
-- [ ] Pipes `<|` and `|>` ?
-- [ ] Operator implementation trait
+### Pipes `<|` and `|>` ?
+### Operator implementation trait
 
 ```swamp
 impl Add for MyOwnType {
@@ -41,10 +42,13 @@ impl Add for MyOwnType {
 }
 ```
 
-- [ ] support for `Self` (as an alias for the type itself) in implementation blocks.
+## `Self` 
 
-## Strings
+Support for **Self** (as an alias for the type itself) in implementation blocks.
 
-- [ ] `\n` new line escape code
-- [ ] `\t` tab escape code
-- [ ] `\"` quotation and single quotation mark escape codes
+
+## String Escape codes
+
+- `\n` new line escape code
+- `\t` tab escape code
+- `\"` quotation and single quotation mark escape codes
