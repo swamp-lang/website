@@ -46,14 +46,22 @@ contexts:
     - match: '\b(Int|Float|String|Bool)\b'
       scope: support.type.primitive
 
+    # Enum instantiation
+    - match: '\b([A-Z][a-zA-Z0-9_]*)(::)([A-Z][a-zA-Z0-9_]*)\b'
+      captures:
+        1: entity.name.type.enum
+        2: punctuation.separator
+        3: constant.other.enum.variant   
+
     # Module paths and type identifiers
     - match: '([a-z][a-z0-9_]*::)+'
       scope: entity.name.namespace
-    
-    - match: '\b[A-Z][a-zA-Z0-9_]*\b'
-      scope: entity.name.type
 
-
+    # Type with optional `?` suffix    
+    - match: '\b([A-Z][a-zA-Z0-9_]*)(\?)?'
+      captures:
+        1: entity.name.type
+        2: keyword.operator.optional
 
     # Function and Method Calls
     - match: '\b([a-z][a-zA-Z0-9_]*)\s*\('
@@ -75,6 +83,8 @@ contexts:
       captures:
         1: keyword.declaration
         2: entity.name.function
+
+
 
     # Static calls
     - match: '\b([A-Z][a-zA-Z0-9_]*)(::)([a-z][a-zA-Z0-9_]*)\b'
@@ -144,19 +154,21 @@ contexts:
 
   double_string:
     - match: '"'
-      scope: string.quoted.double
+      scope: punctuation.definition.string.end
       pop: true
-    - match: '\\\.'
+    - match: '\\[nrt\\"'']'
       scope: constant.character.escape
     - match: .
       scope: string.quoted.double
 
   interpolated_string:
     - match: "'"
-      scope: string.quoted.single
+      scope: punctuation.definition.string.end
       pop: true
+    - match: '\\[nrt\\"'']'
+      scope: constant.character.escape
     - match: '\{'
-      push: interpolation
+      push: interpolation 
     - match: .
       scope: string.quoted.single
 
