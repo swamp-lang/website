@@ -566,16 +566,16 @@ match item {
     Key => open_nearest_door(),
     
     // Tuple variant destructuring
-    Weapon(_, range) => {           // Ignore damage
+    Weapon _, range => {           // Ignore damage
         set_attack_range(range)
     },
 
-    Potion(amount) => {
+    Potion amount => {
         player.health += amount
     },
     
     // Struct variant destructuring
-    Armor { defense, weight, .. } => {
+    Armor defense, weight => {
         if player.strength >= weight {
             equip_armor(defense)
         } else {
