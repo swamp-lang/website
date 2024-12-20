@@ -100,11 +100,11 @@ contexts:
 
     # Strings
     - match: '"'
-      scope: string.quoted.double
+      scope: punctuation.definition.string.begin
       push: double_string
 
     - match: "'"
-      scope: string.quoted.single
+      scope: punctuation.definition.string.begin
       push: interpolated_string
 
     # Numbers
@@ -153,24 +153,22 @@ contexts:
       scope: comment.line.double-slash
 
   double_string:
+    - meta_scope: string.quoted.double
     - match: '"'
       scope: punctuation.definition.string.end
       pop: true
     - match: '\\[nrt\\"'']'
       scope: constant.character.escape
-    - match: .
-      scope: string.quoted.double
 
   interpolated_string:
+    - meta_scope: string.quoted.single
     - match: "'"
       scope: punctuation.definition.string.end
       pop: true
     - match: '\\[nrt\\"'']'
       scope: constant.character.escape
     - match: '\{'
-      push: interpolation 
-    - match: .
-      scope: string.quoted.single
+      push: interpolation
 
   interpolation:
     - match: '\}'
