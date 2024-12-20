@@ -36,9 +36,9 @@ struct Player {
 
 ## Variables
 
-### Variable Declaration
+### Variable Definition
 
-Declaring a variable in Swamp is simple:
+Defining a variable in Swamp is simple:
 
 ```swamp
 player_name = "Hero"
@@ -90,29 +90,29 @@ When the scope ends, the variable is automatically cleaned up.
 
 ## Functions
 
-### Function Declaration
+### Function Definition
 
 ```swamp
 fn my_function(parameter: Type) {
 }
 ```
 
-Functions are declared with ´fn´ followed by the function name (in `snake_case`[^snakecase]) and parameters in parentheses. Each parameter also needs a declared Type (upper `CamelCase`[^camelcase]).
+Functions are declared with `fn` followed by the function name (in `snake_case`[^snakecase]) and parameters in parentheses. Each parameter also needs a declared Type (upper `CamelCase`[^camelcase]).
 
 ### Functions that Return Values
 
 ```swamp
-fn add(a: Int, b:int) -> Int {
+fn add(a: Int, b: Int) -> Int {
     a+b
 }
 ```
 
-If the function will return a value, the parameters are followed by a `->`and a Type declaration for the return value. By default, the function will return the *last line* of its declaration.
+If the function will return a value, the parameters are followed by a `->`and a Type declaration for the return value. By default, the function will return the *last expression* of its definition.
 
 If you need to, you can write `return` to escape the function with a value before the last line.
 
 ```swamp
-fn my_function(a: Int, b:int) -> Int {
+fn my_function(a: Int, b: Int) -> Int {
     if a > b {
         return 100
     }
@@ -177,7 +177,7 @@ distance = player.distance_to(enemy.position)
 #### Associated Function Calls
 
 These belong to the type itself, not instances.
-They're called using double colon notation (`::`) and are often used as constructors or utility functions.
+They're called using double colon notation (`::`) and are often used for instantiation or utility functions.
 
 ```swamp
 impl Weapon {
@@ -207,7 +207,7 @@ fn log(message: String) {
 
 ## Basic Types
 
-**Swamp** provides fundamental types for storing different kinds of data: Integers (Int) for whole numbers, Floating-point numbers (are in fact Fixed Point numbers) for decimal values, Booleans (Bool) for true/false conditions, and Strings (String) for text.
+**Swamp** provides fundamental types for storing different kinds of data: Integers (Int) for whole numbers, Floating-point numbers (that in reference implementations are Fixed Point numbers) for decimal values, Booleans (Bool) for true/false conditions, and Strings (String) for text.
 
 ### Integers
 
@@ -351,7 +351,7 @@ When declaring a list as a parameter, add square brackets `[]` surrounding the T
 - Add item to end of list (must have same Type) `.add(item)`
 - Remove the item and index `.remove(index)`
 
-#### Array Construction
+#### Array Instantiation
 
 ```swamp
 // Initialize positions
@@ -384,7 +384,7 @@ fn my_function(my_map: [Key: Value]) {}
 
 A map looks similar to a list, but has two types within the square brackets `[]`. The first type is used as the lookup key.
 
-#### Map Construction
+#### Map Instantiation
 
 ```swamp
 // Spawn points for different level names
@@ -428,7 +428,7 @@ struct Player {
 }
 ```
 
-#### Struct Construction
+#### Struct Instantiation
 
 Once a Struct is defined, you can create a an instance of it. When you do, you have to set **each field** of the Struct to a value.
 
@@ -525,7 +525,7 @@ Each variant can optionally carry different types of data. They're great for rep
 
 #### Enum Definition
 
-To define an Enum, write `enum` followed by its name (in uppercase `CamelCase` as it will become a Type) and a pair of curly brackets `{}`. Inside the brackets, you list each Type the Enum can be.
+To define an Enum, write `enum` followed by its name (in uppercase `CamelCase` as it will become a Type) and a pair of curly brackets `{}`. Inside the brackets, you list each variant the Enum can be.
 
 ```swamp
 enum Item {
@@ -546,7 +546,7 @@ enum Item {
 }
 ```
 
-#### Enum Declaration
+#### Enum Instantiation
 
 ```swamp
 item = Item::Armor { defense: 3, weight: 3.8, durability: 99 }
@@ -595,7 +595,8 @@ type MyAlias = (Int, Int)
 
 ### Optional Types
 
-Optional types handle values that might or might not exist.
+Optional types handle values that might or might not exist. They are represented by adding `?` after any type.
+When an Optional has no value, it contains the literal value `none`.
 
 #### Type Declaration
 
