@@ -6,13 +6,13 @@ $header-color: #cccccc;
 $border-color: #444444;
 $inline-code-color: #ff7a7a;
 
-@import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 // Basic reset and typography
 html, body {
     margin: 0;
     padding: 0;
-    font-family: "Alegreya", serif;
+    font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
@@ -23,9 +23,11 @@ html, body {
 
 // Container
 .container {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 20px;
+    max-width: 37rem; // 75ch;
+    min-width: 37rem;
+    margin-left: 1rem;  // Fixed left margin
+    margin-right: auto;  // Auto right margin
+    padding: 0rem 1rem ;
 }
 
 nav {
@@ -238,45 +240,7 @@ article {
     margin-top: -1rem;
 }
 
-// Table of Contents
-.toc {
-    position: fixed;
-    right: 2rem;
-    top: 6rem;
-    width: 250px;
-    background: lighten($bg-dark, 3%);
-    padding: 1rem;
-    border-left: 2px solid $border-color;
-    border-radius: 4px;
-    
-    h2 {
-        font-size: 1.2rem;
-        margin-top: 0;
-    }
-    
-    ul {
-        list-style: none;
-        padding-left: 1rem;
-        
-        ul {
-            padding-left: 1rem;
-        }
-    }
-    
-    a {
-        color: darken($text-light, 20%);
-        text-decoration: none;
-        font-size: 0.9rem;
-        
-        &:hover {
-            color: $link-color;
-        }
-    }
-    
-    @media (max-width: 1200px) {
-        display: none;
-    }
-}
+
 
 // Notes/callouts/admonitions
 .note {
@@ -442,16 +406,16 @@ footer {
 // Table of Contents
 .toc {
     position: fixed;
-    right: 0rem;
+    left: calc(42rem);
     top: 4rem;
     width: 250px;
     background: lighten($bg-dark, 3%);
     padding: 1rem;
     border-left: 2px solid $border-color;
     border-radius: 4px;
-    max-height: calc(100vh - 8rem); // scrollable
+    max-height: calc(100vh - 8rem);
     line-height: 1.1rem;           
-    overflow-y: auto;               // scrollable
+    overflow-y: auto;
     
     h2 {
         font-size: 1.0rem;
@@ -466,7 +430,7 @@ footer {
         margin: 0;   
         
         li {
-            margin-top: 0.4rem;
+            margin-top: 0.5rem;
             a {
                 color: lighten($text-light, 20%);           
             }
@@ -488,14 +452,15 @@ footer {
 
     a {
         text-decoration: none;
-        font-size: 0.7rem;
+        font-size: 0.9rem;
+        line-height: 1.2rem;
         
         &:hover {
             color: $link-color;
         }
     }
     
-    @media (max-width: 1400px) {
+    @media (max-width: 60rem) {
         display: none;
     }
 }
