@@ -24,7 +24,6 @@ html, body {
 // Container
 .container {
     max-width: 37rem; // 75ch;
-    min-width: 37rem;
     margin-left: 1rem;  // Fixed left margin
     margin-right: auto;  // Auto right margin
     padding: 0rem 1rem ;
@@ -110,7 +109,8 @@ nav {
             top: 100%;
             left: 0;
             right: 0;
-            background: darken($bg-dark, 3%);
+            background: #2c2b2b;
+            //box-shadow: #4a4a4b 5px 5px 4px;
             padding: 1rem 0;
             border-bottom: 1px solid $border-color;
             z-index: 1;
