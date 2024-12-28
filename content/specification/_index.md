@@ -585,14 +585,6 @@ match item {
 }
 ```
 
-### Type Aliases
-
-You can make an alias for any Type. This is mostly useful for Tuples, and in most cases you are better of defining a Struct.
-
-```swamp
-type MyAlias = (Int, Int)
-```
-
 ### Optional Types
 
 Optional types handle values that might or might not exist. They are represented by adding `?` after any type.
