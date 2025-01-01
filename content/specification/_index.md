@@ -978,6 +978,43 @@ for player_id, score in high_scores {
 }
 ```
 
+## Modules and Imports
+
+### The `use` Keyword
+
+The `use` keyword allows you to import modules, types, and functions from other parts of your codebase. This helps organize your code and makes it easier to access functionality defined elsewhere.
+
+The dot notation in module paths directly corresponds to the file system structure. Each dot represents a directory separator in the file path, and the module name is resolved to a `.swamp` file. For example:
+
+- `use gameplay` resolves to `gameplay.swamp`
+- `use math.geometry` resolves to `math/geometry.swamp`
+- `use engine.physics.collision` resolves to `engine/physics/collision.swamp`
+
+
+#### Basic Module Import
+
+```swamp
+// Import an entire module
+use some_module
+```
+
+#### Nested Module Import
+
+```swamp
+// Import from nested modules using dot notation
+use math.geometry.something
+```
+
+#### Selective Imports
+
+```swamp
+// Import specific items from a module
+use math.geometry { utility_function, SomeType }
+```
+
+When you use selective imports, you can import multiple items at once by listing them inside curly braces. These imported items can then be used directly in your code without needing to prefix them with the module name.
+
+
 ## Type Inference
 
 **Swamp** automatically determines types from context, so you rarely need to write them explicitly.
