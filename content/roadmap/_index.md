@@ -7,19 +7,10 @@ toc = true
 
 ## Modules
 
-### `use` statement
 
+### External packages?
 ```swamp
-use external_module
-use external_module::{my_function, MyStruct}
-use external_module::*
-use external_module::{my_function as my_function_alias, MyStruct as MyStructAlias}
-```
-
-### `mod` statement
-
-```swamp
-mod local_module
+use @external_package
 ```
 
 
@@ -32,6 +23,9 @@ mod local_module
 ```
 
 ### Pipes `<|` and `|>` ?
+
+### Default trait implementation
+
 ### Operator implementation trait
 
 ```swamp

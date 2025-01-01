@@ -441,6 +441,75 @@ player = Player {
 }
 ```
 
+##### Partial Initialization with Defaults (..)
+
+When using `..` for partial initialization, Swamp follows a structured process to ensure all fields are correctly filled:
+
+1.	Check for a Default Trait Implementation on the Struct:
+
+{% note(type="coming_soon") %}
+impl Default is not implemented yet.
+{% end %}
+
+  - If the struct type being instantiated has an `impl Default` block, Swamp:
+    1.	Initializes the struct using the values returned by `default()` function.
+    2.	Overwrites any fields that are explicitly set during instantiation.
+
+```swamp
+struct Player {
+    name: String,
+    health: Int,
+    mana: Int,
+    speed: Float
+}
+
+impl Default for Player {
+    fn default() -> Player {
+        Player {
+            name: "Unknown",
+            health: 100,
+            mana: 50,
+            speed: 5.0
+        }
+    }
+}
+
+player = Player {
+    name: "Hero",
+    mana: 75,
+    ..
+}
+
+// Result: Player { name: "Hero", health: 100, mana: 75, speed: 5.0 }
+```
+
+2.	If no `Default` implementation is found for the struct type:
+  -	Swamp iterates through each field that is not explicitly set during instantiation and fills them individually by:
+  -	Calling `Default::default()` on the field type.
+  -	Using built-in defaults for primitive types:
+    - `Int` → `0`
+    - `Float` → `0.0`
+    - `Bool` → `false`
+    - `T?` → `none`
+    - `String` → `""` (empty string)
+
+**Example** (No `Default` trait implementation):
+
+```swamp
+struct Enemy {
+    health: Int,
+    damage: Int,
+    name: String,
+    speed: Float
+}
+
+enemy = Enemy {
+    damage: 200,
+    ..
+}
+// Result: Enemy { health: 0, damage: 200, name: "", speed: 0.0 }
+```
+
 #### Struct Field Access
 
 You can access fields like variables, using a period (`struct.field`).
@@ -600,7 +669,7 @@ The `?` suffix indicates that these variables might not have a value.
 
 #### Usage Examples with Default Values
 
-{% note(type="unimplemented") %}
+{% note(type="coming_soon") %}
 Default value operator `??` is not implemented yet.
 {% end %}
 
