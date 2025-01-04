@@ -1015,6 +1015,29 @@ use math.geometry { utility_function, SomeType }
 When you use selective imports, you can import multiple items at once by listing them inside curly braces. These imported items can then be used directly in your code without needing to prefix them with the module name.
 
 
+## Constants
+
+Constants are fixed values that remain unchanged throughout the execution of your program. Unlike variables, which can be mutable or immutable, constants are inherently immutable and are intended for values that should not be altered once set. They are ideal for defining configuration parameters, fixed values, or any data that should remain consistent across different parts of your code.
+
+### Constant Definition
+
+Use the `const` keyword followed by the constant name (in SCREAMING_SNAKE_CASE[^screaming_snake_case]) and assign it to an expression.
+Constants do not require explicit type annotations, as their types are inferred from the assigned values.
+
+```swamp
+const MAX_HEALTH = 100
+const PI = 3.1415
+const WELCOME_MESSAGE = "Welcome to Swamp!"
+```
+
+constants can contain more complex expressions including function calls:
+
+```swamp
+const DOUBLE_PI = 2.0 * PI
+const HALF_MAX_HEALTH = MAX_HEALTH / 2
+const STATS = StatsStruct::calculate_stats(42)
+```
+
 ## Type Inference
 
 **Swamp** automatically determines types from context, so you rarely need to write them explicitly.
@@ -1029,3 +1052,4 @@ The compiler will tell you when explicit types are needed.
 
 [^snakecase]: [Snake_case Wikipedia](https://en.wikipedia.org/wiki/Snake_case)
 [^camelcase]: [CamelCase Wikipedia](https://en.wikipedia.org/wiki/Camel_case)
+[^screaming_snake_case]: [Screaming Snake Case Wikipedia](https://en.wikipedia.org/wiki/Snake_case)
