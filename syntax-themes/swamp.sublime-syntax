@@ -22,7 +22,7 @@ contexts:
 
 
     # Keywords
-    - match: '\b(if|else|for|in|while|return|break|continue|match|use|from)\b'
+    - match: '\b(if|else|for|in|while|return|break|continue|match|use)\b'
       scope: keyword.control
 
     - match: '\b(struct|enum|trait|impl|type|external|fn)\b'
@@ -30,6 +30,10 @@ contexts:
 
     - match: '\bmut\b'
       scope:  storage.type.mut, storage.modifier.mut, entity.name.tag, support.constant
+
+    - match: '\bconst\b'
+      scope: keyword.declaration.const
+      push: const_declaration
 
     - match: '\bself\b'
       scope: variable.language.self.rust
@@ -141,10 +145,19 @@ contexts:
     - match: '[{}()\[\],:;]'
       scope: punctuation.separator
 
+    # constant identifier (SCREAMING_SNAKE_CASE)
+    - match: '\b[A-Z][A-Z0-9_]*\b'
+      scope: constant.other.swamp
+
     # Variables and fields
     - match: '\b[a-z][a-zA-Z0-9_]*\b'
       scope: variable.other
 
+  const_declaration:
+    - match: '\b([A-Z][A-Z0-9_]*)\b'
+      scope: constant.other.swamp
+      pop: true
+    - include: main
 
   line_comment:
     - match: $\n?
