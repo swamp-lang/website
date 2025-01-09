@@ -7,12 +7,11 @@ toc = true
 
 ## Modules
 
-
 ### External packages?
+
 ```swamp
 use @external_package
 ```
-
 
 ## Iterators
 
@@ -22,7 +21,7 @@ use @external_package
 0..=10
 ```
 
-### Pipes `<|` and `|>` ?
+## Traits
 
 ### Default trait implementation
 
@@ -36,10 +35,9 @@ impl Add for MyOwnType {
 }
 ```
 
-## `Self` 
+## `Self`
 
 Support for **Self** (as an alias for the type itself) in implementation blocks.
-
 
 ## String Escape codes
 
