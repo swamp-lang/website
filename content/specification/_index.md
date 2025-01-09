@@ -1014,7 +1014,6 @@ use math.geometry { utility_function, SomeType }
 
 When you use selective imports, you can import multiple items at once by listing them inside curly braces. These imported items can then be used directly in your code without needing to prefix them with the module name.
 
-
 ## Constants
 
 Constants are fixed values that remain unchanged throughout the execution of your program. Unlike variables, which can be mutable or immutable, constants are inherently immutable and are intended for values that should not be altered once set. They are ideal for defining configuration parameters, fixed values, or any data that should remain consistent across different parts of your code.
@@ -1036,6 +1035,32 @@ constants can contain more complex expressions including function calls:
 const DOUBLE_PI = 2.0 * PI
 const HALF_MAX_HEALTH = MAX_HEALTH / 2
 const STATS = StatsStruct::calculate_stats(42)
+```
+
+## With
+
+The `with` keyword creates a new scope with bound variables. It's useful for temporarily binding values or creating local aliases. It is almost like mini-functions. Can be useful if you have a longer function that does not make sense to split into smaller separate functions.
+
+Only the specified variables are available inside the expression (block).
+
+```swamp
+// defaults to something=something, another=another
+with something, another { 
+    something + another
+    x + 3 // Fails, x is not a bound variable in the `with` block
+}
+```
+
+```swamp
+with damage, mut health = mut player.health {
+    health -= damage // modifies player.health
+}
+```
+
+```swamp
+with target = mut enemies[0] {
+    target.take_damage(10) // modifies the first enemy
+}
 ```
 
 ## Type Inference
