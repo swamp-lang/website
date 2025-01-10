@@ -282,6 +282,16 @@ Strings are written in quotation marks `""`. If you need to use quotation marks 
 dialog = "Guard: \"Stop right there!\""
 ```
 
+#### Escape Sequences
+
+- `\n` - newline
+- `\t` - tab
+- `\\` - the character `\`
+- `\'` - the character `'`
+- `\"` - the character `"`
+- `\xHH` - inserts an octet in string. (e.g. `'\xF0\x9F\x90\x8A'` = 🐊)
+- `\u(HHH)` - inserts unicode character as utf8. (e.g. `'\u(1F40A)'` = 🐊)
+
 #### String Operations & Member Functions
 
 - `.len()` Returns length (in characters).
@@ -445,15 +455,11 @@ player = Player {
 
 When using `..` for partial initialization, Swamp follows a structured process to ensure all fields are correctly filled:
 
-1.	Check for a Default Trait Implementation on the Struct:
+1.Check for a Default Trait Implementation on the Struct:
 
-{% note(type="coming_soon") %}
-impl Default is not implemented yet.
-{% end %}
-
-  - If the struct type being instantiated has an `impl Default` block, Swamp:
-    1.	Initializes the struct using the values returned by `default()` function.
-    2.	Overwrites any fields that are explicitly set during instantiation.
+- If the struct type being instantiated has an `impl Default` block, Swamp:
+  1. Initializes the struct using the values returned by `default()` function.
+  2. Overwrites any fields that are explicitly set during instantiation.
 
 ```swamp
 struct Player {
@@ -483,10 +489,11 @@ player = Player {
 // Result: Player { name: "Hero", health: 100, mana: 75, speed: 5.0 }
 ```
 
-2.	If no `Default` implementation is found for the struct type:
-  -	Swamp iterates through each field that is not explicitly set during instantiation and fills them individually by:
-  -	Calling `Default::default()` on the field type.
-  -	Using built-in defaults for primitive types:
+2. If no `Default` implementation is found for the struct type:
+
+- Swamp iterates through each field that is not explicitly set during instantiation and fills them individually by:
+  - Calling `Default::default()` on the field type.
+  - Using built-in defaults for primitive types:
     - `Int` → `0`
     - `Float` → `0.0`
     - `Bool` → `false`
@@ -668,10 +675,6 @@ target: Entity?            // Current target
 The `?` suffix indicates that these variables might not have a value.
 
 #### Usage Examples with Default Values
-
-{% note(type="coming_soon") %}
-Default value operator `??` is not implemented yet.
-{% end %}
 
 ```swamp
 // Using ?? to provide default values
@@ -877,13 +880,9 @@ match item {
 
 ### Guard Patterns
 
-{% note(type="unimplemented") %}
-Guard patterns are not implemented yet.
-{% end %}
-
 ```swamp
 match player_state {
-    Attacking damage if has_power_up => 
+    Attacking damage | has_power_up => 
         apply_damage(damage * 2),
     Attacking damage => 
         apply_damage(damage),
@@ -951,10 +950,6 @@ for i in 3..0 {
 ```
 
 ### Inclusive Range
-
-{% note(type="coming_soon") %}
-Inclusive ranges are not implemented yet. Use exclusive ranges for now.
-{% end %}
 
 ```swamp
 for hp in 1..=max_health {
@@ -1062,6 +1057,21 @@ with target = mut enemies[0] {
     target.take_damage(10) // modifies the first enemy
 }
 ```
+
+## Guard Expressions
+
+Guard expressions in Swamp provide a concise and powerful way to evaluate multiple conditions and return a single result (or execute a block of code) based on the first matching guard. They are similar to if-else chains in other languages, but with a more pattern-like syntax. Each guard (`| condition -> result`) is checked in order. As soon as one guard condition is true, its associated expression is evaluated and returned. If no guard condition matches, a wildcard guard (_) can handle the remaining cases.
+
+```swamp
+reward = 
+    | score >= 1000 -> "Treasure Chest"
+    | score >= 500  -> "Gold Coins"
+    | score >= 100  -> "Silver Coins"
+    | _ -> "No Reward"
+```
+
+
+
 
 ## Type Inference
 
