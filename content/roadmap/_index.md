@@ -15,12 +15,6 @@ use @external_package
 
 ## Iterators
 
-### Inclusive Range
-
-```swamp
-0..=10
-```
-
 ## Traits
 
 ### Default trait implementation
@@ -34,13 +28,3 @@ impl Add for MyOwnType {
     }
 }
 ```
-
-## `Self`
-
-Support for **Self** (as an alias for the type itself) in implementation blocks.
-
-## String Escape codes
-
-- `\n` new line escape code
-- `\t` tab escape code
-- `\"` quotation and single quotation mark escape codes
