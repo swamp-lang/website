@@ -23,7 +23,7 @@ html, body {
 
 // Container
 .container {
-    max-width: 37rem; // 75ch;
+    max-width: 40rem; // 75ch;
     margin-left: 1rem;  // Fixed left margin
     margin-right: auto;  // Auto right margin
     padding: 0rem 1rem ;
@@ -406,7 +406,7 @@ footer {
 // Table of Contents
 .toc {
     position: fixed;
-    left: calc(42rem);
+    left: calc(45rem);
     top: 4rem;
     width: 250px;
     background: lighten($bg-dark, 3%);
