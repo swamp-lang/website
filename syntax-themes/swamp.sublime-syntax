@@ -9,7 +9,7 @@ contexts:
     # Comments
     - match: '///'
       scope: comment.line.documentation
-      push: line_comment
+      push: doc_comment
 
     - match: '//'
       scope: comment.line.double-slash
@@ -24,6 +24,10 @@ contexts:
     # Keywords
     - match: '\b(if|else|for|in|while|return|break|continue|match|use|with)\b'
       scope: keyword.control
+
+    - match: '\b(match)\b'
+      scope: keyword.control
+      push: match_expression      
 
     - match: '\b(struct|enum|trait|impl|type|external|fn)\b'
       scope: keyword.declaration
@@ -60,6 +64,17 @@ contexts:
     # Module paths and type identifiers
     - match: '([a-z][a-z0-9_]*::)+'
       scope: entity.name.namespace
+
+    # Generic Types
+    - match: '<'
+      scope: punctuation.definition.generic.begin
+      push: type_generics
+
+
+
+    # For optional operator on expressions
+    - match: '\?'
+      scope: keyword.operator.optional
 
     # Type with optional `?` suffix    
     - match: '\b([A-Z][a-zA-Z0-9_]*)(\?)?'
@@ -196,3 +211,66 @@ contexts:
       scope: comment.block
     - match: \n
       scope: comment.block
+
+  doc_comment:
+    - meta_scope: comment.line.documentation
+    - match: $\n?
+      pop: true
+    - match: '.'
+      scope: comment.line.documentation      
+
+  ## MATCH
+  match_expression:
+    # Once we see `match`, the next interesting piece is an opening `{`,
+    # which means match arms begin:
+    - match: '\{'
+      scope: punctuation.section.braces.begin
+      push: match_arms
+
+    # If something interrupts us before the `{`, just fall back:
+    - match: '(?=\S)'
+      pop: true
+    - include: main
+
+  match_arms:
+    - meta_scope: meta.match.block.swamp
+
+    # End of the match block
+    - match: '\}'
+      scope: punctuation.section.braces.end
+      pop: true
+
+    - match: '=>'
+      scope: keyword.operator.arrow.match
+
+    - match: '\|'
+      scope: keyword.operator.guard
+      push: guard_expression
+
+    - match: '->'
+      scope: keyword.operator.arrow.guard
+
+    # Pattern wildcard
+    - match: '\b_\b'
+      scope: keyword.operator.wildcard
+
+    - match: '[,;]'
+      scope: punctuation.terminator.match-arm
+
+    - include: main
+
+  guard_expression:
+    - meta_scope: meta.guard.expression.swamp
+    - match: '->'
+      scope: keyword.operator.arrow.guard
+      pop: true
+    - include: main
+
+
+  # Generic Types
+  type_generics:
+    - meta_scope: meta.type.parameters.swamp
+    - match: '>'
+      scope: punctuation.definition.generic.end
+      pop: true
+    - include: main
