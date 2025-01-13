@@ -282,6 +282,22 @@ Strings are written in quotation marks `""`. If you need to use quotation marks 
 dialog = "Guard: \"Stop right there!\""
 ```
 
+#### String Access
+
+```swamp
+player_name = "Hero"
+player_name[1..3] // returns "er"
+player_name[1..=3] // returns "ero"
+```
+
+#### String Assignment
+
+```swamp
+mut player_name = "Hero"
+player_name[0..2] = "Ze"
+player_name[0..=1] = "Ze"
+```
+
 #### Escape Sequences
 
 - `\n` - newline
@@ -373,6 +389,9 @@ spawn_points = [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 }, Point { x: -10, y
 ```swamp
 waypoints = [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 } ]
 next_pos = waypoints[1]
+
+waypoints[0..2] // returns first two items
+waypoints[0..=1] // also returns the first two items
 ```
 
 #### Array Assignment
@@ -380,6 +399,7 @@ next_pos = waypoints[1]
 ```swamp
 mut high_scores = [ 100, 95, 90, 85, 80 ]
 high_scores[0] = 105
+high_scores[0..2] = [32, 44]
 ```
 
 ### Maps
