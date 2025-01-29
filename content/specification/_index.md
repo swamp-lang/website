@@ -694,7 +694,29 @@ target: Entity?            // Current target
 
 The `?` suffix indicates that these variables might not have a value.
 
-#### Usage Examples with Default Values
+#### Unwrap `?` operator
+
+{% note(type="coming_soon") %}
+will be released soon
+{% end %}
+
+Used so a "chain" of lookups can be made without having to check for `none` in each step. Is only valid in `when` or with the default value operator `??`.
+
+```swamp
+guild_name = player.guild?.get_name() ?? "No Guild"
+
+leader_rank = when rank = player.guild?.get_leader()?.get_rank() { 
+    rank 
+} else {
+    "No Rank"
+}
+
+spell_power = equipped_weapon?.get_enchantment()?.calculate_power() ?? 0
+```
+
+#### Default Value operator `??`
+
+You use `??` to provide a default value. If the value is none, then the value to the right of `??` is used, otherwise the unwrapped value.
 
 ```swamp
 // Using ?? to provide default values
@@ -703,32 +725,24 @@ name = target?.name ?? "No Target"        // Default to "No Target" if no target
 x = spawn_point?.x ?? 0.0                 // Default to 0.0 if no spawn point
 ```
 
-#### Optional Binding
+#### When - Optional Binding
 
 ```swamp
-// Using if to bind and check optionals
-if equipped_weapon? {
-    // weapon is now bound and available in this scope
-    weapon.attack()
+// Using when to bind and check optionals
+when equipped_weapon {
+    // equipped_weapon is now bound and available in this scope
+    equipped_weapon.attack()
 }
 
 // Can be used with else
-if target = find_nearest_enemy()? {
+when target = find_nearest_enemy() {
     target.take_damage(10)
 } else {
     player.search_area()
 }
 ```
 
-#### Chaining Optionals
 
-```swamp
-guild_name = player.guild?.get_name() ?? "No Guild"
-
-leader_rank = player.guild?.get_leader()?.get_rank() ?? "No Rank"
-
-spell_power = equipped_weapon?.get_enchantment()?.calculate_power() ?? 0
-```
 
 ## Control Flow
 
