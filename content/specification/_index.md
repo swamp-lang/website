@@ -23,11 +23,11 @@ player_health = 100      // Start health value
 struct Player {
     /// The player's current position in the world
     position: Point,
-    
+
     /// Current health points (0-100)
     /// When this reaches 0, the game is over
     health: Int,
-    
+
     /// Movement speed in units per second
     /// Affected by equipment and status effects
     speed: Float,
@@ -61,9 +61,9 @@ Only mutable variables can be given new values. This helps prevent accidental ch
 
 ```swamp
 // Mutable variables can be reassigned
-mut score = 0       
-score = score + 100 
-score = score * 2   
+mut score = 0
+score = score + 100
+score = score * 2
 ```
 
 ### Variable Scope and Lifetime
@@ -212,7 +212,7 @@ fn log(message: String) {
 ### Integers
 
 ```swamp
-health = 100     
+health = 100
 ```
 
 #### Integer Operations
@@ -222,7 +222,7 @@ health = 100
 - Multiply `*`
 - Divide `/`
 - Remainder `%`
-  
+
 #### Integer Comparisons
 
 - Equal `==`
@@ -237,7 +237,7 @@ health = 100
 Floats are always written with one decimal, to keep them apart from Ints.
 
 ```swamp
-speed = 5.5      
+speed = 5.5
 ```
 
 #### Float Operations
@@ -246,7 +246,7 @@ speed = 5.5
 - Subtract `-`
 - Multiply `*`
 - Divide `/`
-  
+
 #### Float Comparisons
 
 - Equal `==`
@@ -259,7 +259,7 @@ speed = 5.5
 ### Booleans
 
 ```swamp
-is_jumping = true 
+is_jumping = true
 ```
 
 A Boolean can only have two different values,  `true` or `false`.
@@ -273,7 +273,7 @@ A Boolean can only have two different values,  `true` or `false`.
 ### Strings
 
 ```swamp
-player_name = "Hero" 
+player_name = "Hero"
 ```
 
 Strings are written in quotation marks `""`. If you need to use quotation marks within the string, you can use backslashes like this `\"`.
@@ -409,7 +409,7 @@ Maps are collections that store pairs of values, where you use one value (the ke
 #### Map Declaration
 
 ```swamp
-fn my_function(my_map: [Key: Value]) {} 
+fn my_function(my_map: [Key: Value]) {}
 ```
 
 A map looks similar to a list, but has two types within the square brackets `[]`. The first type is used as the lookup key.
@@ -420,8 +420,8 @@ A map looks similar to a list, but has two types within the square brackets `[]`
 // Spawn points for different level names
 spawn_points = [
     "Starting Level": Point { x: 0, y: 0 },
-    "Second Level": Point { x: 100, y: 50 },   
-    "Secret Area": Point { x: -50, y: 75 },  
+    "Second Level": Point { x: 100, y: 50 },
+    "Secret Area": Point { x: -50, y: 75 },
 ]
 ```
 
@@ -475,67 +475,67 @@ player = Player {
 
 When using `..` for partial initialization, Swamp follows a structured process to ensure all fields are correctly filled:
 
-1.Check for a Default Trait Implementation on the Struct:
+1. Check for a Default Trait Implementation on the Struct:
 
-- If the struct type being instantiated has an `impl Default` block, Swamp:
-  1. Initializes the struct using the values returned by `default()` function.
-  2. Overwrites any fields that are explicitly set during instantiation.
+   - If the struct type being instantiated has an `impl Default` block, Swamp:
+     1. Initializes the struct using the values returned by `default()` function.
+     2. Overwrites any fields that are explicitly set during instantiation.
 
-```swamp
-struct Player {
-    name: String,
-    health: Int,
-    mana: Int,
-    speed: Float
-}
+   ```swamp
+   struct Player {
+       name: String,
+       health: Int,
+       mana: Int,
+       speed: Float
+   }
 
-impl Default for Player {
-    fn default() -> Player {
-        Player {
-            name: "Unknown",
-            health: 100,
-            mana: 50,
-            speed: 5.0
-        }
-    }
-}
+   impl Default for Player {
+       fn default() -> Player {
+           Player {
+               name: "Unknown",
+               health: 100,
+               mana: 50,
+               speed: 5.0
+           }
+       }
+   }
 
-player = Player {
-    name: "Hero",
-    mana: 75,
-    ..
-}
+   player = Player {
+       name: "Hero",
+       mana: 75,
+       ..
+   }
 
-// Result: Player { name: "Hero", health: 100, mana: 75, speed: 5.0 }
-```
+   // Result: Player { name: "Hero", health: 100, mana: 75, speed: 5.0 }
+   ```
 
 2. If no `Default` implementation is found for the struct type:
 
-- Swamp iterates through each field that is not explicitly set during instantiation and fills them individually by:
-  - Calling `Default::default()` on the field type.
-  - Using built-in defaults for primitive types:
-    - `Int` → `0`
-    - `Float` → `0.0`
-    - `Bool` → `false`
-    - `T?` → `none`
-    - `String` → `""` (empty string)
+   - Swamp iterates through each field that is not explicitly set during instantiation and fills them individually by:
+     - Calling `Default::default()` on the field type.
+     - Using built-in defaults for primitive types:
+       - `Int` → `0`
+       - `Float` → `0.0`
+       - `Bool` → `false`
+       - `T?` → `none`
+       - `String` → `""` (empty string)
 
-**Example** (No `Default` trait implementation):
+   **Example** (No `Default` trait implementation):
 
-```swamp
-struct Enemy {
-    health: Int,
-    damage: Int,
-    name: String,
-    speed: Float
-}
+   ```swamp
+   struct Enemy {
+       health: Int,
+       damage: Int,
+       name: String,
+       speed: Float
+   }
 
-enemy = Enemy {
-    damage: 200,
-    ..
-}
-// Result: Enemy { health: 0, damage: 200, name: "", speed: 0.0 }
-```
+   enemy = Enemy {
+       damage: 200,
+       ..
+   }
+   // Result: Enemy { health: 0, damage: 200, name: "", speed: 0.0 }
+   ```
 
 #### Struct Field Access
 
@@ -628,11 +628,11 @@ enum Item {
     // Simple variants (no data)
     Gold,
     Key,
-    
+
     // Tuple variants with data
     Weapon(Int, Float),    // damage, range
     Potion(Int),           // healing amount
-    
+
     // Struct variants with named fields
     Armor {
         defense: Int,
@@ -658,9 +658,9 @@ match item {
     Gold => {
         player.money += 100
     },
-    
+
     Key => open_nearest_door(),
-    
+
     // Tuple variant destructuring
     Weapon _, range => {           // Ignore damage
         set_attack_range(range)
@@ -669,7 +669,7 @@ match item {
     Potion amount => {
         player.health += amount
     },
-    
+
     // Struct variant destructuring
     Armor defense, weight => {
         if player.strength >= weight {
@@ -696,22 +696,30 @@ The `?` suffix indicates that these variables might not have a value.
 
 #### Unwrap `?` operator
 
-{% note(type="coming_soon") %}
-will be released soon
-{% end %}
-
 Used so a "chain" of lookups can be made without having to check for `none` in each step. Is only valid in `when` or with the default value operator `??`.
 
 ```swamp
 guild_name = player.guild?.get_name() ?? "No Guild"
 
-leader_rank = when rank = player.guild?.get_leader()?.get_rank() { 
-    rank 
+leader_rank = when rank = player.guild?.get_leader()?.get_rank() {
+    rank
 } else {
     "No Rank"
 }
 
 spell_power = equipped_weapon?.get_enchantment()?.calculate_power() ?? 0
+```
+
+### Type aliases
+
+{% note(type="to_review") %}
+catnipped please review this
+{% end %}
+
+Creates a name for the specified type. Can not rename existing named types, but can use basic types like primitives, arrays, maps and tuples.
+
+```swamp
+type SomeAlias = (Int, Float)
 ```
 
 #### Default Value operator `??`
@@ -741,8 +749,6 @@ when target = find_nearest_enemy() {
     player.search_area()
 }
 ```
-
-
 
 ## Control Flow
 
@@ -856,12 +862,12 @@ match item {
     Gold => {
         player.money += 100
     },
-    
+
     // Tuple variant destructuring
     Weapon damage, range => {
         player.equip_weapon(damage, range)
     },
-    
+
     // Struct variant destructuring
     Armor defense, weight => {
         if player.can_carry(weight) {
@@ -916,9 +922,9 @@ match item {
 
 ```swamp
 match player_state {
-    Attacking damage | has_power_up => 
+    Attacking damage | has_power_up =>
         apply_damage(damage * 2),
-    Attacking damage => 
+    Attacking damage =>
         apply_damage(damage),
     _ => ()
 }
@@ -1009,39 +1015,58 @@ for player_id, score in high_scores {
 
 ## Modules and Imports
 
-### The `use` Keyword
+### The `mod` Keyword
 
-The `use` keyword allows you to import modules, types, and functions from other parts of your codebase. This helps organize your code and makes it easier to access functionality defined elsewhere.
+{% note(type="to_review") %}
+catnipped please review this
+{% end %}
 
-The dot notation in module paths directly corresponds to the file system structure. Each dot represents a directory separator in the file path, and the module name is resolved to a `.swamp` file. For example:
+The `mod` keyword allows you to import modules, types, and functions from other parts of your codebase. This helps organize your code and makes it easier to access functionality defined elsewhere.
 
-- `use gameplay` resolves to `gameplay.swamp`
-- `use math.geometry` resolves to `math/geometry.swamp`
-- `use engine.physics.collision` resolves to `engine/physics/collision.swamp`
+The dot notation in module paths directly corresponds to the file system structure in your project or crate locally only. Each dot represents a directory separator in the file path, and the module name is resolved to a `.swamp` file. For example:
 
+- `mod gameplay` resolves to `gameplay.swamp`
+- `mod math::geometry` resolves to `math/geometry.swamp`
+- `mod engine::physics::collision` resolves to `engine/physics/collision.swamp`
 
 #### Basic Module Import
 
 ```swamp
 // Import an entire module
-use some_module
+mod some_module
 ```
 
 #### Nested Module Import
 
 ```swamp
 // Import from nested modules using dot notation
-use math.geometry.something
+mod math.geometry.something
 ```
 
 #### Selective Imports
 
 ```swamp
 // Import specific items from a module
-use math.geometry { utility_function, SomeType }
+mod math.geometry { utility_function, SomeType }
 ```
 
 When you use selective imports, you can import multiple items at once by listing them inside curly braces. These imported items can then be used directly in your code without needing to prefix them with the module name.
+
+### The `use` keyword
+
+{% note(type="to_review") %}
+catnipped please review this
+{% end %}
+
+Use keyword is to make it easier to write types that are in other modules, by importing them in to the local module namespace. It works both for local modules ( `mod`) and external crates from the registry.
+
+```swamp
+use std
+
+use another_package::some_module::ThatType // you only need to write `ThatType`
+use another_package::some_module::{ThatType, OtherType} // you only need to write `ThatType` or `OtherType`
+use second_package::module_name // you don't need to write `second_package::`
+```
 
 ## Constants
 
@@ -1074,7 +1099,7 @@ Only the specified variables are available inside the expression (block).
 
 ```swamp
 // defaults to something=something, another=another
-with something, another { 
+with something, another {
     something + another
     x + 3 // Fails, x is not a bound variable in the `with` block
 }
@@ -1097,7 +1122,7 @@ with target = mut enemies[0] {
 Guard expressions in Swamp provide a concise and powerful way to evaluate multiple conditions and return a single result (or execute a block of code) based on the first matching guard. They are similar to if-else chains in other languages, but with a more pattern-like syntax. Each guard (`| condition -> result`) is checked in order. As soon as one guard condition is true, its associated expression is evaluated and returned. If no guard condition matches, a wildcard guard (_) can handle the remaining cases.
 
 ```swamp
-reward = 
+reward =
     | score >= 1000 -> "Treasure Chest"
     | score >= 500  -> "Gold Coins"
     | score >= 100  -> "Silver Coins"
