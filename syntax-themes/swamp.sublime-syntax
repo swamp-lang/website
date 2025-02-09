@@ -22,12 +22,12 @@ contexts:
 
 
     # Keywords
-    - match: '\b(if|else|for|in|while|return|break|continue|match|use|with|when)\b'
+    - match: '\b(if|else|for|in|while|return|break|continue|match|use|mod|with|when)\b'
       scope: keyword.control
 
     - match: '\b(match)\b'
       scope: keyword.control
-      push: match_expression      
+      push: match_expression
 
     - match: '\b(struct|enum|trait|impl|type|external|fn)\b'
       scope: keyword.declaration
@@ -59,7 +59,7 @@ contexts:
       captures:
         1: entity.name.type.enum
         2: punctuation.separator
-        3: constant.other.enum.variant   
+        3: constant.other.enum.variant
 
     # Module paths and type identifiers
     - match: '([a-z][a-z0-9_]*::)+'
@@ -76,7 +76,7 @@ contexts:
     - match: '\?'
       scope: keyword.operator.optional
 
-    # Type with optional `?` suffix    
+    # Type with optional `?` suffix
     - match: '\b([A-Z][a-zA-Z0-9_]*)(\?)?'
       captures:
         1: entity.name.type
@@ -95,7 +95,7 @@ contexts:
     # Properties
     - match: '\.([a-z][a-zA-Z0-9_]*)\b(?!\s*\()'
       captures:
-        1: variable.other.property      
+        1: variable.other.property
 
     # Functions
     - match: '\b(fn)\s+([a-z][a-zA-Z0-9_]*)\b'
@@ -217,7 +217,7 @@ contexts:
     - match: $\n?
       pop: true
     - match: '.'
-      scope: comment.line.documentation      
+      scope: comment.line.documentation
 
   ## MATCH
   match_expression:
