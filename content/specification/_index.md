@@ -1129,7 +1129,53 @@ reward =
     | _ -> "No Reward"
 ```
 
+## Generics
 
+{% note(type="to_review") %}
+catnipped please review this
+{% end %}
+
+Structs, functions and enums can take a type parameter (generic types). That makes them into a "template" of sorts, and that template can be realized using monomorphization.
+
+```swamp
+struct SomeStruct<T> {
+    value: T,
+}
+
+
+enum ButtonState<Data> {
+    Inactive,
+    Activated { data: Data },
+}
+
+button = ButtonState::Activated<Int>
+
+something = SomeStruct<String>
+```
+
+## Type alias
+
+{% note(type="to_review") %}
+catnipped please review this
+{% end %}
+
+Adds a name to a type. You can not define an alias for another alias, struct or enum type.
+
+```swamp
+type My2dPosition = (Int, Int)
+```
+
+## External Type
+
+{% note(type="to_review") %}
+catnipped please review this
+{% end %}
+
+References a type that is used in the engine that is embedding Swamp. You are rarely using this, it is only for the engine developers.
+
+```swamp
+External<"SomeFfiType">
+```
 
 
 ## Type Inference
