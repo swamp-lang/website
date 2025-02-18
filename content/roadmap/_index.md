@@ -5,14 +5,6 @@ description = "Future plans and development roadmap for Swamp"
 toc = true
 +++
 
-## Modules
-
-### External packages?
-
-```swamp
-use @external_package
-```
-
 ## Iterators
 
 ## Traits
