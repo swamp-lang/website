@@ -68,7 +68,7 @@ score = score * 2
 
 ### Variable Scope and Lifetime
 
-Variables only exist within their scope (the block of code where they're defined). **There are no global variables**, so any variables that you need to access within a function must be given to it as a parameter. However, a variable can be accessed inside a nested scope (such as within an **if** statement or **for** loop).
+Variables only exist within their scope (the block of code where they're defined). **There are no global variables**, so any variables that you need to access within a function must be given to it as a parameter. However, a variable can be accessed inside a nested scope (such as within an **if** expression or **for** loop).
 When the scope ends, the variable is automatically cleaned up.
 
 ```swamp
@@ -755,7 +755,7 @@ when target = find_nearest_enemy() {
 Control flow determines how your program runs. Swamp provides several ways
  to control the flow of your game.
 
-### If Expressions and Statements
+### If Expressions
 
 In **Swamp**, every block is an expression that returns a value. This means you can use them on the right side of assignments. When an `if` doesn't have an `else` block, the missing path automatically returns Unit `()` (representing "nothing").
 
@@ -841,7 +841,7 @@ fn find_health_potion(inventory: Inventory) -> Item? {
 
 ## Pattern Matching
 
-Pattern matching is a powerful way to handle different cases in your code. It's like a super-powered if statement that can look inside complex types and handle multiple cases clearly.
+Pattern matching is a powerful way to handle different cases in your code. It's like a super-powered if expression that can look inside complex types and handle multiple cases clearly.
 
 ### Basic Patterns
 
