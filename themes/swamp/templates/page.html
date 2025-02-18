@@ -1,42 +1,38 @@
 {% extends "base.html" %}
-
-
-
 {% block title %}
-{{ config.title }} | {{ page.title }}
+  {{ config.title }} | {{ page.title }}
 {% endblock title %}
-
 {% block content %}
-<article>
+<div class="content-wrapper">
+  <article>
     <h1>{{ page.title }}</h1>
     {% if page.description %}
-        <p class="subtitle">{{ page.description }}</p>
+      <p>{{ page.description }}</p>
     {% endif %}
-    
-    <div class="content">
-        {{ page.content | safe }}
+    <div>
+      {{ page.content | safe }}
     </div>
-</article>
-
-{% if page.toc %}
-<aside class="toc">
+  </article>
+  {% if page.toc %}
+  <aside>
     <h2>Contents</h2>
     <ul>
-        {% for h1 in page.toc %}
+      {% for h1 in page.toc %}
         <li>
-            <a href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
-            {% if h1.children %}
-            <ul>
-                {% for h2 in h1.children %}
-                <li>
-                    <a href="{{ h2.permalink | safe }}">{{ h2.title }}</a>
-                </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+          <a href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
+          {% if h1.children %}
+          <ul>
+            {% for h2 in h1.children %}
+              <li>
+                <a href="{{ h2.permalink | safe }}">{{ h2.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
         </li>
-        {% endfor %}
+      {% endfor %}
     </ul>
-</aside>
-{% endif %}
+  </aside>
+  {% endif %}
+</div>
 {% endblock content %}

@@ -8,405 +8,298 @@ $inline-code-color: #ff7a7a;
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-// Basic reset and typography
 html, body {
-    margin: 0;
-    padding: 0;
-    font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-    line-height: 1.5;
-    color: $text-light;
-    background: $bg-dark;
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.5;
+  color: $text-light;
+  background: $bg-dark;
 }
 
-// Container
-.container {
-    max-width: 40rem; // 75ch;
-    margin-left: 1rem;  // Fixed left margin
-    margin-right: auto;  // Auto right margin
-    padding: 0rem 1rem ;
+
+nav > div,
+footer > div,
+section > div,
+article > div {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  font-size: 0.8rem;
 }
 
+/* Navigation */
 nav {
-    background: darken($bg-dark, 3%);
+  background: darken($bg-dark, 3%);
+  padding: 1rem 0;
+  border-bottom: 1px solid $border-color;
+  position: relative;
+}
+nav > div > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+nav a {
+  color: $header-color;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+nav button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+nav button span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background: $text-light;
+  margin: 5px 0;
+  transition: all 0.3s ease;
+}
+nav ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+nav ul li {
+  margin-left: 2rem;
+}
+nav ul li a {
+  color: $text-light;
+  text-decoration: none;
+  &:hover {
+    color: $link-color;
+  }
+}
+@media (max-width: 768px) {
+  nav button {
+    display: block;
+  }
+  nav ul {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #2c2b2b;
     padding: 1rem 0;
     border-bottom: 1px solid $border-color;
-    position: relative;
-    
-    .nav-wrapper {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .nav-brand {
-        color: $header-color;
-        font-size: 1.25rem;
-        font-weight: bold;
-        text-decoration: none;
-    }
-
-    .hamburger {
-        display: none;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0.5rem;
-        z-index: 2;
-        
-        span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background: $text-light;
-            margin: 5px 0;
-            transition: all 0.3s ease;
-        }
-
-        &.is-active {
-            span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
-            span:nth-child(2) {
-                opacity: 0;
-            }
-            span:nth-child(3) {
-                transform: rotate(-45deg) translate(7px, -7px);
-            }
-        }
-    }
-    
-    .nav-menu {
-        display: flex;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        
-        li {
-            margin-left: 2rem;
-        }
-        
-        a {
-            color: $text-light;
-            text-decoration: none;
-            
-            &:hover {
-                color: $link-color;
-            }
-        }
-    }
-
-    @media (max-width: 768px) {
-        .hamburger {
-            display: block;
-        }
-
-        .nav-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #2c2b2b;
-            //box-shadow: #4a4a4b 5px 5px 4px;
-            padding: 1rem 0;
-            border-bottom: 1px solid $border-color;
-            z-index: 1;
-            
-            &.is-active {
-                display: block !important;
-            }
-            
-            li {
-                margin: 0;
-                display: block;
-                
-                a {
-                    display: block;
-                    padding: 0.5rem 2rem;
-                    
-                    &:hover {
-                        background: lighten($bg-dark, 5%);
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Headers
-h1, h2, h3, h4, h5, h6 {
-    margin: 2rem 0 1rem;
-    line-height: 1.2;
-    color: $header-color;
-}
-
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.75rem; }
-h4 { font-size: 1.3rem; }
-h5 { font-size: 1.15rem; }
-h6 { font-size: 1rem; }
-
-h2 {
-    border-bottom: 1px solid darken($border-color, 10%);
-    padding-bottom: 0.5rem;
-}
-
-
-h2[id], h3[id], h4[id] {
-    position: relative;
-
-    &:hover::before {
-        opacity: 1;
-    }
-
-    &::before {
-        content: "#";
-        position: absolute;
-        left: -24px;
-        
-        // HACK: Center vertically relative to the text
-        top: 50%;
-        transform: translateY(-50%);
-        
-        width: 24px;
-        text-align: center;
-        opacity: 0;
-        transition: opacity 0.2s;
-        color: $link-color;
-        font-size: 0.9em;
-    }
-}
-
-
-// Links
-a {
-    color: $link-color;
-    text-decoration: none;
-    
+    z-index: 1;
+  }
+  nav ul.is-active {
+    display: block !important;
+  }
+  nav ul li {
+    margin: 0;
+    display: block;
+  }
+  nav ul li a {
+    display: block;
+    padding: 0.5rem 2rem;
     &:hover {
-        text-decoration: underline;
+      background: lighten($bg-dark, 5%);
     }
+  }
 }
 
-// Code blocks
-pre {
-    background: $code-bg;
-    padding: 1rem;
-    overflow-x: auto;
-    border-radius: 4px;
-    border: 1px solid $border-color;
-    
-    code {
-        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-        font-size: 0.8rem;
-        background: none;
-        padding: 0;
-        color: $text-light;
-    }
+/* Headers */
+h1, h2, h3, h4, h5, h6 {
+  margin: 2rem 0 1rem;
+  line-height: 1.2;
+  color: $header-color;
 }
-
-// Inline code
-code {
-    background: $code-bg;
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
+h1 { font-size: 2.0rem; }
+h2 { font-size: 1.8rem; border-bottom: 1px solid darken($border-color, 10%); padding-bottom: 0.7rem; }
+h3 { font-size: 1.6rem; border-bottom: 1px solid darken($border-color, 5%); padding-bottom: 0.5rem;  }
+h4 { font-size: 1.2rem; }
+h5 { font-size: 1.0rem; }
+h6 { font-size: 1rem; }
+h2[id], h3[id], h4[id] {
+  position: relative;
+  &:hover::before { opacity: 1; }
+  &::before {
+    content: "#";
+    position: absolute;
+    left: -24px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    color: $link-color;
     font-size: 0.9em;
-    color: $inline-code-color;
+  }
 }
 
-// Basic content spacing
+/* Links */
+a {
+  color: $link-color;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Code blocks and inline code */
+pre {
+  background: $code-bg;
+  padding: 1rem;
+  overflow-x: auto;
+  border-radius: 4px;
+  border: 1px solid $border-color;
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 0.8rem;
+    background: none;
+    padding: 0;
+    color: $text-light;
+  }
+}
+code {
+  background: $code-bg;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  color: $inline-code-color;
+}
+
+/* Paragraphs and basic content spacing */
 p, ul, ol {
-    margin: 1rem 0;
+  margin: 1rem 0;
 }
-
 strong {
-    font-weight: bold;
-    color: lighten($text-light, 10%);
+  font-weight: bold;
+  color: lighten($text-light, 10%);
 }
 
-// Article layout
+/* Article layout */
 article {
-    max-width: 800px;
-    margin: 2rem auto;
+  max-width: 800px;
+  margin: 2rem auto;
 }
 
-.subtitle {
-    color: darken($text-light, 20%);
-    font-size: 1.2rem;
-    margin-top: -1rem;
-}
-
-
-
-// Notes/callouts/admonitions
-.note {
-    margin: 0 rem 0; 
-    padding: 0.5rem;  
-    line-height: 1rem;
-    border-radius: 0.25rem;
-    border-left: 5px solid;
-    font-size: 0.8rem;
-
-    p {
-        margin: 1.6rem 0;
-        
-        &:first-child {
-            margin-top: 0.4rem;
-        }
-        
-        &:last-child {
-            margin-bottom: 0.1rem;
-        }
-    }
-}
-
-.note-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.125rem;
-    gap: 0.25rem;
-}
-
-.note-title {
-    margin-left: 0.2rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.note-info {
-    background-color: rgba(59, 130, 246, 0.1);
-    border-color: rgb(59, 130, 246);
-}
-
-.note-unimplemented {
-    background-color: rgba(168, 85, 247, 0.1);
-    border-color: rgb(168, 85, 247);
-}
-
-.note-coming_soon {
-    background-color: rgba(16, 185, 129, 0.1);
-    border-color: rgb(16, 185, 129);
-}
-
-.note svg {
-    width: 1.25rem;
-    height: 1.25rem;
-}
-
-.note-info svg {
-    color: rgb(59, 130, 246);
-}
-
-.note-unimplemented svg {
-    color: rgb(168, 85, 247);
-}
-
-.note-coming_soon svg {
-    color: rgb(16, 185, 129);
-}
-
-// Footer
-footer {
-    margin-top: 2rem;
-    padding: 1rem 0;
-    border-top: 1px solid $border-color;
-    color: darken($text-light, 20%);
-    font-size: 0.8rem;
-
-    .footer-content {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-
-        p {
-            margin: 0;
-        }
-    }
-
-    .social-links {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        flex-shrink: 0;
-    }
-
-    .social-link {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.5rem;
-        border-radius: 4px;
-        transition: all 0.2s;
-        color: $text-light;
-
-        &:hover {
-            background: lighten($bg-dark, 5%);
-            color: $link-color;
-        }
-    }
-
-    // Make footer responsive
-    @media (max-width: 600px) {
-        .footer-content {
-            flex-direction: column;
-            text-align: center;
-            gap: 1rem;
-        }
-    }
-}
-
-// Footnotes section
+/* Footnotes */
 .footnote-definition {
     display: flex;
-    align-items: baseline;
-    margin: 0.8rem 0;
-    padding: 0.5rem 1rem;
-    background: lighten($bg-dark, 3%);
-    border-radius: 4px;
-    
-    sup {
-        flex-shrink: 0;
-        margin-right: 1rem;
-        font-size: 0.8rem;
-        color: $link-color;
-        font-weight: bold;
-    }
-    
-    p {
-        margin: 0;
-    }
+    margin: 0.6rem 1rem;
+    font-size: 0.7rem;
 }
 
-// Footnote references in text
-.footnote-reference {
-    vertical-align: super;
-    font-size: 0.8em;
-    text-decoration: none;
-    color: $link-color;
-    font-weight: bold;
-    
-    &:hover {
-        color: lighten($link-color, 15%);
-    }
+.footnote-definition sup {
+   display: inline-block;
+   margin-right: 0.4rem;
+   font-size: 0.6rem;
+   color: $link-color;
+   font-weight: bold;
+ }
+
+
+.footnote-definition p {
+    margin: 0;
 }
 
-// Footnotes container
 .footnotes-list {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid $border-color;
+  display: flex;
+  margin: 0.3rem 0;
+  padding: 0.4rem 1.4rem;
+  background: lighten($bg-dark, 3%);
+  border-radius: 6px;
 }
 
 
 
-// Table of Contents
-.toc {
-    position: fixed;
-    left: calc(45rem);
+
+.content-wrapper {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+
+    > section {
+      flex: 1;
+    }
+
+    > aside {
+      flex: 0 0 20rem;
+      position: sticky;
+      background: lighten($bg-dark, 3%);
+      padding: 1rem;
+      border-left: 2px solid $border-color;
+      border-radius: 4px;
+    }
+  }
+
+
+  section[role="note"] {
+    background-color: lighten($border-color, 25%);
+    border: 1px solid darken($border-color, 10%);
+    border-left-width: 0.4rem;
+    border-left-color: $link-color;
+    border-radius: 4px;
+    padding: 0.3rem;
+    margin: 0rem 0;
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+
+      h4 {
+        margin: 0;
+        font-size: 0.9rem;
+      }
+
+      svg {
+        flex-shrink: 0;
+        width: 1.2rem;
+      }
+
+      div {
+        margin: 0;
+
+      }
+    }
+
+    p {
+        margin: 0.5rem 0;
+        font-size: 0.7rem;
+      }
+  }
+
+  $note-coming: #FB923C;
+  $note-unimplemented: #F43F5E;
+  $note-to_review: #8B5CF6;
+
+  section[role="note"][data-type="coming_soon"] {
+    background-color: rgba(lighten($note-coming, 40%), 0.1);
+    border: 5px solid rgba(darken($note-coming, 10%), 0.3);
+    border-left-color: rgba(darken($note-coming, 10%), 0.8);
+  }
+
+  section[role="note"][data-type="unimplemented"] {
+    background-color: rgba(lighten($note-unimplemented, 40%), 0.1);
+    border: 0.4rem solid rgba(darken($note-unimplemented, 10%), 0.3);
+    border-left-color: rgba(darken($note-unimplemented, 10%), 0.8);
+  }
+
+  section[role="note"][data-type="to_review"] {
+    background-color: rgba(darken($note-to_review, 40%), 0.1);
+    border: 0.1rem solid rgba(darken($note-to_review, 10%), 0.3);
+    border-left-width: 0.4rem;
+    border-left-color: rgba(darken($note-to_review, 10%), 0.7);
+  }
+
+/* Table of Contents based on tag structure */
+aside {
+    position: sticky;
     top: 4rem;
     width: 250px;
     background: lighten($bg-dark, 3%);
@@ -414,53 +307,30 @@ footer {
     border-left: 2px solid $border-color;
     border-radius: 4px;
     max-height: calc(100vh - 8rem);
-    line-height: 1.1rem;           
     overflow-y: auto;
-    
-    h2 {
-        font-size: 1.0rem;
-        margin-top: 0;
-        margin-bottom: 0.8rem;      
-    }
-    
-    // This is for H2 Level in the TOC
+    h2 { font-size: 1rem; margin: 0 0 0.8rem 0; }
     ul {
-        list-style: none;
-        padding-left: 0.5rem;
-        margin: 0;   
-        
-        li {
-            margin-top: 0.5rem;
-            a {
-                color: lighten($text-light, 20%);           
-            }
+      list-style: none;
+      padding-left: 0.5rem;
+      li {
+        margin-top: 0.5rem;
+        a {
+          color: lighten($text-light, 20%);
+          font-size: 0.9rem;
+          line-height: 1.2;
+          text-decoration: none;
+          &:hover { color: $link-color; }
         }
-        
-        // This is for H3 Level in the TOC
         ul {
-            padding-left: 0.7rem;
-            margin: 0rem;   
-
-            li {
-                margin-top: 0.0rem;     
-                a {
-                    color: $text-light;           
-                }
-            }
+          padding-left: 0.7rem;
+          li {
+            margin-top: 0;
+            a { color: $text-light; }
+          }
         }
+      }
     }
-
-    a {
-        text-decoration: none;
-        font-size: 0.9rem;
-        line-height: 1.2rem;
-        
-        &:hover {
-            color: $link-color;
-        }
-    }
-    
     @media (max-width: 60rem) {
-        display: none;
+      display: none;
     }
-}
+  }

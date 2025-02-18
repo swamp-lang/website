@@ -1,59 +1,57 @@
 {% extends "base.html" %}
-
 {% block title %}
 {{ config.title }} | {{ section.title }}
 {% endblock title %}
-
 {% block content %}
+<div class="content-wrapper">
 <section>
-    <div class="container">
-        <div>
-            <h1>{{ section.title }}</h1>
-            {% if section.description %}
-                <p class="subtitle">{{ section.description }}</p>
-            {% endif %}
-        </div>
-        <div class="content">
-            {{ section.content | safe }}
-        </div>
-        
-        {% if section.pages %}
-        <div>
-            {% for page in section.pages %}
-            <article>
-                <h2>
-                    <a href="{{ page.permalink }}">{{ page.title }}</a>
-                </h2>
-                {% if page.description %}
-                    <p>{{ page.description }}</p>
-                {% endif %}
-            </article>
-            {% endfor %}
-        </div>
-        {% endif %}
+  <div>
+    <div>
+      <h1>{{ section.title }}</h1>
+      {% if section.description %}
+        <p>{{ section.description }}</p>
+      {% endif %}
     </div>
-</section>
-
-
-{% if section.toc %}
-<aside class="toc">
-    <h2>Contents</h2>
-    <ul>
-        {% for h1 in section.toc %}
-        <li>
-            <a href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
-            {% if h1.children %}
-            <ul>
-                {% for h2 in h1.children %}
-                <li>
-                    <a href="{{ h2.permalink | safe }}">{{ h2.title }}</a>
-                </li>
-                {% endfor %}
-            </ul>
+    <div>
+      {{ section.content | safe }}
+    </div>
+    {% if section.pages %}
+      <div>
+        {% for page in section.pages %}
+          <article>
+            <h2>
+              <a href="{{ page.permalink }}">{{ page.title }}</a>
+            </h2>
+            {% if page.description %}
+              <p>{{ page.description }}</p>
             {% endif %}
-        </li>
+          </article>
         {% endfor %}
-    </ul>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% if section.toc %}
+<aside>
+  <h2>Contents</h2>
+  <ul>
+    {% for h1 in section.toc %}
+      <li>
+        <a href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
+        {% if h1.children %}
+          <ul>
+            {% for h2 in h1.children %}
+              <li>
+                <a href="{{ h2.permalink | safe }}">{{ h2.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
 </aside>
 {% endif %}
+</div>
+
 {% endblock content %}
