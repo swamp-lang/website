@@ -109,17 +109,6 @@ fn add(a: Int, b: Int) -> Int {
 
 If the function will return a value, the parameters are followed by a `->`and a Type declaration for the return value. By default, the function will return the *last expression* of its definition.
 
-If you need to, you can write `return` to escape the function with a value before the last line.
-
-```swamp
-fn my_function(a: Int, b: Int) -> Int {
-    if a > b {
-        return 100
-    }
-    a+b
-}
-```
-
 ### Parameter Mutability
 
 Functions can choose whether they want to modify their parameters by using `mut`.This helps make it clear which functions will change the values passed to them and which will just read them.
@@ -808,36 +797,6 @@ for id, enemy in map_of_enemies {
     enemy.check_player_distance()
 }
 
-
-```
-
-### Break and Continue
-
-```swamp
-// Find first vulnerable enemy
-for enemy in enemies {
-    if enemy.has_shield {
-        continue  // Skip to next enemy
-    }
-    if enemy.is_in_range(player) {
-        enemy.attack()
-        break     // Stop searching
-    }
-}
-```
-
-### Return
-
-```swamp
-fn find_health_potion(inventory: Inventory) -> Item? {
-    for item in inventory.items {
-        if item.is_health_potion() {
-            return item    // Early return when found
-        }
-    }
-    none                 // Return none if not found
-}
-```
 
 ## Pattern Matching
 
