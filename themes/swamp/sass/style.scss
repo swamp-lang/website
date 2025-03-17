@@ -274,12 +274,12 @@ article {
       }
   }
 
-  $note-coming: #FB923C;
+  $note-coming: #456423;
   $note-unimplemented: #F43F5E;
   $note-to_review: #8B5CF6;
 
   section[role="note"][data-type="coming_soon"] {
-    background-color: rgba(lighten($note-coming, 40%), 0.1);
+    background-color: rgba(lighten($note-coming, 10%), 0.2);
     border: 5px solid rgba(darken($note-coming, 10%), 0.3);
     border-left-color: rgba(darken($note-coming, 10%), 0.8);
   }
@@ -296,6 +296,7 @@ article {
     border-left-width: 0.4rem;
     border-left-color: rgba(darken($note-to_review, 10%), 0.7);
   }
+
 
 /* Table of Contents based on tag structure */
 aside {

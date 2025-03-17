@@ -796,7 +796,28 @@ for id, enemy in map_of_enemies {
     enemy.update()
     enemy.check_player_distance()
 }
+```
 
+#### New syntax
+
+{% note(type="coming_soon") %}
+scheduled for version 0.2
+{% end %}
+
+```swamp
+// Update all entities
+enemies.for |enemy| {
+    enemy.update()
+    enemy.check_player_distance()
+}
+
+// Update all entities
+map_of_enemies.for |id, enemy| {
+    println("Updating enemy {id}")
+    enemy.update()
+    enemy.check_player_distance()
+}
+```
 
 ## Pattern Matching
 
