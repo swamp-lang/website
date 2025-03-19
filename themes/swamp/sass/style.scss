@@ -22,7 +22,7 @@ html, body {
 
 
 nav > div,
-footer > div,
+footer > section,
 section > div,
 article > div {
   max-width: 40rem;
@@ -218,7 +218,7 @@ article {
   border-radius: 6px;
 }
 
-.site-wrapper {
+body {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
@@ -227,86 +227,105 @@ article {
 }
 
 
-.main-and-aside {
+main {
+  display: flex;
+  width: 100%;
+  max-width: 100%; /* Ensure it respects its parent's width */
+  gap: 2rem;
+  align-items: flex-start;
+  box-sizing: border-box; /* Include padding/border in total width */
+  margin: 0 auto;
+
+  /* Responsive adjustments (stack on smaller screens) */
+  @media (max-width: 60rem) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+main > section {
+  flex: 1;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%; /* needed to respect parent's boundaries */
+  min-width: 10em;
+}
+
+main > aside {
+  flex: 0 0 20rem;
+  position: sticky;
+  top: 4rem;
+  background: lighten($bg-dark, 3%);
+  padding: 1rem;
+  border-left: 2px solid $border-color;
+  border-radius: 4px;
+  box-sizing: border-box;   /* Ensure consistent sizing */
+
+  /* Hide on smaller screens */
+  @media (max-width: 60rem) {
+    display: none;
+  }
+}
+
+
+section[role="note"] {
+  background-color: lighten($border-color, 25%);
+  border: 1px solid darken($border-color, 10%);
+  border-left-width: 0.4rem;
+  border-left-color: $link-color;
+  border-radius: 4px;
+  padding: 0.3rem;
+  margin: 0rem 0;
+
+  header {
     display: flex;
-    width: 100%;
-    gap: 2rem;
-    align-items: flex-start;
+    align-items: center;
+    gap: 0.4rem;
 
-    > section {
-      min-width: 0;
-      flex: 1;
+    h4 {
+      margin: 0;
+      font-size: 0.9rem;
     }
 
-    > aside {
-      flex: 0 0 20rem;
-      position: sticky;
-      background: lighten($bg-dark, 3%);
-      padding: 1rem;
-      border-left: 2px solid $border-color;
-      border-radius: 4px;
+    svg {
+      flex-shrink: 0;
+      width: 1.2rem;
+    }
+
+    div {
+      margin: 0;
+
     }
   }
 
-
-  section[role="note"] {
-    background-color: lighten($border-color, 25%);
-    border: 1px solid darken($border-color, 10%);
-    border-left-width: 0.4rem;
-    border-left-color: $link-color;
-    border-radius: 4px;
-    padding: 0.3rem;
-    margin: 0rem 0;
-
-    header {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-
-      h4 {
-        margin: 0;
-        font-size: 0.9rem;
-      }
-
-      svg {
-        flex-shrink: 0;
-        width: 1.2rem;
-      }
-
-      div {
-        margin: 0;
-
-      }
+  p {
+      margin: 0.5rem 0;
+      font-size: 0.7rem;
     }
+}
 
-    p {
-        margin: 0.5rem 0;
-        font-size: 0.7rem;
-      }
-  }
+$note-coming: #456423;
+$note-unimplemented: #F43F5E;
+$note-to_review: #8B5CF6;
 
-  $note-coming: #456423;
-  $note-unimplemented: #F43F5E;
-  $note-to_review: #8B5CF6;
+section[role="note"][data-type="coming_soon"] {
+  background-color: rgba(lighten($note-coming, 10%), 0.2);
+  border: 5px solid rgba(darken($note-coming, 10%), 0.3);
+  border-left-color: rgba(darken($note-coming, 10%), 0.8);
+}
 
-  section[role="note"][data-type="coming_soon"] {
-    background-color: rgba(lighten($note-coming, 10%), 0.2);
-    border: 5px solid rgba(darken($note-coming, 10%), 0.3);
-    border-left-color: rgba(darken($note-coming, 10%), 0.8);
-  }
+section[role="note"][data-type="unimplemented"] {
+  background-color: rgba(lighten($note-unimplemented, 40%), 0.1);
+  border: 0.4rem solid rgba(darken($note-unimplemented, 10%), 0.3);
+  border-left-color: rgba(darken($note-unimplemented, 10%), 0.8);
+}
 
-  section[role="note"][data-type="unimplemented"] {
-    background-color: rgba(lighten($note-unimplemented, 40%), 0.1);
-    border: 0.4rem solid rgba(darken($note-unimplemented, 10%), 0.3);
-    border-left-color: rgba(darken($note-unimplemented, 10%), 0.8);
-  }
-
-  section[role="note"][data-type="to_review"] {
-    background-color: rgba(darken($note-to_review, 40%), 0.1);
-    border: 0.1rem solid rgba(darken($note-to_review, 10%), 0.3);
-    border-left-width: 0.4rem;
-    border-left-color: rgba(darken($note-to_review, 10%), 0.7);
-  }
+section[role="note"][data-type="to_review"] {
+  background-color: rgba(darken($note-to_review, 40%), 0.1);
+  border: 0.1rem solid rgba(darken($note-to_review, 10%), 0.3);
+  border-left-width: 0.4rem;
+  border-left-color: rgba(darken($note-to_review, 10%), 0.7);
+}
 
 
 /* Table of Contents based on tag structure */
