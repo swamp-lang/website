@@ -33,6 +33,7 @@
   </script>
 </head>
 <body>
+  <div class="site-wrapper">
   <nav>
     <div>
       <div class="nav-wrapper">
@@ -62,7 +63,7 @@
   </main>
 
   <footer>
-    <div>
+    <section>
       <div>
         {{ config.extra.footer.info | markdown | safe }}
         {% if config.extra.social %}
@@ -78,7 +79,8 @@
           </div>
         {% endif %}
       </div>
-    </div>
+    </section>
   </footer>
+</div> <!-- END WRAPPER -->
 </body>
 </html>

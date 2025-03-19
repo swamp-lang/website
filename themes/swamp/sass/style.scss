@@ -96,6 +96,8 @@ nav ul li a {
   }
   nav ul.is-active {
     display: block !important;
+    width: 100%;
+    overflow-x: hidden;
   }
   nav ul li {
     margin: 0;
@@ -152,6 +154,7 @@ a {
 /* Code blocks and inline code */
 pre {
   background: $code-bg;
+  overflow-x: auto;
   padding: 1rem;
   overflow-x: auto;
   border-radius: 4px;
@@ -215,15 +218,23 @@ article {
   border-radius: 6px;
 }
 
+.site-wrapper {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
 
 
-
-.content-wrapper {
+.main-and-aside {
     display: flex;
+    width: 100%;
     gap: 2rem;
     align-items: flex-start;
 
     > section {
+      min-width: 0;
       flex: 1;
     }
 
