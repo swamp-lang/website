@@ -24,6 +24,7 @@ navbar_items = [
     { url = "/", name = "Home" },
     { url = "/specification/", name = "Specification" },
     { url = "/roadmap/", name = "Roadmap" },
+    { url = "/internal/", name = "Internal" },
   ]}
 ]
 
