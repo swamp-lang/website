@@ -151,6 +151,10 @@ a {
   }
 }
 
+html body pre > code {
+  line-height: 1.0;
+}
+
 /* Code blocks and inline code */
 pre {
   background: $code-bg;
@@ -159,15 +163,16 @@ pre {
   overflow-x: auto;
   border-radius: 4px;
   border: 1px solid $border-color;
-  code {
+  line-height: 1.1;
+  > code {
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
     font-size: 0.8rem;
     background: none;
     padding: 0;
-    line-height: 1.0;
     color: $text-light;
   }
 }
+
 
 //  for backticks
 code {
