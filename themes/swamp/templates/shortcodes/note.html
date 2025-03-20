@@ -23,6 +23,14 @@
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <circle cx="12" cy="12" r="3"></circle>
         </svg>
+        {% elif type == "nerdy" %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="12" r="3"></circle>
+          <circle cx="16" cy="12" r="3"></circle>
+          <path d="M11 12h2"></path>
+          <path d="M3 12h1"></path>
+          <path d="M20 12h1"></path>
+        </svg>
       {% endif %}
       <h4>{{ title | default(value=(type | replace(from="_", to=" ") | title)) }}</h4>
     </header>
