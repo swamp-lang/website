@@ -272,13 +272,13 @@ main > aside {
 
 
 section[role="note"] {
-  background-color: lighten($border-color, 25%);
-  border: 1px solid darken($border-color, 10%);
-  border-left-width: 0.4rem;
+  border: 1px solid darken($border-color, 5%);
+  border-left-width: 0.3rem;
   border-left-color: $link-color;
-  border-radius: 4px;
-  padding: 0.3rem;
-  margin: 0rem 0;
+  border-radius: 1px;
+  padding: 0.1rem;
+  margin: 0.1rem auto;
+  max-width: 20em;
 
   header {
     display: flex;
@@ -287,49 +287,73 @@ section[role="note"] {
 
     h4 {
       margin: 0;
-      font-size: 0.9rem;
+      font-size: 0.5rem;
     }
 
     svg {
       flex-shrink: 0;
-      width: 1.2rem;
+      width: 0.9rem;
     }
 
     div {
       margin: 0;
-
     }
   }
 
   p {
-      margin: 0.5rem 0;
-      font-size: 0.7rem;
-    }
+    margin: 0.0rem 0;
+    padding: 0.1rem;
+    font-size: 0.7rem;
+    line-height: 1;
+  }
 }
 
 $note-coming: #456423;
 $note-unimplemented: #F43F5E;
 $note-to_review: #8B5CF6;
+$note-nerdy: #3498db;
 
 section[role="note"][data-type="coming_soon"] {
-  background-color: rgba(lighten($note-coming, 10%), 0.2);
+  //background-color: rgba(lighten($note-coming, 10%), 0.2);
   border: 5px solid rgba(darken($note-coming, 10%), 0.3);
   border-left-color: rgba(darken($note-coming, 10%), 0.8);
 }
 
 section[role="note"][data-type="unimplemented"] {
   background-color: rgba(lighten($note-unimplemented, 40%), 0.1);
-  border: 0.4rem solid rgba(darken($note-unimplemented, 10%), 0.3);
   border-left-color: rgba(darken($note-unimplemented, 10%), 0.8);
 }
 
 section[role="note"][data-type="to_review"] {
   background-color: rgba(darken($note-to_review, 40%), 0.1);
-  border: 0.1rem solid rgba(darken($note-to_review, 10%), 0.3);
-  border-left-width: 0.4rem;
   border-left-color: rgba(darken($note-to_review, 10%), 0.7);
 }
 
+section[role="note"][data-type="nerdy"] {
+  background-color: rgba(lighten($note-nerdy, 20%), 0.15);
+  border-left-color: rgba(darken($note-nerdy, 5%), 0.8);
+
+  font-size: 0.8rem;
+  padding: 0.2rem;
+  margin: 0;
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+
+    h4 {
+      margin: 0;
+      font-size: 0.5rem;
+    }
+
+  }
+
+  p {
+    font-size: 0.6rem;
+  }
+
+}
 
 /* Table of Contents based on tag structure */
 aside {
