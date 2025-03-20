@@ -349,11 +349,11 @@ padded_score = 'Score: {score:.5s}'      // "Score: 00012"
 
 These are more complex types that let you group data together in different ways.
 
-### Arrays
+### Vec
 
-Arrays are ordered lists of items of the **same type**. You can create them, access their elements by position (starting at 0), and modify them if they're mutable.
+A `Vec` is an ordered lists of items of the **same type**. You can create them, access their elements by position (starting at 0), and modify them if they're mutable.
 
-#### Array Type Declaration
+#### Vec Type Declaration
 
 ```swamp
 fn my_function (my_list: [Int]) {}
@@ -361,19 +361,23 @@ fn my_function (my_list: [Int]) {}
 
 When declaring a list as a parameter, add square brackets `[]` surrounding the Type that the list will take.
 
-#### Array Member Functions
+#### Vec Member Functions
 
 - Add item to end of list (must have same Type) `.add(item)`
 - Remove the item and index `.remove(index)`
 
-#### Array Instantiation
+#### Vec Instantiation
 
 ```swamp
 // Initialize positions
 spawn_points = [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 }, Point { x: -10, y: 5 } ]
 ```
 
-#### Array Access
+{% note(type="nerdy") %}
+Internally they are converted from a [slice](/internal/#slice).
+{% end %}
+
+#### Vec Access
 
 ```swamp
 waypoints = [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 } ]
@@ -383,7 +387,7 @@ waypoints[0..2] // returns first two items
 waypoints[0..=1] // also returns the first two items
 ```
 
-#### Array Assignment
+#### Vec Assignment
 
 ```swamp
 mut high_scores = [ 100, 95, 90, 85, 80 ]
@@ -415,6 +419,16 @@ spawn_points = [
 ```
 
 Remember that each following Key/Value pair must have the same types as the last.
+
+An empty Map is specified as:
+
+```swamp
+empty_map = [:]
+```
+
+{% note(type="nerdy") %}
+Internally they are converted from a [slice-pair](/internal/#slicepair).
+{% end %}
 
 #### Map Access
 
@@ -806,17 +820,21 @@ scheduled for version 0.2
 
 ```swamp
 // Update all entities
-enemies.for |enemy| {
+enemies.for( |mut enemy| {
     enemy.update()
     enemy.check_player_distance()
-}
+} )
 
 // Update all entities
-map_of_enemies.for |id, enemy| {
+map_of_enemies.for( |id, mut enemy| {
     println("Updating enemy {id}")
     enemy.update()
     enemy.check_player_distance()
-}
+} )
+
+// Update all entities, one line
+map_of_enemies.for( |mut enemy| enemy.update() )
+
 ```
 
 ## Pattern Matching
