@@ -88,6 +88,18 @@ When the scope ends, the variable is automatically cleaned up.
 }   // power_up is automatically cleaned up here
 ```
 
+### Variable Type Annotation
+
+Swamp supports type inference by automatically deducing a variable's type from its assigned value. However, there are times when the variable's type is not obvious—especially when initializing a variable with a optional type value like `none`, an empty vector `[]`, or an empty map `[:]`. In those cases, you can explicitly specify the variable's type using type annotation.
+
+```swamp
+a : Int? = none
+
+numbers : [Int] = []
+
+settings : [Int:Float] = [:]
+```
+
 ## Functions
 
 ### Function Definition
@@ -297,7 +309,7 @@ player_name[0..=1] = "Ze"
 - `\xHH` - inserts an octet in string. (e.g. `'\xF0\x9F\x90\x8A'` = 🐊)
 - `\u(HHH)` - inserts unicode character as utf8. (e.g. `'\u(1F40A)'` = 🐊)
 
-### String Operations & Member Functions
+#### String Operations & Member Functions
 
 - `.len()` Returns length (in characters).
 - `+` Concatenate two strings into one.
