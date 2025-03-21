@@ -297,12 +297,12 @@ player_name[0..=1] = "Ze"
 - `\xHH` - inserts an octet in string. (e.g. `'\xF0\x9F\x90\x8A'` = 🐊)
 - `\u(HHH)` - inserts unicode character as utf8. (e.g. `'\u(1F40A)'` = 🐊)
 
-#### String Operations & Member Functions
+### String Operations & Member Functions
 
 - `.len()` Returns length (in characters).
 - `+` Concatenate two strings into one.
 
-### String Interpolation
+#### String Interpolation
 
 String interpolation lets you embed values and expressions directly in your text using curly brackets `{}` in a **single quotation mark** declaration.
 
@@ -319,7 +319,7 @@ Anything within the curly brackets will be handled like regular code: you can in
 status = 'HP: {health * 100 / max_health}'
 ```
 
-#### String Interpolation Formatting
+##### String Interpolation Formatting
 
 You can specify how the interpolation formats itself using by adding `:` after a variable within the brackets.
 
@@ -713,18 +713,6 @@ leader_rank = when rank = player.guild?.get_leader()?.get_rank() {
 spell_power = equipped_weapon?.get_enchantment()?.calculate_power() ?? 0
 ```
 
-### Type aliases
-
-{% note(type="to_review") %}
-catnipped please review this
-{% end %}
-
-Creates a name for the specified type. Can not rename existing named types, but can use basic types like primitives, arrays, maps and tuples.
-
-```swamp
-type SomeAlias = (Int, Float)
-```
-
 #### Default Value operator `??`
 
 You use `??` to provide a default value. If the value is none, then the value to the right of `??` is used, otherwise the unwrapped value.
@@ -736,21 +724,16 @@ name = target?.name ?? "No Target"        // Default to "No Target" if no target
 x = spawn_point?.x ?? 0.0                 // Default to 0.0 if no spawn point
 ```
 
-#### When - Optional Binding
+### Type alias
+
+{% note(type="to_review") %}
+catnipped please review this
+{% end %}
+
+Adds a name to a type. You can not define an alias for another alias, named struct struct or enum type.
 
 ```swamp
-// Using when to bind and check optionals
-when equipped_weapon {
-    // equipped_weapon is now bound and available in this scope
-    equipped_weapon.attack()
-}
-
-// Can be used with else
-when target = find_nearest_enemy() {
-    target.take_damage(10)
-} else {
-    player.search_area()
-}
+type My2dPosition = (Int, Int)
 ```
 
 ## Control Flow
@@ -835,6 +818,86 @@ map_of_enemies.for( |id, mut enemy| {
 // Update all entities, one line
 map_of_enemies.for( |mut enemy| enemy.update() )
 
+```
+
+## Further Language Constructs
+
+### When - Optional Binding
+
+```swamp
+// Using when to bind and check optionals
+when equipped_weapon {
+    // equipped_weapon is now bound and available in this scope
+    equipped_weapon.attack()
+}
+
+// Can be used with else
+when target = find_nearest_enemy() {
+    target.take_damage(10)
+} else {
+    player.search_area()
+}
+```
+
+### Constants
+
+Constants are fixed values that remain unchanged throughout the execution of your program. Unlike variables, which can be mutable or immutable, constants are inherently immutable and are intended for values that should not be altered once set. They are ideal for defining configuration parameters, fixed values, or any data that should remain consistent across different parts of your code.
+
+#### Constant Definition
+
+Use the `const` keyword followed by the constant name (in SCREAMING_SNAKE_CASE[^screaming_snake_case]) and assign it to an expression.
+Constants do not require explicit type annotations, as their types are inferred from the assigned values.
+
+```swamp
+const MAX_HEALTH = 100
+const PI = 3.1415
+const WELCOME_MESSAGE = "Welcome to Swamp!"
+```
+
+constants can contain more complex expressions including function calls:
+
+```swamp
+const DOUBLE_PI = 2.0 * PI
+const HALF_MAX_HEALTH = MAX_HEALTH / 2
+const STATS = StatsStruct::calculate_stats(42)
+```
+
+### With
+
+The `with` keyword creates a new scope with bound variables. It's useful for temporarily binding values or creating local aliases. It is almost like mini-functions. Can be useful if you have a longer function that does not make sense to split into smaller separate functions.
+
+Only the specified variables are available inside the expression (block).
+
+```swamp
+// defaults to something=something, another=another
+with something, another {
+    something + another
+    x + 3 // Fails, x is not a bound variable in the `with` block
+}
+```
+
+```swamp
+with damage, mut health = mut player.health {
+    health -= damage // modifies player.health
+}
+```
+
+```swamp
+with target = mut enemies[0] {
+    target.take_damage(10) // modifies the first enemy
+}
+```
+
+### Guard Expressions
+
+Guard expressions in Swamp provide a concise and powerful way to evaluate multiple conditions and return a single result (or execute a block of code) based on the first matching guard. They are similar to if-else chains in other languages, but with a more pattern-like syntax. Each guard (`| condition -> result`) is checked in order. As soon as one guard condition is true, its associated expression is evaluated and returned. If no guard condition matches, a wildcard guard (_) can handle the remaining cases.
+
+```swamp
+reward =
+    | score >= 1000 -> "Treasure Chest"
+    | score >= 500  -> "Gold Coins"
+    | score >= 100  -> "Silver Coins"
+    | _ -> "No Reward"
 ```
 
 ## Pattern Matching
@@ -1038,14 +1101,14 @@ mod some_module
 
 ```swamp
 // Import from nested modules using dot notation
-mod math.geometry.something
+mod math::geometry::something
 ```
 
 #### Selective Imports
 
 ```swamp
 // Import specific items from a module
-mod math.geometry { utility_function, SomeType }
+mod math::geometry::{ utility_function, SomeType }
 ```
 
 When you use selective imports, you can import multiple items at once by listing them inside curly braces. These imported items can then be used directly in your code without needing to prefix them with the module name.
@@ -1056,7 +1119,7 @@ When you use selective imports, you can import multiple items at once by listing
 catnipped please review this
 {% end %}
 
-Use keyword is to make it easier to write types that are in other modules, by importing them in to the local module namespace. It works both for local modules ( `mod`) and external crates from the registry.
+`use` is very similar to `mod`, but with the key difference is that use takes external modules and bring them into the namespace.
 
 ```swamp
 use std
@@ -1064,67 +1127,6 @@ use std
 use another_package::some_module::ThatType // you only need to write `ThatType`
 use another_package::some_module::{ThatType, OtherType} // you only need to write `ThatType` or `OtherType`
 use second_package::module_name // you don't need to write `second_package::`
-```
-
-## Constants
-
-Constants are fixed values that remain unchanged throughout the execution of your program. Unlike variables, which can be mutable or immutable, constants are inherently immutable and are intended for values that should not be altered once set. They are ideal for defining configuration parameters, fixed values, or any data that should remain consistent across different parts of your code.
-
-### Constant Definition
-
-Use the `const` keyword followed by the constant name (in SCREAMING_SNAKE_CASE[^screaming_snake_case]) and assign it to an expression.
-Constants do not require explicit type annotations, as their types are inferred from the assigned values.
-
-```swamp
-const MAX_HEALTH = 100
-const PI = 3.1415
-const WELCOME_MESSAGE = "Welcome to Swamp!"
-```
-
-constants can contain more complex expressions including function calls:
-
-```swamp
-const DOUBLE_PI = 2.0 * PI
-const HALF_MAX_HEALTH = MAX_HEALTH / 2
-const STATS = StatsStruct::calculate_stats(42)
-```
-
-## With
-
-The `with` keyword creates a new scope with bound variables. It's useful for temporarily binding values or creating local aliases. It is almost like mini-functions. Can be useful if you have a longer function that does not make sense to split into smaller separate functions.
-
-Only the specified variables are available inside the expression (block).
-
-```swamp
-// defaults to something=something, another=another
-with something, another {
-    something + another
-    x + 3 // Fails, x is not a bound variable in the `with` block
-}
-```
-
-```swamp
-with damage, mut health = mut player.health {
-    health -= damage // modifies player.health
-}
-```
-
-```swamp
-with target = mut enemies[0] {
-    target.take_damage(10) // modifies the first enemy
-}
-```
-
-## Guard Expressions
-
-Guard expressions in Swamp provide a concise and powerful way to evaluate multiple conditions and return a single result (or execute a block of code) based on the first matching guard. They are similar to if-else chains in other languages, but with a more pattern-like syntax. Each guard (`| condition -> result`) is checked in order. As soon as one guard condition is true, its associated expression is evaluated and returned. If no guard condition matches, a wildcard guard (_) can handle the remaining cases.
-
-```swamp
-reward =
-    | score >= 1000 -> "Treasure Chest"
-    | score >= 500  -> "Gold Coins"
-    | score >= 100  -> "Silver Coins"
-    | _ -> "No Reward"
 ```
 
 ## Generics
@@ -1151,18 +1153,6 @@ button = ButtonState::Activated<Int>
 something = SomeStruct<String>
 ```
 
-## Type alias
-
-{% note(type="to_review") %}
-catnipped please review this
-{% end %}
-
-Adds a name to a type. You can not define an alias for another alias, struct or enum type.
-
-```swamp
-type My2dPosition = (Int, Int)
-```
-
 ## External Type
 
 {% note(type="to_review") %}
@@ -1174,7 +1164,6 @@ References a type that is used in the engine that is embedding Swamp. You are ra
 ```swamp
 External<"SomeFfiType">
 ```
-
 
 ## Type Inference
 
