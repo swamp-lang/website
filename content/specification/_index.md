@@ -794,13 +794,13 @@ while projectile.is_active {
 
 ```swamp
 // Update all entities
-for enemy in enemies {
+for mut enemy in enemies {
     enemy.update()
     enemy.check_player_distance()
 }
 
 // Update all entities
-for id, enemy in map_of_enemies {
+for id, mut enemy in map_of_enemies {
     println("Updating enemy {id}")
     enemy.update()
     enemy.check_player_distance()
