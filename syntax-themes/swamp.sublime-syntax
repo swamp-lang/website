@@ -62,7 +62,7 @@ contexts:
         3: constant.other.enum.variant
 
     # Module paths and type identifiers
-    - match: '([a-z][a-z0-9_]*::)+'
+    - match: '\b([a-z][a-z0-9_]*(?:::[a-z][a-z0-9_]*)+)\b'
       scope: entity.name.namespace
 
     # Generic Types
