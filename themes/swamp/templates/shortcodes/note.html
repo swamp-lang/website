@@ -1,5 +1,4 @@
 <section role="note" data-type="{{ type }}">
-    <header>
       {% if type == "unimplemented" %}
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
@@ -32,9 +31,5 @@
           <path d="M20 12h1"></path>
         </svg>
       {% endif %}
-      <h4>{{ title | default(value=(type | replace(from="_", to=" ") | title)) }}</h4>
-    </header>
-    <div>
-      {{ body | markdown | safe }}
-    </div>
+      <p><strong>{{ title | default(value=(type | replace(from="_", to=" ") | title)) }}:</strong>  {{ body | markdown | safe }}</p>
   </section>
