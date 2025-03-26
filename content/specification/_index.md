@@ -912,6 +912,25 @@ reward =
     | _ -> "No Reward"
 ```
 
+### Non-Capturing Lambda
+
+{% note(type="to_review") %}
+catnipped please review this
+{% end %}
+
+They look very close to a closure or a lambda. But the key distinction is that they do not capture the variables or builds a state. They are basically just inserted during code generation.
+This makes the very performant. They can, by design, not be used as functions.
+
+```swamp
+// Just with an expression
+| id | id + 2
+
+// with a block
+| key, value | {
+    print('key: {key}, value: {value}')
+}
+```
+
 ## Pattern Matching
 
 Pattern matching is a powerful way to handle different cases in your code. It's like a super-powered if expression that can look inside complex types and handle multiple cases clearly.
