@@ -88,6 +88,20 @@ When the scope ends, the variable is automatically cleaned up.
 }   // power_up is automatically cleaned up here
 ```
 
+### Mutability and Reference Rules
+
+Swamp uses a unique approach to managing mutability that prioritizes safety and clarity:
+
+- Everything is immutable (read-only) by default. This immutability-first approach prevents accidental modifications and makes your code easier to reason about.
+
+- Mutability (write access) is explicitly declared with mut. When you need a variable that can change, you must declare this intention clearly.
+
+- Mutable references are requested with &. The & operator is used when you need to temporarily give write access to a function or a specific scope. This is called "borrowing" - you're lending out the ability to modify your data for a short period.
+
+- References can only be used in specific contexts and cannot be stored. This prevents many common memory safety issues found in other languages.
+
+Swamp encourages an "immutability-first" approach to software design. We recommend keeping variables immutable by default and only introducing mutability when needed.
+
 ### Variable Type Annotation
 
 Swamp supports type inference by automatically deducing a variable's type from its assigned value. However, there are times when the variable's type is not obvious—especially when initializing a variable with a optional type value like `none`, an empty vector `[]`, or an empty map `[:]`. In those cases, you can explicitly specify the variable's type using type annotation.
@@ -809,10 +823,6 @@ for id, mut enemy in map_of_enemies {
 
 #### New syntax
 
-{% note(type="coming_soon") %}
-scheduled for version 0.2
-{% end %}
-
 ```swamp
 // Update all entities
 enemies.for( |mut enemy| {
@@ -889,13 +899,13 @@ with something, another {
 ```
 
 ```swamp
-with damage, mut health = mut player.health {
+with damage, mut health = &player.health {
     health -= damage // modifies player.health
 }
 ```
 
 ```swamp
-with target = mut enemies[0] {
+with target = &enemies[0] {
     target.take_damage(10) // modifies the first enemy
 }
 ```
@@ -1158,42 +1168,6 @@ use std
 use another_package::some_module::ThatType // you only need to write `ThatType`
 use another_package::some_module::{ThatType, OtherType} // you only need to write `ThatType` or `OtherType`
 use second_package::module_name // you don't need to write `second_package::`
-```
-
-## Generics
-
-{% note(type="to_review") %}
-catnipped please review this
-{% end %}
-
-Structs, functions and enums can take a type parameter (generic types). That makes them into a "template" of sorts, and that template can be realized using monomorphization.
-
-```swamp
-struct SomeStruct<T> {
-    value: T,
-}
-
-
-enum ButtonState<Data> {
-    Inactive,
-    Activated { data: Data },
-}
-
-button = ButtonState::Activated<Int>
-
-something = SomeStruct<String>
-```
-
-## External Type
-
-{% note(type="to_review") %}
-catnipped please review this
-{% end %}
-
-References a type that is used in the engine that is embedding Swamp. You are rarely using this, it is only for the engine developers.
-
-```swamp
-External<"SomeFfiType">
 ```
 
 ## Type Inference
