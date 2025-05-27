@@ -164,7 +164,7 @@ fn calculate_distance(player: Point, target: Point) -> Float {
 
 #### Member Functions
 
-These operate on an instance of a type, accessed using a dot notation. They can modify the instance if marked with `mut`.
+These operate on an instance of a type, accessed using a dot notation. They can modify the instance if marked with `mut`. [^ufcs]
 
 ```swamp
 impl Player {
@@ -1185,3 +1185,4 @@ The compiler will tell you when explicit types are needed.
 [^snakecase]: [Snake_case Wikipedia](https://en.wikipedia.org/wiki/Snake_case)
 [^camelcase]: [CamelCase Wikipedia](https://en.wikipedia.org/wiki/Camel_case)
 [^screaming_snake_case]: [Screaming Snake Case Wikipedia](https://en.wikipedia.org/wiki/Snake_case)
+[^ufcs]: [Uniform Function Call Syntax](https://en.wikipedia.org/wiki/Uniform_function_call_syntax)
