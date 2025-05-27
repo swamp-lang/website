@@ -459,7 +459,7 @@ Internally they are converted from a [slice-pair](/internal/#slicepair).
 #### Map Access
 
 ```swamp
-spawn_points = [ "Starting Level": Point { x: 0, y: 0 }, "Second Level": Point { x: 100, y: 50 } ]
+spawn_points = [ "Starting Level": Point { x: 0, y: 0 }, "Second Level": Point { x: 100, y: 50 }, ]
 start_pos = spawn_points["Starting Level"]     // Get starting position
 ```
 
@@ -887,6 +887,7 @@ const STATS = StatsStruct::calculate_stats(42)
 ### With
 
 The `with` keyword creates a new scope with bound variables. It's useful for temporarily binding values or creating local aliases. It is almost like mini-functions. Can be useful if you have a longer function that does not make sense to split into smaller separate functions.
+If you only name the binding, it will create an alias variable. e.g. `a=a`, `a=something_else`, `mut a=b`.
 
 Only the specified variables are available inside the expression (block).
 
@@ -895,18 +896,6 @@ Only the specified variables are available inside the expression (block).
 with something, another {
     something + another
     x + 3 // Fails, x is not a bound variable in the `with` block
-}
-```
-
-```swamp
-with damage, mut health = &player.health {
-    health -= damage // modifies player.health
-}
-```
-
-```swamp
-with target = &enemies[0] {
-    target.take_damage(10) // modifies the first enemy
 }
 ```
 
@@ -963,12 +952,12 @@ match item {
     // Simple variant matching
     Gold => {
         player.money += 100
-    },
+    }
 
     // Tuple variant destructuring
     Weapon damage, range => {
         player.equip_weapon(damage, range)
-    },
+    }
 
     // Struct variant destructuring
     Armor defense, weight => {
@@ -1002,7 +991,7 @@ match entity {
     Player health: 100, mana: 100 => ui.show_status("Full Power!"),
     Player health: 0 => {
         player.die()
-    },
+    }
     Enemy health: 1 => {
         enemy.enter_rage_mode()
     }
@@ -1013,7 +1002,7 @@ match item {
     Gold => {
         player.money += 100
         ui.show_pickup("Gold")
-    },
+    }
     Weapon 0, _ => ui.show_status("Broken Weapon"),
     Weapon damage, range => player.equip_weapon(damage, range),
     Armor defense: 0 => ui.show_status("Broken Armor"),
@@ -1028,7 +1017,7 @@ match player_state {
         apply_damage(damage * 2),
     Attacking damage =>
         apply_damage(damage),
-    _ => ()
+    _ => (),
 }
 ```
 
