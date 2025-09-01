@@ -5,7 +5,7 @@ description = "Detailed specification of the Swamp programming language"
 toc = true
 +++
 
-## Slice
+## Initializer List
 
 A continous area of elements of the same type.
 
@@ -13,7 +13,7 @@ A continous area of elements of the same type.
 [10, -4, 20]
 ```
 
-## SlicePair
+## Initializer Pair List
 
 A continous area of elements of the same interleaved key- and value-type.
 
@@ -39,11 +39,11 @@ guard =
 // Blocks use {...} as natural delimiter
 
 match x {
-    1 => {
+    1 -> {
         foo()
         bar()
     }
-    2 => {
+    2 -> {
         baz()
     }
 }

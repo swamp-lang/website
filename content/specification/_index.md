@@ -222,7 +222,7 @@ fn log(message: String) {
 
 ## Basic Types
 
-**Swamp** provides fundamental types for storing different kinds of data: Integers (Int) for whole numbers, Floating-point numbers (that in reference implementations are Fixed Point numbers) for decimal values, Booleans (Bool) for true/false conditions, and Strings (String) for text.
+**Swamp** provides fundamental types for storing different kinds of data: Integers (Int) for whole numbers, Floating-point numbers (that in reference implementations are Fixed Point numbers) for decimal values, Booleans (Bool) for true/false conditions, and Strings (String) for text, and Codepoint (u32) for characters. There is also Byte (8-bit) and Short (16-bit), but those are rarely used.
 
 ### Integers
 
@@ -400,7 +400,7 @@ spawn_points = [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 }, Point { x: -10, y
 ```
 
 {% note(type="nerdy") %}
-Internally they are converted from a [slice](/internal/#slice).
+Internally they are converted from a [initializer_list](/internal/#initializer-list).
 {% end %}
 
 #### Vec Access
@@ -423,7 +423,7 @@ high_scores[0..2] = [32, 44]
 
 ### Maps
 
-Maps are collections that store pairs of values, where you use one value (the key) to look up another (the value).
+Maps are collections that store pairs of values, where you use one value (the key) to look up another (the value). The key can be a primitive (Int, Byte), and enum and a struct. Strings are not supported as key.
 
 #### Map Declaration
 
@@ -436,11 +436,18 @@ A map looks similar to a list, but has two types within the square brackets `[]`
 #### Map Instantiation
 
 ```swamp
+
+enum SpawnPoint {
+    StartingLevel,
+    SecondLevel,
+    SecretArea,
+}
+
 // Spawn points for different level names
 spawn_points = [
-    "Starting Level": Point { x: 0, y: 0 },
-    "Second Level": Point { x: 100, y: 50 },
-    "Secret Area": Point { x: -50, y: 75 },
+    SpawnPoint::StartingLevel : Point { x: 0, y: 0 },
+    SpawnPoint::SecondLevel : Point { x: 100, y: 50 },
+    SpawnPoint::SecretArea : Point { x: -50, y: 75 },
 ]
 ```
 
@@ -453,21 +460,27 @@ empty_map = [:]
 ```
 
 {% note(type="nerdy") %}
-Internally they are converted from a [slice-pair](/internal/#slicepair).
+Internally they are converted from a [initializer pair-list](/internal/#initializer-pair-list).
 {% end %}
 
 #### Map Access
 
 ```swamp
-spawn_points = [ "Starting Level": Point { x: 0, y: 0 }, "Second Level": Point { x: 100, y: 50 }, ]
-start_pos = spawn_points["Starting Level"]     // Get starting position
+spawn_points = [
+    SpawnPoint::StartingLevel : Point { x: 0, y: 0 },
+    SpawnPoint::SecretArea : Point { x: 100, y: 50 },
+]
+
+start_pos = spawn_points[StartingLevel]     // Get starting position
 ```
 
 #### Map Assignment
 
 ```swamp
-mut spawn_points = [ "Starting Level": Point { x: 0, y: 0 } ]
-spawn_points["Starting Level"] = Point { x: 10, y: 10 }    // Update spawn point
+mut spawn_points = [ SpawnPoint::StartingLevel: Point { x: 0, y: 0 } ]
+
+// Update spawn point
+spawn_points[SpawnPoint::StartingLevel] = Point { x: 10, y: 10 }
 ```
 
 ### Structs
@@ -483,7 +496,7 @@ struct Player {
     position: Point,
     health: Int,
     mana: Int,
-    speed: Float
+    speed: Float,
 }
 ```
 
@@ -496,7 +509,7 @@ player = Player {
     position: Point { x: 0.0, y: 0.0 },
     health: 100,
     mana: 50,
-    speed: 5.0
+    speed: 5.0,
 }
 ```
 
@@ -596,7 +609,7 @@ player.position = Point { x: 10.0, y: 5.0 }  // Move player
 
 #### Struct Implementation
 
-Using `impl` you can attach [member functions](#member-functions) to Structs.
+Using `impl` you can attach [member functions](#member-functions) to struct and enum types.
 
 ```swamp
 impl Player {
@@ -611,7 +624,7 @@ impl Player {
 }
 ```
 
-`impl` can also be used to attach functions used for [associated function calls](#associated-function-calls).
+`impl` can also be used to attach functions used for [associated function calls](#associated-function-calls) (no self).
 
 ```swamp
 impl Player {
@@ -660,7 +673,7 @@ enum Item {
 
     // Tuple variants with data
     Weapon(Int, Float),    // damage, range
-    Potion(Int),           // healing amount
+    Potion Int,           // Single data. healing amount
 
     // Struct variants with named fields
     Armor {
@@ -684,23 +697,25 @@ You can [pattern match](#pattern-matching) an Enum and output different outcomes
 ```swamp
 match item {
     // Simple variant matching
-    Gold => {
+    Gold -> {
         player.money += 100
     },
 
-    Key => open_nearest_door(),
+    Key -> open_nearest_door(),
 
     // Tuple variant destructuring
-    Weapon _, range => {           // Ignore damage
+    Weapon _, range -> {           // Ignore damage
         set_attack_range(range)
     },
 
-    Potion amount => {
+    Potion amount -> {
         player.health += amount
     },
 
     // Struct variant destructuring
-    Armor defense, weight => {
+    // The `{` and `}` are there to show that these are field names
+    // and must match exactly
+    Armor { defense, weight } -> {
         if player.strength >= weight {
             equip_armor(defense)
         } else {
@@ -938,10 +953,10 @@ Pattern matching is a powerful way to handle different cases in your code. It's 
 
 ```swamp
 match game_state {
-    Playing => update_game(),
-    Paused => show_pause_menu(),
-    GameOver => show_final_score(),
-    _ => show_main_menu()
+    Playing -> update_game(),
+    Paused -> show_pause_menu(),
+    GameOver -> show_final_score(),
+    _ -> show_main_menu()
 }
 ```
 
@@ -950,17 +965,18 @@ match game_state {
 ```swamp
 match item {
     // Simple variant matching
-    Gold => {
+    Gold -> {
         player.money += 100
     }
 
     // Tuple variant destructuring
-    Weapon damage, range => {
+    Weapon damage, range -> {
         player.equip_weapon(damage, range)
     }
 
     // Struct variant destructuring
-    Armor defense, weight => {
+    // `{` `}` is needed since it is field name references
+    Armor { defense, weight } -> {
         if player.can_carry(weight) {
             player.equip_armor(defense)
         }
@@ -973,39 +989,39 @@ match item {
 ```swamp
 // Numeric and string literals
 match player.health {
-    100 => ui.show_status("Full Health"),
-    1..10 => ui.show_status("Low Health!"),
-    _ => ui.show_health(player.health),
+    100 -> ui.show_status("Full Health"),
+    1..10 -> ui.show_status("Low Health!"),
+    _ -> ui.show_health(player.health),
 }
 
 // Tuple patterns with literals and variables
 match position {
-    0, 0 => player.spawn_at_origin(),
-    0, y => player.spawn_at_height(y),
-    x, 0 => player.spawn_at_width(x),
-    x, y => player.spawn_at(x, y),
+    0, 0 -> player.spawn_at_origin(),
+    0, y -> player.spawn_at_height(y),
+    x, 0 -> player.spawn_at_width(x),
+    x, y -> player.spawn_at(x, y),
 }
 
 // Struct patterns with literals
 match entity {
-    Player health: 100, mana: 100 => ui.show_status("Full Power!"),
-    Player health: 0 => {
+    Player health: 100, mana: 100 -> ui.show_status("Full Power!"),
+    Player health: 0 -> {
         player.die()
     }
-    Enemy health: 1 => {
+    Enemy health: 1 -> {
         enemy.enter_rage_mode()
     }
 }
 
 // Enum patterns with data
 match item {
-    Gold => {
+    Gold -> {
         player.money += 100
         ui.show_pickup("Gold")
     }
-    Weapon 0, _ => ui.show_status("Broken Weapon"),
-    Weapon damage, range => player.equip_weapon(damage, range),
-    Armor defense: 0 => ui.show_status("Broken Armor"),
+    Weapon 0, _ -> ui.show_status("Broken Weapon"),
+    Weapon damage, range -> player.equip_weapon(damage, range),
+    Armor defense: 0 -> ui.show_status("Broken Armor"),
 }
 ```
 
@@ -1013,11 +1029,11 @@ match item {
 
 ```swamp
 match player_state {
-    Attacking damage | has_power_up =>
+    Attacking damage | has_power_up ->
         apply_damage(damage * 2),
-    Attacking damage =>
+    Attacking damage ->
         apply_damage(damage),
-    _ => (),
+    _ -> (),
 }
 ```
 

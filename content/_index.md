@@ -54,8 +54,8 @@ enum Result {
 
 fn process(result: Result) {
     match result {
-        Ok(message) => print('Success: {message}'),
-        Err(error) => print('Error: {error}')
+        Ok(message) -> print('Success: {message}'),
+        Err(error) -> print('Error: {error}')
     }
 }
 ```
@@ -70,7 +70,7 @@ struct Point {
 
 impl Point {
     fn distance(self, other: Point) -> Float {
-        ((self.x - other.x) * (self.x - other.x) + 
+        ((self.x - other.x) * (self.x - other.x) +
          (self.y - other.y) * (self.y - other.y)).sqrt()
     }
 }
@@ -83,7 +83,7 @@ print('Distance: {p1.distance(p2)}')
 
 ### Mutable Variables
 
-In Swamp, variables are immutable by default and arguments are passed by value (copied when passed to functions). 
+In Swamp, variables are immutable by default and arguments are passed by value (copied when passed to functions).
 This design encourages immutability for safer, more predictable code. To make a variable mutable, use the `mut` keyword:
 
 
@@ -102,10 +102,10 @@ fn increment(mut x: Int) {
 
 mut a = 5 // a will be changed in the future
 
-// even though a is already mutable, we want to make 
+// even though a is already mutable, we want to make
 // it explicit that we allow and see the function might change it.
 
-increment(mut a) 
+increment(mut a)
 
 print(a)  // Outputs: 6
 ```
