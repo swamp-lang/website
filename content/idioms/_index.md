@@ -326,8 +326,8 @@ When a function conceptually belongs to a type, make it an associated function
 This has two big advantages:
 
 - **Discoverability:** Code completion and intellisense will show all available
-  functions when you type value and a dot `.`. You don't have to remember global
-  function names.
+  functions when you type value and a dot `.`. You don't have to remember the
+  name of free functions.
 
 - **Documentation:** The impl block becomes the single place to look when you
   want to know what operations a type supports.
@@ -645,8 +645,8 @@ a = Avatar {
 
 ## Use Tuples for Small, Self-Explanatory Groups
 
-For small, short-lived groups where order is obvious, prefer a tuple.
-Tuples avoid boilerplate and keep code concise.
+For small, short-lived groups where order is obvious, prefer a tuple. Tuples
+avoid boilerplate and keep code concise.
 
 If the grouping is reused, or if field names add clarity, use a struct instead.
 
@@ -669,6 +669,35 @@ move_avatar(Coords { x: 5, y: -3 })
 fn move_avatar(delta: (Int, Int)) { ... }
 
 move_avatar((5, -3))
+```
+
+## Prefer Guards Over If-Else Chains
+
+Guards read top-to-bottom: the **first** true condition yields the value.
+They remove nesting, flat, scannable logic, make intent explicit, and gives a clear default with `_`.
+
+**Avoid (if-else ladder as an expression):**
+
+```swamp
+fn classify(a: Int, b: Int) -> Int {
+    if a > 3 {
+        4
+    } else if b < 9 && a > 4 {
+        99
+    } else {
+        0
+    }
+}
+```
+
+**Prefer (guards):**
+
+```swamp
+fn classify(a: Int, b: Int) -> Int {
+    | a > 3              -> 4
+    | b < 9 && a > 4     -> 99
+    | _                  -> 0
+}
 ```
 
 ## References
