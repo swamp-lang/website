@@ -67,7 +67,7 @@ Avoid:
 
 ```swamp
 struct Avatar {
-  id: Int,
+    id: Int,
 }
 
 fn find_avatar(distance: Int) -> Avatar? {
@@ -85,7 +85,7 @@ Prefer:
 
 ```swamp
 struct Avatar {
-  id: Int,
+    id: Int,
 }
 
 // id will be zero if avatar is not found
@@ -106,8 +106,8 @@ be safe. This way, an uninitialized or default value never causes harm.
 
 ```swamp
 enum Action {
-  Idle,
-  DrinkingPotion,
+    Idle,
+    DrinkingPotion,
 }
 
 fn avatar_do_action(avatar: Avatar, action: Action) {
@@ -335,17 +335,17 @@ This has two big advantages:
 Avoid (free function)
 
 ```swamp
-fn length_of_name(p: Player) -> Int {
-    p.name.len()
+fn avatar_target_range(p: Player) -> Int {
+    p.base_range + p.boosted_range
 }
 ```
 
 Prefer:
 
 ```swamp
-impl Player {
-    fn name_length(self) -> Int {
-        self.name.len()
+impl Avatar {
+    fn target_range(self) -> Int {
+        self.base_range + self.boosted_range
     }
 }
 ```
