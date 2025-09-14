@@ -5,7 +5,7 @@ description = "Idioms, best practices, and philosophy for writing Swamp code."
 toc = true
 +++
 
-## Avoid `mut` variables
+## Prefer Single Assignment
 
 Avoid:
 
@@ -23,6 +23,32 @@ Prefer:
 ```swamp
 a = if something 4 else 5
 ```
+
+Avoid:
+
+```swamp
+mut direction = Vec2 { .. }
+if input == Input::Left {
+    direction = Vec2::new(-1, 0)
+} else if input == Input::Right {
+    direction = Vec2::new(1, 0)
+} else {
+    direction = Vec2::new(0, 0)
+}
+```
+
+Prefer:
+
+```swamp
+direction = match input {
+    Left  -> Vec2::new(-1, 0),
+    Right -> Vec2::new(1, 0),
+    _     -> Vec2::new(0, 0),
+}
+```
+
+{% note(type="principle") %} One assignment tells the whole story — mutation
+muddies it. {% end %}
 
 ## ZII = Zero Is Initialization
 
@@ -45,7 +71,7 @@ struct Avatar {
 }
 
 fn find_avatar(distance: Int) -> Avatar? {
-    // some code
+    ...
 }
 
 
@@ -64,7 +90,7 @@ struct Avatar {
 
 // id will be zero if avatar is not found
 fn find_avatar(distance: Int) -> Avatar {
-    // some code
+    ...
 }
 
 avatar = find_avatar(20)
@@ -173,7 +199,7 @@ Avoid:
 
 ```swamp
 fn draw_avatar(x: Int, y: Int, rotation: Float, scale: Float, opacity: Float) {
-    // ...
+    ...
 }
 
 draw_avatar(120, 200, 0.0, 1.0, 0.8)
@@ -191,7 +217,7 @@ struct DrawParams {
 }
 
 fn draw_avatar(params: DrawParams) {
-    // ...
+    ...
 }
 
 draw_avatar(DrawParams {
@@ -421,7 +447,8 @@ fn get_localized_string(
 
 - **Parsing text formats**
 
-Parsing text formats should usually be done by the engine, not in Swamp --- but there are times when it's necessary.
+Parsing text formats should usually be done by the engine, not in Swamp --- but
+there are times when it's necessary.
 
 Everywhere else: keep your data structured.
 
@@ -541,6 +568,108 @@ I/O, no indirection --- just direct access to data that never changes.
 
 {% note(type="principle") %} If you already know it, compile it in. Runtime is
 for the unknown. {% end %}
+
+## Prefer Type Inference
+
+> Infer more, clutter less.
+
+Swamp's type inference makes code shorter, cleaner, and easier to read. Explicit
+types are only needed when type cannot be inferred.
+
+Avoid:
+
+```swamp
+player: Player = Player::new()
+score: Int = 0
+```
+
+Prefer (inferred):
+
+```swamp
+player = Player::new()
+score = 0
+```
+
+Sometimes:
+
+Optionals and other cases where a value has multiple meanings may need explicit
+annotation.
+
+```swamp
+maybe_score: Int? = 0
+```
+
+Here, zero is wrapped in `Some`, making the type explicit.
+
+{% note(type="principle") %} Infer the obvious, state the meaningful. {% end %}
+
+## Return Values Instead of Mutating Parameters
+
+> Builders should build --- not patch.
+
+If a function's purpose is to initialize a value, make it return that value.
+Don't take an existing variable as a `mut` parameter and fill it in.
+
+This makes such functions easy to use directly inside struct initializers and
+expressions, where mutation isn't possible. It also improves performance:
+returning writes the result directly into the struct field (via sret), avoiding
+a separate variable and the extra store/"copy" into the field.
+
+**Avoid (mutating parameter):**
+
+```swamp
+fn create_spawn_from_id(mut pos: Position, id: Int) {
+    pos = Position { x: id, y: 0 }
+}
+
+a = Avatar {
+    position: {
+        mut p = Position {..}
+        create_spawn_from_id(&p, 42)
+        p
+    },
+}
+```
+
+**Prefer (returning the value):**
+
+```swamp
+fn create_spawn_from_id(id: Int) -> Position {
+    Position { x: id, y: 0 }
+}
+
+a = Avatar {
+    position: create_spawn_from_id(42),
+}
+```
+
+## Use Tuples for Small, Self-Explanatory Groups
+
+For small, short-lived groups where order is obvious, prefer a tuple.
+Tuples avoid boilerplate and keep code concise.
+
+If the grouping is reused, or if field names add clarity, use a struct instead.
+
+**Avoid:**
+
+```swamp
+struct Coords {
+    x: Int,
+    y: Int,
+}
+
+fn move_avatar(delta: Coords) { ... }
+
+move_avatar(Coords { x: 5, y: -3 })
+```
+
+**Prefer (tuple):**
+
+```swamp
+fn move_avatar(delta: (Int, Int)) { ... }
+
+move_avatar((5, -3))
+```
 
 ## References
 
