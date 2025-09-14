@@ -137,8 +137,9 @@ contexts:
     - match: '\b(true|false|\(\))\b'
       scope: constant.language,  support.constant
 
-
-
+    # ... placeholder (write "some code here")
+    - match: '\.\.\.'
+      scope: comment.placeholder.swamp
 
     # Operators
     - match: '[+\-*/%]|\+\+'
