@@ -188,8 +188,9 @@ There's also a **performance cost**:
   the struct.
 
 Instead, if you must have more than four arguments, group related values into a
-struct and pass that as a single argument. This improves readability, makes the
-code self-documenting, and lets you extend later without breaking call sites.
+named or anonymous struct and pass that as a single argument. This improves
+readability, makes the code self-documenting, and lets you extend later without
+breaking call sites.
 
 Functions with many parameters are harder to use correctly. Research suggests
 developers struggle with more than four parameters [RamaKak2013], and psychology
@@ -198,11 +199,11 @@ shows that people can juggle around four items in working memory [Cowan2010].
 Avoid:
 
 ```swamp
-fn draw_avatar(x: Int, y: Int, rotation: Float, scale: Float, opacity: Float) {
+fn draw_avatar(x: Int, y: Int, rotation: Float, scale: Float, opacity: Float, avatar: Avatar) {
     ...
 }
 
-draw_avatar(120, 200, 0.0, 1.0, 0.8)
+draw_avatar(120, 200, 0.0, 1.0, 0.8, Avatar {..})
 ```
 
 Prefer:
@@ -216,7 +217,11 @@ struct DrawParams {
     opacity: Float,
 }
 
-fn draw_avatar(params: DrawParams) {
+fn draw_avatar(params: DrawParams, avatar: Avatar) {
+    ...
+}
+
+fn draw_spaceship(params: DrawParams, spaceship: Spaceship) {
     ...
 }
 
@@ -226,7 +231,7 @@ draw_avatar(DrawParams {
     rotation: 0.0,
     scale: 1.0,
     opacity: 0.8,
-})
+}, Avatar {..})
 ```
 
 ## Use Anonymous Structs for Rare Cases
@@ -442,6 +447,7 @@ fn get_localized_string(
     language: Language,
     id: LocalizedStringId,
     game: Game) -> String {
+    ...
 }
 ```
 
@@ -673,8 +679,9 @@ move_avatar((5, -3))
 
 ## Prefer Guards Over If-Else Chains
 
-Guards read top-to-bottom: the **first** true condition yields the value.
-They remove nesting, flat, scannable logic, make intent explicit, and gives a clear default with `_`.
+Guards read top-to-bottom: the **first** true condition yields the value. They
+remove nesting, flat, scannable logic, make intent explicit, and gives a clear
+default with `_`.
 
 **Avoid (if-else ladder as an expression):**
 
