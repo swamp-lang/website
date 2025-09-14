@@ -419,6 +419,10 @@ fn get_localized_string(
 }
 ```
 
+- **Parsing text formats**
+
+Parsing text formats should usually be done by the engine, not in Swamp --- but there are times when it's necessary.
+
 Everywhere else: keep your data structured.
 
 ## Do not use Defensive Coding
@@ -436,7 +440,7 @@ automatically, so they don't cost performance.
 **Wrong (defensive coding):**
 
 ```swamp
-fn update_avatar(avatar: Avatar) {
+fn update_avatar(mut avatar: Avatar) {
     if avatar.gold < 0 {
         avatar.gold = 0 // silently fix
     }
@@ -446,7 +450,7 @@ fn update_avatar(avatar: Avatar) {
 **Right:**
 
 ```swamp
-fn update_avatar(avatar: Avatar) {
+fn update_avatar(mut avatar: Avatar) {
     assert(avatar.gold >= 0, "Gold amount should never be negative")
 }
 ```
@@ -533,7 +537,7 @@ const CARDS = [
 ```
 
 Here the entire card library is in constant memory. No runtime parsing, no file
-I/O, no indirection --— just direct access to data that never changes.
+I/O, no indirection --- just direct access to data that never changes.
 
 {% note(type="principle") %} If you already know it, compile it in. Runtime is
 for the unknown. {% end %}
