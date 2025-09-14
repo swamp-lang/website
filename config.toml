@@ -10,7 +10,7 @@ highlight_code = true
 highlight_theme = "ayu-dark"
 # extra_syntaxes = ["syntax-themes"]  # Not sure if this is needed?
 extra_syntaxes_and_themes = ["syntax-themes"]
-
+smart_punctuation = true
 
 [extra]
 author = "Swamp"
@@ -24,6 +24,7 @@ navbar_items = [
     { url = "/", name = "Home" },
     { url = "/specification/", name = "Specification" },
     { url = "/roadmap/", name = "Roadmap" },
+		{ url = "/idioms/", name = "Idioms" },
     { url = "/internal/", name = "Internal" },
   ]}
 ]

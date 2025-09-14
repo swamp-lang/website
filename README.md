@@ -4,13 +4,13 @@
 
 1. Install Zola:
    - **macOS**: `brew install zola`
-   - **Linux**: 
+   - **Linux**:
      - Ubuntu/Debian: `sudo apt install zola`
      - Fedora: `sudo dnf install zola`
      - Arch: `sudo pacman -S zola`
    - **Windows**: Download from [Zola releases](https://github.com/getzola/zola/releases)
 
-   More information can be found [here](https://www.getzola.org/documentation/getting-started/installation/).
+   More information can be found at [zola getting started](https://www.getzola.org/documentation/getting-started/installation/).
 
 ## Development
 
@@ -30,4 +30,4 @@ To build the static site:
 1. Run `zola build`
 2. The generated site will be in the `output/` directory
 
-Note: The `output/` directory is automatically generated and should not be committed to the repository. It's already included in `.gitignore`. If you're deploying the site manually, use the contents of this directory.
+Note: The `output/` directory is automatically generated and should not be committed to the repository. It's already included in `.gitignore`. If you're deploying the site manually, use the contents of this directory
