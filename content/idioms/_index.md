@@ -335,8 +335,8 @@ This has two big advantages:
 Avoid (free function)
 
 ```swamp
-fn avatar_target_range(p: Player) -> Int {
-    p.base_range + p.boosted_range
+fn avatar_target_range(a: Avatar) -> Int {
+    a.base_range + a.boosted_range
 }
 ```
 
