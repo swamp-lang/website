@@ -759,7 +759,7 @@ fn tick(mut self, game_grid: Grid) {
 }
 ````
 
-### TODO / FIXME tags
+### Tracking Tags
 
 Use tags for actionable work items --- short, imperative, and easy to grep.
 
@@ -767,13 +767,17 @@ Use tags for actionable work items --- short, imperative, and easy to grep.
 
 - **TODO**: planned work that's safe to defer for later (feature, improvement, refactor, docs, tests).
 
+- **HACK**: Intentional workaround that violates the ideal solution for a specific reason (deadline, demo, dependency). Should include a removal plan.
+
 - **FIXME**: something is wrong **now** (bug, correctness/safety issue, crash, broken invariant). Bugs should generally be fixed _right away_, but it is decided to be temporarily deferred (e.g., lower priority, blocked, or awaiting info).
+
+- **BUG**: known defect/limitation with unique id, often cross-cutting and almost always tracked in external bug tracker.
 
 - **NOCHECKIN**: temporary commit/merge blocker. Any change containing it **must not be** committed, pushed, or merged; **pre-commit** hooks and **CI** should fail when it's present. Use it to fence off local test code, WIP refactors, or temporary hacks that aren't meant to ship.
 
 The tag format is `TAG(optional-info)[optional-category]: message`:
 
-- `TAG` is `TODO` or `FIXME`. for local use: `NOCHECKIN`.
+- `TAG` is `TODO`, `FIXME`, `HACK` or `BUG`. for local use: `NOCHECKIN`.
 
 - `optional-info` (in **parens**) can include issue IDs, owners, dates:
   `(#233,@piot,2025-08-12)`
