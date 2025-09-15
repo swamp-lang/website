@@ -47,23 +47,20 @@ direction = match input {
 }
 ```
 
-{% note(type="principle") %} One assignment tells the whole story — mutation
-muddies it. {% end %}
+{% note(type="principle") %} One assignment tells the whole story — mutation muddies it. {% end %}
 
 ## ZII = Zero Is Initialization
 
 > Zero should always be safe. Zero means nothing, and nothing is safe.
 
-Embrace zero. The value `0`, `none`, or the _first_ variant of an enum
-(discriminant is zero for the first) should always be safe and well-defined.
-This makes it easy to check for "empty" or "non-existent" without introducing
-optional types.
+Embrace zero. The value `0`, `none`, or the _first_ variant of an enum (discriminant is zero for the first) should always be safe and well-defined.
+This makes it easy to check for "empty" or "non-existent" without introducing optional types.
 
-The benefit is not just simpler code, but also leaner code generation --- the
-compiler doesn't need to emit extra instructions for wrapping and unwrapping
-optionals.
+The benefit is not just simpler code, but also leaner code generation --- the compiler doesn't need to emit extra instructions for wrapping and unwrapping optionals.
 
-Avoid:
+Only use ZII if there is a "natural" existing field that can be used to detect if the type is "nothing", inactive or harmless. Do not add a field just to make it ZII, use an optional in that case `T?`.
+
+**Avoid:**
 
 ```swamp
 struct Avatar {
@@ -81,7 +78,7 @@ when avatar {
 }
 ```
 
-Prefer:
+**Prefer:**
 
 ```swamp
 struct Avatar {
@@ -101,8 +98,7 @@ if avatar.id != 0 {
 
 ### Enums and ZII
 
-The first variant of an enum is always the zero value --- and it should always
-be safe. This way, an uninitialized or default value never causes harm.
+The first variant of an enum is always the zero value --- and it should always be safe. This way, an uninitialized or default value never causes harm.
 
 ```swamp
 enum Action {
@@ -120,9 +116,7 @@ fn avatar_do_action(avatar: Avatar, action: Action) {
 
 ### When Zero Can't Mean "Nothing"
 
-Sometimes zero is a valid value: coordinates, vectors, matrices, and other
-numeric types where 0 has real meaning. In these cases, you cannot reserve zero
-to signal "empty."
+Sometimes zero is a valid value: coordinates, vectors, matrices, and other numeric types where 0 has real meaning. In these cases, you cannot reserve zero to signal "empty."
 
 For these types, use an optional (`T?`) instead.
 
@@ -130,12 +124,11 @@ For these types, use an optional (`T?`) instead.
 
 > Fill in what matters, zero the rest.
 
-When creating struct literals, the `..` operator automatically sets all
-unspecified fields to their zero value. This makes code shorter, clearer, and
-consistent with the ZII principle.
+When creating struct literals, the `..` operator automatically sets all unspecified fields to their zero value. This makes code shorter, clearer, and consistent with the ZII principle.
 
-Instead of manually filling in every field, you can focus only on the values
-that matter --- the rest are guaranteed safe because zero is safe.
+Instead of manually filling in every field, you can focus only on the values that matter --- the rest are guaranteed safe because zero is safe.
+
+If a the type being constructed has a `default()` associated member function, that will be used, if not if a field that is initialized has a `default()` member function, that will be used for each field initialized.
 
 Avoid (explicit zeroes):
 
@@ -175,28 +168,23 @@ player = Player {
 
 > Functions should be simple to call and easy to read.
 
-Functions with many parameters are confusing: the order is easy to mix up, the
-meaning of each argument is unclear, and the code becomes harder to maintain.
+Functions with many parameters are confusing: the order is easy to mix up, the meaning of each argument is unclear, and the code becomes harder to maintain.
 
 There's also a **performance cost**:
 
-- Each parameter must be stored to a temporary register, moved into ABI order,
-  and sometimes copied back for scalars.
-- On many platforms, when the number of parameters grows, extra ones must be
-  spilled to the stack, introducing memory traffic and alignment adjustments.
-- With a ready struct, the overhead is minimal --- just passing the pointer to
-  the struct.
+- Each parameter must be stored to a temporary register, moved into ABI order, and sometimes copied back for scalars.
 
-Instead, if you must have more than four arguments, group related values into a
-named or anonymous struct and pass that as a single argument. This improves
-readability, makes the code self-documenting, and lets you extend later without
-breaking call sites.
+- On many platforms, when the number of parameters grows, extra ones must be spilled to the stack, introducing memory traffic and alignment adjustments.
 
-Functions with many parameters are harder to use correctly. Research suggests
-developers struggle with more than four parameters [RamaKak2013], and psychology
-shows that people can juggle around four items in working memory [Cowan2010].
+- With a ready struct, the overhead is minimal --- just passing the pointer to the struct.
 
-Avoid:
+Instead, if you must have more than four arguments, group related values into a named or anonymous struct and pass that as a single argument. This improves readability, makes the code self-documenting, and lets you extend later without breaking call sites.
+
+Note that if some fields are mutable and some are not, you need to create two different structs. Unfortunately there is currently a bug where you need to set storage for those fields, but that will change in the future.
+
+Functions with many parameters are harder to use correctly. Research suggests developers struggle with more than four parameters [RamaKak2013], and psychology shows that people can juggle around four items in working memory [Cowan2010].
+
+**Avoid:**
 
 ```swamp
 fn draw_avatar(x: Int, y: Int, rotation: Float, scale: Float, opacity: Float, avatar: Avatar) {
@@ -206,7 +194,7 @@ fn draw_avatar(x: Int, y: Int, rotation: Float, scale: Float, opacity: Float, av
 draw_avatar(120, 200, 0.0, 1.0, 0.8, Avatar {..})
 ```
 
-Prefer:
+**Prefer:**
 
 ```swamp
 struct DrawParams {
@@ -238,11 +226,9 @@ draw_avatar(DrawParams {
 
 > Don't name what you only use once.
 
-If a group of fields is only used in one or a few places, there's no need to
-define a named struct for it.
+If a group of fields is only used in one or a few places, there's no need to define a named struct for it.
 
-Anonymous structs are perfect for bundling values together for a single call
-site or a temporary grouping.
+Anonymous structs are perfect for bundling values together for a single call site or a temporary grouping.
 
 ```swamp
 fn draw_special_button(special_params: {
@@ -259,24 +245,28 @@ draw_special_button( {
 } )
 ```
 
+### Use in sub structs inside a struct
+
+If the struct grouping is not used in many places, use an anonymous struct:
+
+```swamp
+struct Avatar {
+    target_info: { unit: Unit, distance: Int }, // This is only used for the avatar target info
+    speed: Int,
+}
+```
+
 ## Prefer Scopes or `with` Blocks Over Single-Use Functions
 
 > Functions are for reuse. Scopes are for structure (and speed).
 
-It's good practice to group related code into scopes `{}` or `with` blocks for
-readability. But don't create named functions that are only ever called once or
-twice. If the code isn't reused, keep it inline --- it makes the flow easier to
-follow and avoids cluttering your code with unnecessary names.
+It's good practice to group related code into scopes `{}` or `with` blocks for readability. But don't create named functions that are only ever called once or twice. If the code isn't reused, keep it inline --- it makes the flow easier to follow and avoids cluttering your code with unnecessary names.
 
-Single-use helpers force the compiler to juggle calling conventions: shuffle
-args into temps, reorder for the ABI, push/pop callee-saved registers, emit
-prologue/epilogue, branch to `call` and back on `ret`. Inline scopes skip all of
-that, yielding fewer instructions and better cache/branch behavior.
+Single-use helpers force the compiler to juggle calling conventions: shuffle args into temps, reorder for the ABI, push/pop callee-saved registers, emit prologue/epilogue, branch to `call` and back on `ret`. Inline scopes skip all of that, yielding fewer instructions and better cache/branch behavior.
 
-Inline code is easier to refactor. You don't have to update function signatures
-or chase down call sites when adding or removing a local variable.
+Inline code is easier to refactor. You don't have to update function signatures or chase down call sites when adding or removing a local variable.
 
-Avoid:
+**Avoid:**
 
 ```swamp
 fn draw_main_menu() {
@@ -285,59 +275,57 @@ fn draw_main_menu() {
 }
 ```
 
-Prefer:
+**Prefer:**
 
 ```swamp
 fn draw_main_menu(gfx: Gfx) {
     // New Game Button
     {
         draw_button_border(gfx, BLUE)
-        draw_text("new game")
+        draw_text(LocalizedString::NewGame)
     }
 
     // Quit Game Button
     {
         draw_button_border(gfx, GREEN)
-        draw_text("quit game")
+        draw_text(LocalizedString::QuitGame)
     }
 }
 ```
 
-or
+**Or:**
 
 ```swamp
 fn draw_main_menu() {
     // New Game Button
     with gfx {
         draw_button_border(gfx, BLUE)
-        draw_text("new game")
+        draw_text(LocalizedString::NewGame)
     }
 
     // Quit Game Button
     with gfx {
         draw_button_border(gfx, GREEN)
-        draw_text("quit game")
+        draw_text(LocalizedString::QuitGame)
     }
 }
 ```
+
+Note: Another upside with scopes is that variables defined in the scope are not taking up registers outside the scope. The variable name can therefor be reused in other scopes.
 
 ## Use Associated Functions
 
 > Keep behavior with the type it belongs to.
 
-When a function conceptually belongs to a type, make it an associated function
-(`impl`) instead of a free function.
+When a function conceptually belongs to a type, make it an associated function (`impl`) instead of a free function.
 
 This has two big advantages:
 
-- **Discoverability:** Code completion and intellisense will show all available
-  functions when you type value and a dot `.`. You don't have to remember the
-  name of free functions.
+- **Discoverability:** Code completion and intellisense will show all available functions when you type value and a dot `.`. You don't have to remember the name of free functions.
 
-- **Documentation:** The impl block becomes the single place to look when you
-  want to know what operations a type supports.
+- **Documentation:** The impl block becomes the single place to look when you want to know what operations a type supports.
 
-Avoid (free function)
+**Avoid (free function):**
 
 ```swamp
 fn avatar_target_range(a: Avatar) -> Int {
@@ -345,7 +333,7 @@ fn avatar_target_range(a: Avatar) -> Int {
 }
 ```
 
-Prefer:
+**Prefer (associated member):**
 
 ```swamp
 impl Avatar {
@@ -359,31 +347,21 @@ impl Avatar {
 
 > Strings are for people, not for game code.
 
-In game code you should rarely use strings. Strings are very heavy: they take
-more memory, require extra allocations, and slow down comparisons.
+In game code you should rarely use strings. Strings are very heavy: they take more memory, require extra allocations, and slow down comparisons.
 
-Worse, strings lose information. If you turn structured data (like an ID or a
-health value) into a string, you throw away its type and meaning. Getting it
-back requires error-prone parsing (never ever do that) --- and usually ends up
-slower and less flexible.
+Worse, strings lose information. If you turn structured data (like an ID or a health value) into a string, you throw away its type and meaning. Getting it back requires error-prone parsing (never ever do that) --- and usually ends up slower and less flexible.
 
-Use identifiers, enums, or numeric handles instead. Strings should only appear
-**as late as possible** in rendering --- that way you can support localization,
-keep your game code lightweight, and preserve information in its structured
-form.
+Use identifiers, enums, or numeric handles instead. Strings should only appear **as late as possible** in rendering --- that way you can support localization, keep your game code lightweight, and preserve information in its structured form.
 
 - **Memory:** numbers and enums are _far_ cheaper to store than strings.
 
-- **Performance**: string comparisons and hashing are _much_ slower than
-  integers.
+- **Performance**: string comparisons and hashing are _much_ slower than integers.
 
 - **Information**: strings flatten structured data and throw away semantics.
 
-- **Flexibility**: separating data from presentation is a good general rule
-  anyway, and makes localization and content changes easy.
+- **Flexibility**: separating data from presentation is a good general rule anyway, and makes localization and content changes easy.
 
-{% note(type="principle") %} Strings belong at the edge of your game —-- for the
-player, not the game code. Inside the game, keep information structured.
+{% note(type="principle") %} Strings belong at the edge of your game —-- for the player, not the game code. Inside the game, keep information structured.
 {% end %}
 
 **Wrong:**
@@ -407,30 +385,25 @@ if action == Action::DrinkPotion {
 }
 ```
 
-Sometimes:
+**Sometimes:**
 
 There are only a few valid uses of strings in Swamp code:
 
-- **Debugging and logging:**
+- **Debugging, assertions, panics and logging:**
 
 ```swamp
 info('loading level {level_id}')
 debug('new game was selected')
 print("starting boss fight")
-```
-
-- **Storing player names:** e.g. names coming from external services (Steam,
-  PSN, etc.).
-
-- **Assertions:**
-
-```swamp
 assert(avatar.velocity < 1000, "Avatar unreasonable velocity")
+panic("value was out of range")
 ```
+
+- **Storing player names:** e.g. names coming from external services(Steam, PSN, etc.).
 
 - **Presentation edge:**
 
-when rendering localized, interpolated strings to the player
+When rendering localized, interpolated strings to the player
 
 ```swamp
 enum LocalizedStringId {
@@ -453,8 +426,7 @@ fn get_localized_string(
 
 - **Parsing text formats**
 
-Parsing text formats should usually be done by the engine, not in Swamp --- but
-there are times when it's necessary.
+Parsing text formats should usually be done by the engine, not in Swamp --- but there are times when it's necessary.
 
 Everywhere else: keep your data structured.
 
@@ -462,13 +434,9 @@ Everywhere else: keep your data structured.
 
 > A hidden bug is a delayed disaster.
 
-Do not accept faulty states or "fix" them silently by clamping, resetting, or
-ignoring invalid values. This only hides the real bug and makes it harder to
-track down.
+Do not accept faulty states or "fix" them silently by clamping, resetting, or ignoring invalid values. This only hides the real bug and makes it harder to track down.
 
-Instead, fail fast and loud with asserts. During development, asserts will catch
-invalid states immediately. In release builds, they can be stripped
-automatically, so they don't cost performance.
+Instead, fail fast and loud with asserts. During development, asserts will catch invalid states immediately. In release builds, they can be stripped automatically, so they don't cost performance.
 
 **Wrong (defensive coding):**
 
@@ -488,18 +456,35 @@ fn update_avatar(mut avatar: Avatar) {
 }
 ```
 
-{% note(type="principle") %} Bugs should surface at the moment they happen, not
-be hidden under "safe defaults."{% end %}
+**Wrong (defensive coding):**
+
+```swamp
+my_position = match get_joystick_value() { //this can only ever be between 0-127
+    0 -> 0,
+    1..127 -> 1,
+    _ -> 0 // defensive coding, we are handling an illegal value
+}
+```
+
+**Right:**
+
+```swamp
+my_position = match get_joystick_value() { // this can only ever be between 0-127
+    0 -> 0,
+    1..127 -> 1,
+    _ -> panic("joystick value was not in range")
+}
+```
+
+{% note(type="principle") %} Bugs should surface at the moment they happen, not be hidden under "safe defaults."{% end %}
 
 ### When Clamping Is Okay
 
 Clamping or handling wrong states are valid in two situations:
 
-1. At the edges of the game --- when input comes from outside sources you cannot
-   fully control (e.g. input, hardware, or network).
+1. At the edges of the game --- when input comes from outside sources you cannot fully control (e.g. input, hardware, or network).
 
-2. As part of the simulation rules --- when the game design itself defines a
-   hard limit.
+2. As part of the simulation rules --- when the game design itself defines a hard limit.
 
 ```swamp
 // Movement speed cannot exceed max velocity by design
@@ -510,9 +495,7 @@ avatar.velocity = avatar.velocity.clamp(0, MAX_VELOCITY)
 
 > Decide as early as possible.
 
-Swamp is designed for determinism and performance. When a value can be known at
-compile time, prefer to make it a constant instead of computing or looking it up
-at runtime.
+Swamp is designed for determinism and performance. When a value can be known at compile time, prefer to make it a constant instead of computing or looking it up at runtime.
 
 This leads to:
 
@@ -522,19 +505,19 @@ This leads to:
 
 **Simplicity:** easier to reason about when values never change.
 
-Avoid:
+**Avoid:**
 
 ```swamp
 fn update_physics() {
-    gravity = 9 * 1000 / 60  // recalculated every frame
+    gravity = 9 * 1000 / 60  // recalculated every tick
     velocity += gravity
 }
 ```
 
-Prefer (compile-time constant):
+**Prefer (compile-time constant):**
 
 ```swamp
-const GRAVITY_PER_TICK = 150
+const GRAVITY_PER_TICK = 9 * 1000 / 60 // this will only be calculated _once_ when the game starts up.
 
 fn update_physics() {
     velocity += GRAVITY_PER_TICK
@@ -543,10 +526,9 @@ fn update_physics() {
 
 ## Code Is Data
 
-If you know the data ahead of time, bake it directly into the code as constants
-instead of loading from a file.
+If you know the data ahead of time, bake it directly into the code as constants instead of loading from a file.
 
-Avoid (runtime loading):
+**Avoid (runtime loading):**
 
 ```swamp
 fn load_cards() -> [Card] {
@@ -554,7 +536,7 @@ fn load_cards() -> [Card] {
 }
 ```
 
-Prefer (compile time):
+**Prefer (compile time):**
 
 ```swamp
 struct Card {
@@ -569,37 +551,33 @@ const CARDS = [
 ]
 ```
 
-Here the entire card library is in constant memory. No runtime parsing, no file
-I/O, no indirection --- just direct access to data that never changes.
+Here the entire card library is in constant memory. No runtime parsing, no file I/O, no indirection --- just direct access to data that never changes.
 
-{% note(type="principle") %} If you already know it, compile it in. Runtime is
-for the unknown. {% end %}
+{% note(type="principle") %} If you already know it, compile it in. Runtime is for the unknown. {% end %}
 
 ## Prefer Type Inference
 
 > Infer more, clutter less.
 
-Swamp's type inference makes code shorter, cleaner, and easier to read. Explicit
-types are only needed when type cannot be inferred.
+Swamp's type inference makes code shorter, cleaner, and easier to read. Explicit types are only needed when type cannot be inferred.
 
-Avoid:
+**Avoid:**
 
 ```swamp
 player: Player = Player::new()
 score: Int = 0
 ```
 
-Prefer (inferred):
+**Prefer (inferred):**
 
 ```swamp
 player = Player::new()
 score = 0
 ```
 
-Sometimes:
+**Sometimes:**
 
-Optionals and other cases where a value has multiple meanings may need explicit
-annotation.
+Optionals and other cases where a value has multiple meanings may need explicit annotation.
 
 ```swamp
 maybe_score: Int? = 0
@@ -613,13 +591,9 @@ Here, zero is wrapped in `Some`, making the type explicit.
 
 > Builders should build --- not patch.
 
-If a function's purpose is to initialize a value, make it return that value.
-Don't take an existing variable as a `mut` parameter and fill it in.
+If a function's purpose is to initialize a value, make it return that value. Don't take an existing variable as a `mut` parameter and fill it in.
 
-This makes such functions easy to use directly inside struct initializers and
-expressions, where mutation isn't possible. It also improves performance:
-returning writes the result directly into the struct field (via sret), avoiding
-a separate variable and the extra store/"copy" into the field.
+This makes such functions easy to use directly inside struct initializers and expressions, where mutation isn't possible. It also improves performance: returning writes the result directly into the struct field (via sret), avoiding a separate variable and the extra store/"copy" into the field.
 
 **Avoid (mutating parameter):**
 
@@ -651,8 +625,7 @@ a = Avatar {
 
 ## Use Tuples for Small, Self-Explanatory Groups
 
-For small, short-lived groups where order is obvious, prefer a tuple. Tuples
-avoid boilerplate and keep code concise.
+For small, short-lived groups where order is obvious, prefer a tuple. Tuples avoid boilerplate and keep code concise.
 
 If the grouping is reused, or if field names add clarity, use a struct instead.
 
@@ -679,9 +652,7 @@ move_avatar((5, -3))
 
 ## Prefer Guards Over If-Else Chains
 
-Guards read top-to-bottom: the **first** true condition yields the value. They
-remove nesting, flat, scannable logic, make intent explicit, and gives a clear
-default with `_`.
+Guards read top-to-bottom: the **first** true condition yields the value. They remove nesting, flat, scannable logic, make intent explicit, and gives a clear default with `_`.
 
 **Avoid (if-else ladder as an expression):**
 
@@ -705,6 +676,85 @@ fn classify(a: Int, b: Int) -> Int {
     | b < 9 && a > 4     -> 99
     | _                  -> 0
 }
+```
+
+## Comment with purpose
+
+> Comments explain _why_, code shows _how_.
+
+Use `///` **Markdown doc comments** on types and functions.
+Use `//!` for module/package files (e.g., `lib.swamp`, `main.swamp`).
+Avoid line-by-line `//` inside functions; reserve `//` for **scope headers** or **block notes** (e.g., a `{ ... }` or `with` block).
+
+{% note(type="unimplemented") %}
+Scanning and parsing of Markdown doc comments is not implemented yet.
+{% end %}
+
+Write doc comments when the **name + signature aren’t self-explanatory**.
+If a function is short and obvious, prefer clear names over extra comments.
+
+**Avoid (narrating):**
+
+```swamp
+fn tick(mut avatar: Avatar) {
+    // increase stamina
+    avatar.stamina += 1
+
+    // if alive then move
+    if avatar.health > 0 {
+        // move right
+        avatar.pos.x += 1
+    }
+}
+```
+
+**Prefer:**
+
+```swamp
+fn tick(mut avatar: Avatar) {
+    avatar.stamina += 1
+
+    if avatar.health > 0 {
+        avatar.pos.x += 1
+    }
+}
+```
+
+### State invariants are asserts (not comments)
+
+### Function Doc Comments
+
+First paragraph should be a short summary of what happens, usually without (extensive) markdown.
+
+You can add sections with `#`. It is allowed, but generally not used, with sub sections `##`, `###` etc.
+
+You refer to parameters with `` `parameter` `` and types with `` `module::scope::Name` ``
+
+````swamp
+/// Updates the avatar simulation.
+///
+/// # Parameters
+/// - `game_grid`: grid used for movement and collisions.
+///
+/// # Effects
+/// Increases stamina; moves only when alive.
+///
+/// # Example
+/// ```swamp
+/// mut avatar = Avatar { .. }
+/// avatar.tick((10, 20), game_grid)
+/// ```
+fn tick(mut avatar: Avatar, game_grid: Grid) {
+    ...
+}
+
+````
+
+### Package Doc Comments
+
+```swamp
+//! # Avatar Package
+//! Handles movement and actions for the Avatar
 ```
 
 ## References
