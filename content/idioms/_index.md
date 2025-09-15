@@ -682,16 +682,22 @@ fn classify(a: Int, b: Int) -> Int {
 
 > Comments explain _why_, code shows _how_.
 
-Use `///` **Markdown doc comments** on types and functions.
-Use `//!` for module/package files (e.g., `lib.swamp`, `main.swamp`).
-Avoid line-by-line `//` inside functions; reserve `//` for **scope headers** or **block notes** (e.g., a `{ ... }` or `with` block).
+Explain intent, constraints, and trade-offs. The code already shows what happens and how --- don’t narrate it.
+
+- Use `///` **Markdown doc comments** just before types and functions.
+
+- Use `//!` for module/package files (e.g., `lib.swamp`, `main.swamp`).
+
+- Avoid line-by-line `//` inside functions (except for TAGS, see below); reserve `//` for **scope headers** or **block notes** (e.g., a `{ ... }` or `with` block).
 
 {% note(type="unimplemented") %}
 Scanning and parsing of Markdown doc comments is not implemented yet.
 {% end %}
 
-Write doc comments when the **name + signature aren’t self-explanatory**.
-If a function is short and obvious, prefer clear names over extra comments.
+Write doc comments when the **name + signature aren't self-explanatory**.
+If a function is short and obvious, prefer clear names over doc comments.
+
+State invariants should be asserts and not comments.
 
 **Avoid (narrating):**
 
@@ -708,7 +714,7 @@ fn tick(mut avatar: Avatar) {
 }
 ```
 
-**Prefer:**
+**Prefer (just code)**:
 
 ```swamp
 fn tick(mut avatar: Avatar) {
@@ -720,35 +726,83 @@ fn tick(mut avatar: Avatar) {
 }
 ```
 
-### State invariants are asserts (not comments)
-
 ### Function Doc Comments
 
-First paragraph should be a short summary of what happens, usually without (extensive) markdown.
+First paragraph should be a short summary of what the intent is, usually without (extensive) markdown.
 
-You can add sections with `#`. It is allowed, but generally not used, with sub sections `##`, `###` etc.
+You can add sections with `#`. Subsections `##`, `###` are possible but rarely needed.
 
-You refer to parameters with `` `parameter` `` and types with `` `module::scope::Name` ``
+You refer to parameters with `` `parameter` `` and types with `` `module::sub_module::Name` ``
+
+Code blocks are wrapped in `` ``` ``, and default to Swamp.
 
 ````swamp
 /// Updates the avatar simulation.
 ///
 /// # Parameters
+///
+/// - `self`: the `shared_types::Avatar` to be simulated.
 /// - `game_grid`: grid used for movement and collisions.
 ///
 /// # Effects
+///
 /// Increases stamina; moves only when alive.
 ///
 /// # Example
-/// ```swamp
+///
+/// ```
 /// mut avatar = Avatar { .. }
 /// avatar.tick((10, 20), game_grid)
 /// ```
-fn tick(mut avatar: Avatar, game_grid: Grid) {
+fn tick(mut self, game_grid: Grid) {
     ...
 }
-
 ````
+
+### TODO / FIXME tags
+
+Use tags for actionable work items --- short, imperative, and easy to grep.
+
+**Semantics**:
+
+- **TODO**: planned work that's safe to defer for later (feature, improvement, refactor, docs, tests).
+
+- **FIXME**: something is wrong **now** (bug, correctness/safety issue, crash, broken invariant). Bugs should generally be fixed _right away_, but it is decided to be temporarily deferred (e.g., lower priority, blocked, or awaiting info).
+
+- **NOCHECKIN**: temporary commit/merge blocker. Any change containing it **must not be** committed, pushed, or merged; **pre-commit** hooks and **CI** should fail when it's present. Use it to fence off local test code, WIP refactors, or temporary hacks that aren't meant to ship.
+
+The tag format is `TAG(optional-info)[optional-category]: message`:
+
+- `TAG` is `TODO` or `FIXME`. for local use: `NOCHECKIN`.
+
+- `optional-info` (in **parens**) can include issue IDs, owners, dates:
+  `(#233,@piot,2025-08-12)`
+
+- `optional-category` (in **brackets**) is a short bucket like:
+  `[perf] [safety] [refactor] [docs] [test]`
+
+- Prefer **one** category; add more only if it truly helps.
+
+**Good message style**:
+
+- Imperative: _"avoid...", "add...", "split...", "bounds-check..."_
+
+- Specific condition: _"when count == 0"_
+
+- One concern per tag.
+
+```swamp
+// TODO: improve jump feel by decreasing gravity
+// TODO(#233,@piot): maybe get achievement if watching the credits
+// TODO(#501,@catnipped)[docs]: add `# Example` for `Position::create_spawn_from_id`
+// TODO(#612)[perf]: fuse the two passes in damage calculation loop
+```
+
+```swamp
+// FIXME: when more than 64 units are spawned it panics
+// FIXME(#612)[correctness]: `ZII` violated - zero `SpellId` triggers effect
+// FIXME(@piot,2025-09-12)[safety]: negative health possible after multi-hit; assert pre/post
+```
 
 ### Package Doc Comments
 
