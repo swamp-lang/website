@@ -5,7 +5,7 @@ description = "Idioms, best practices, and philosophy for writing Swamp code."
 toc = true
 +++
 
-## Prefer Single Assignment
+## Single Assignment
 
 **Avoid:**
 
@@ -120,7 +120,7 @@ Sometimes zero is a valid value: coordinates, vectors, matrices, and other numer
 
 For these types, use an optional (`T?`) instead.
 
-## Use "rest" `..` Operator
+## Rest `..` Operator
 
 > Fill in what matters, zero the rest.
 
@@ -164,7 +164,7 @@ player = Player {
 }
 ```
 
-## Only Use up to Four Parameters
+## Max Four Parameters
 
 > Functions should be simple to call and easy to read.
 
@@ -256,7 +256,7 @@ struct Avatar {
 }
 ```
 
-## Prefer Scopes or `with` Blocks Over Single-Use Functions
+## Scopes or `with` Blocks Over Single-Use Functions
 
 > Functions are for reuse. Scopes are for structure (and speed).
 
@@ -313,7 +313,7 @@ fn draw_main_menu() {
 
 Note: Another upside with scopes is that variables defined in the scope are not taking up registers outside the scope. The variable name can therefor be reused in other scopes.
 
-## Use Associated Functions
+## Associated Functions
 
 > Keep behavior with the type it belongs to.
 
@@ -343,7 +343,7 @@ impl Avatar {
 }
 ```
 
-## Do Not Use Strings
+## No Strings
 
 > Strings are for people, not for game code.
 
@@ -430,7 +430,7 @@ Parsing text formats should usually be done by the engine, not in Swamp --- but 
 
 Everywhere else: keep your data structured.
 
-## Do not use Defensive Coding
+## No Defensive Coding
 
 > A hidden bug is a delayed disaster.
 
@@ -555,7 +555,7 @@ Here the entire card library is in constant memory. No runtime parsing, no file 
 
 {% note(type="principle") %} If you already know it, compile it in. Runtime is for the unknown. {% end %}
 
-## Prefer Type Inference
+## Type Inference
 
 > Infer more, clutter less.
 
@@ -623,7 +623,7 @@ a = Avatar {
 }
 ```
 
-## Use Tuples for Small, Self-Explanatory Groups
+## Tuples for Small, Self-Explanatory Groups
 
 For small, short-lived groups where order is obvious, prefer a tuple. Tuples avoid boilerplate and keep code concise.
 
@@ -650,7 +650,7 @@ fn move_avatar(delta: (Int, Int)) { ... }
 move_avatar((5, -3))
 ```
 
-## Prefer Guards Over If-Else Chains
+## Guards Over If-Else Chains
 
 Guards read top-to-bottom: the **first** true condition yields the value. They remove nesting, flat, scannable logic, make intent explicit, and gives a clear default with `_`.
 
