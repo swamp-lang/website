@@ -316,8 +316,12 @@ body section[role="note"] {
   font-family: "Montserrat", sans-serif;
   font-size: 0.6rem;
   line-height: 1;
-  max-width: none;
-  white-space: nowrap;
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: normal;
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 
   > header,
   > div {
@@ -334,12 +338,12 @@ body section[role="note"] {
   p {
     margin: 0;
     padding: 0;
+    min-width: 0; /* allow flex item to shrink and wrap */
   }
 }
 
 
 section[role="note"] p {
-  display: inline;
   margin: 0;
   padding: 0;
 }
