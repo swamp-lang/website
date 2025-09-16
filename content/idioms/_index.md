@@ -7,7 +7,7 @@ toc = true
 
 ## Prefer Single Assignment
 
-Avoid:
+**Avoid:**
 
 ```swamp
 mut a = 0
@@ -18,13 +18,13 @@ if something {
 }
 ```
 
-Prefer:
+**Prefer:**
 
 ```swamp
 a = if something 4 else 5
 ```
 
-Avoid:
+**Avoid:**
 
 ```swamp
 mut direction = Vec2 { .. }
@@ -37,7 +37,7 @@ if input == Input::Left {
 }
 ```
 
-Prefer:
+**Prefer:**
 
 ```swamp
 direction = match input {
@@ -53,12 +53,12 @@ direction = match input {
 
 > Zero should always be safe. Zero means nothing, and nothing is safe.
 
-Embrace zero. The value `0`, `none`, or the _first_ variant of an enum (discriminant is zero for the first) should always be safe and well-defined.
+Embrace zero and [ZII]. The value `0`, `none`, or the _first_ variant of an enum (discriminant is zero for the first) should always be safe and well-defined.
 This makes it easy to check for "empty" or "non-existent" without introducing optional types.
 
 The benefit is not just simpler code, but also leaner code generation --- the compiler doesn't need to emit extra instructions for wrapping and unwrapping optionals.
 
-Only use ZII if there is a "natural" existing field that can be used to detect if the type is "nothing", inactive or harmless. Do not add a field just to make it ZII, use an optional in that case `T?`.
+Only use ZII if there is a "natural" existing field that can be used to detect if the type is "nothing", inactive or harmless. Do not add a field just to make it ZII, use an optional in that case: `T?`.
 
 **Avoid:**
 
@@ -815,11 +815,16 @@ The tag format is `TAG(optional-info)[optional-category]: message`:
 //! Handles movement and actions for the Avatar
 ```
 
-## References
+---
+
+[ZII]:
+  https://youtu.be/lzdKgeovBN0?t=1744
+  'Casey Muratori - Handmade Hero Day 341'
 
 [RamaKak2013]:
   https://engineering.purdue.edu/RVL/Publications/RamaKakAPIQ_SPE.pdf
   'Rama, G., & Kak, A. (2013). Some Structural Measures of API Usability. Software: Practice and Experience, 43(12), 1529–1555.'
+
 [Cowan2010]:
   https://pmc.ncbi.nlm.nih.gov/articles/PMC2864034/
   'Cowan, N. (2010). The Magical Mystery Four: How Is Working Memory Capacity Limited, and Why? Current Directions in Psychological Science, 19(1), 51–57.'
