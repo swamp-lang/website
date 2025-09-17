@@ -53,10 +53,15 @@ direction = match input {
 
 > Zero should always be safe. Zero means nothing, and nothing is safe.
 
+
 Embrace zero and [ZII]. The value `0`, `none`, or the _first_ variant of an enum (discriminant is zero for the first) should always be safe and well-defined.
 This makes it easy to check for "empty" or "non-existent" without introducing optional types.
 
 The benefit is not just simpler code, but also leaner code generation --- the compiler doesn't need to emit extra instructions for wrapping and unwrapping optionals.
+
+{% figure(src="option_overhead.png", alt="Option Overhead", width=400) %}
+Comparison of memory layout between `Int` and `Int?`
+{% end %}
 
 Only use ZII if there is a "natural" existing field that can be used to detect if the type is "nothing", inactive or harmless. Do not add a field just to make it ZII, use an optional in that case: `T?`.
 
