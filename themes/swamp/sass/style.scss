@@ -185,7 +185,22 @@ code {
 
 figcaption {
     font-style: italic;
-    font-size: 0.8em;
+    font-size: 0.9em;
+    color: #96989b;
+    p {
+      font-family: "Georgia", "Times New Roman", serif;
+    }
+}
+
+
+figure {
+    margin: 1em auto;
+    text-align: center;
+}
+
+figure img {
+  display: block;
+  margin: 0 auto;
 }
 
 blockquote {
