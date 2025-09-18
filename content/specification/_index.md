@@ -151,10 +151,10 @@ fn apply_damage(mut target: Entity, damage: Int) {
 }
 
 // Immutable parameter example
-fn calculate_distance(player: Point, target: Point) -> Float {
+fn calculate_squared_distance(player: Point, target: Point) -> Float {
     dx = target.x - player.x
     dy = target.y - player.y
-    (dx * dx + dy * dy).sqrt()
+    (dx * dx + dy * dy)
 }
 ```
 
@@ -177,10 +177,10 @@ impl Player {
     }
 
     /// Calculates distance to target
-    fn distance_to(self, target: Point) -> Float {
+    fn squared_distance_to(self, target: Point) -> Float {
         dx = target.x - self.position.x
         dy = target.y - self.position.y
-        (dx * dx + dy * dy).sqrt()
+        dx * dx + dy * dy
     }
 }
 
@@ -235,8 +235,7 @@ health = 100
 - Add `+`
 - Subtract `-`
 - Multiply `*`
-- Divide `/`
-- Remainder `%`
+- Divide `/` (only for constant divisors, use `.div()` for non-constants --- a lot slower)
 
 #### Integer Comparisons
 
@@ -260,7 +259,7 @@ speed = 5.5
 - Add `+`
 - Subtract `-`
 - Multiply `*`
-- Divide `/`
+- Divide `/` (only for constant divisors, use `.div()` for non-constants --- a lot slower)
 
 #### Float Comparisons
 

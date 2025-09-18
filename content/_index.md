@@ -69,16 +69,16 @@ struct Point {
 }
 
 impl Point {
-    fn distance(self, other: Point) -> Float {
+    fn squared_distance(self, other: Point) -> Float {
         ((self.x - other.x) * (self.x - other.x) +
-         (self.y - other.y) * (self.y - other.y)).sqrt()
+         (self.y - other.y) * (self.y - other.y))
     }
 }
 
 p1 = Point { x: 0.0, y: 0.0 }
 p2 = Point { x: 3.0, y: 4.0 }
 
-print('Distance: {p1.distance(p2)}')
+print('Distance: {p1.squared_distance(p2)}')
 ```
 
 ### Mutable Variables
@@ -86,12 +86,10 @@ print('Distance: {p1.distance(p2)}')
 In Swamp, variables are immutable by default and arguments are passed by value (copied when passed to functions).
 This design encourages immutability for safer, more predictable code. To make a variable mutable, use the `mut` keyword:
 
-
 ```swamp
 mut x = 10
 x = 20  // Now you can change the value of x
 ```
-
 
  When passing a mutable variable to a function, you must explicitly mark it as mutable at the call site, even if the variable was already declared as mutable:
 
