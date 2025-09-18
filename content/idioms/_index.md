@@ -683,6 +683,73 @@ fn classify(a: Int, b: Int) -> Int {
 }
 ```
 
+## Use power-of-two sizes
+
+Whenever possible, design data structures and sizes to be a power of two:
+2, 4, 8, 16, 32, 64, 128, ...
+
+### Why is this so effective?
+
+- **Fast wrap-around**: `i = (i + 1) & (SIZE - 1)` replaces modulo with a single bitmask.
+- **Cheap alignment**: Power-of-two sizes align naturally with hardware caches and DMA transfers.
+- **Simpler code**: No need for slow `/`, just shifts and masks.
+- **Hardware Synergy**: Power-of-two sizes often align data perfectly with the CPU's cache lines and DMA transfer requirements.
+- **Simpler & Faster Math**: Many calculations become simpler. For example, dividing by a power-of-two can be replaced with a much faster bit-shift operation (`>>`).
+
+### What if you can't use a power of two?
+
+- **Conditional Reset**: For simple counters that increment by one, an `if` statement is often clearer and faster than a modulo.
+
+    ```swamp
+    frame = frame + 1
+    if frame >= 10 {
+        frame = 0
+    }
+    ```
+
+- **Subtractive Loop**: If the input value is expected to be close to the limit (e.g., wrapping tile coordinates), a simple loop can be effective. However, be cautious, as this can be slow if the value is large.
+
+    ```swamp
+    mut offset = x
+    while offset >= 30 {
+        offset -= 30
+    }
+    ```
+
+- **Explicit Division**: If you must perform a true modulo or division, use Swamp's explicit `.div()` or `.rem()` intrinsics. This makes the computational cost visible in your code and reminds you to keep it out of performance-critical inner loops.
+
+## Rarely use division
+
+This might seem like a strange suggestion, but surprisingly division is still one of the slowest basic operations in a CPU. On modern x86, a multiplication may take ~3 cycles, while a division can be 20–30 cycles (7-10x slower). On M1 the ballpark for multiplication is 3 cycles, and integer division is 9-14 cycles (about 3x slower). On retro CPUs like the GBA's ARM7TDMI, integer division has no hardware instruction at all and must be emulated in software --- which means about **50–100x slower** than a multiply.
+
+That difference is huge in gameplay code, where tight loops run thousands of times per frame.
+
+Unlike other arithmetic, division has a fatal edge case: division by zero. This doesn't just produce a weird number, it causes a panic that crashes the program.
+
+The remainder operation (`%`) is just as slow as division because it is fundamentally part of the same calculation (basically a sdiv with a msub)
+
+### Division loses information
+
+Unlike multiplication, which preserves all bits of its result until overflow, division is destructive.
+
+Integer division truncates (rounds toward zero) and throws away the remainder.
+
+That means division isn't just slower --- it's also less predictable. The cost and the result are both things you should be aware of when you write gameplay code.
+
+### When do you actually need division?
+
+In practice, most gameplay uses of division/modulo fall into just a handful of patterns that have faster and clearer alternatives:
+
+- **Wrap-around counters** (animation frames, cycling lists) -> use an `if` with a reset.
+
+- **Odd/even checks** -> use bitwise AND (`i & 1`).
+
+- Indexing with power-of-two sizes -> use a mask (`i & (size-1)`).
+
+- **Scaling by constants** -> use multiplication by a reciprocal (often precomputed as fixed-point).
+
+For the rare cases where you really need "true division," Swamp requires an explicit `.div()` intrinsic. That way, you know you're paying the cost, and you can consciously keep it out of inner loops.
+
 ## Comment with purpose
 
 > Comments explain _why_, code shows _how_.
