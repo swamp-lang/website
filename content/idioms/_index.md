@@ -47,7 +47,7 @@ direction = match input {
 }
 ```
 
-{% note(type="principle") %} One assignment tells the whole story — mutation muddies it. {% end %}
+{% note(type="principle") %} One assignment tells the whole story --- mutation muddies it. {% end %}
 
 ## ZII - Zero Is Initialization
 
@@ -197,7 +197,8 @@ Functions with many parameters are harder to use correctly. Research suggests de
 **Avoid:**
 
 ```swamp
-fn draw_avatar(x: Int, y: Int, rotation: Float, scale: Float, opacity: Float, avatar: Avatar) {
+fn draw_avatar(x: Int, y: Int, rotation: Float, scale: Float,
+    opacity: Float, avatar: Avatar) {
     ...
 }
 
@@ -261,7 +262,8 @@ If the struct grouping is not used in many places, use an anonymous struct:
 
 ```swamp
 struct Avatar {
-    target_info: { unit: Unit, distance: Int }, // This is only used for the avatar target info
+    // This is only used for the avatar target info
+    target_info: { unit: Unit, distance: Int },
     speed: Int,
 }
 ```
@@ -280,8 +282,11 @@ Inline code is easier to refactor. You don't have to update function signatures 
 
 ```swamp
 fn draw_main_menu() {
-    draw_new_game_button() // new_game_button will only be called from here
-    draw_quit_game_button() // quit_game_button will only be called from here
+    // new_game_button will only be called from here
+    draw_new_game_button()
+
+    // quit_game_button will only be called from here
+    draw_quit_game_button()
 }
 ```
 
@@ -371,7 +376,7 @@ Use identifiers, enums, or numeric handles instead. Strings should only appear *
 
 - **Flexibility**: separating data from presentation is a good general rule anyway, and makes localization and content changes easy.
 
-{% note(type="principle") %} Strings belong at the edge of your game —-- for the player, not the game code. Inside the game, keep information structured.
+{% note(type="principle") %} Strings belong at the edge of your game --- for the player, not the game code. Inside the game, keep information structured.
 {% end %}
 
 **Wrong:**
@@ -812,41 +817,21 @@ fn integrate_positions(
 }
 ```
 
-## No Recursion
+## Mind the Stack
 
-**What Is Recursion?**
+Stack space is small and precious.
 
-Recursion is when a function calls itself as part of its own definition.
-Each call pushes a new frame on the stack, and the function won't finish until all recursive calls return.
+Swamp stacks are deliberately small for speed and predictability. That means you must budget your stack use carefully:
 
-A classic example is computing factorial:
+- Keep call depth flat -> avoid long chains of function calls. Inline or restructure when practical.
 
-```swamp
-fn factorial(n: Int) -> Int {
-    if n == 0 {
-        1
-    } else {
-        n * factorial(n - 1) // the function calls itself
-    }
-}
-```
+- Watch local sizes -> large structs and fixed-capacity collections can exhaust stack space quickly.
 
-**Why avoid it?**
+- Keep bulk storage out of the stack -> store big collections as part of your game state, not as temporary locals.
 
-On both retro and modern CPUs, a function call is expensive:
+- Think capacity, not just type -> a collection with capacity 256 is heavy even if it's empty at runtime.
 
-- Arguments must be shuffled into ABI registers. With nested calls, intermediate results usually can't go straight into the right registers; they're stored in temporaries first, then moved again for the next call.
-
-- Callee-saved registers may need to be spilled and restored.
-
-- The link register is saved and restored.
-
-- The CPU pipeline must branch out and back.
-
-With recursion, you pay this overhead again for every level, and most recursive functions are small --- meaning the call overhead dominates the actual work.
-
-On top of that, each recursive call consumes additional stack memory.
-Swamp stacks are by design deliberately small --- for both speed and predictability. This guarantees bounded memory use and keeps stack data hot in cache. But it also means deep or unbounded recursion can overflow the stack quickly. The only workaround is to reserve a very large stack up front — which wastes memory and hurts cache performance.
+The goal is to make stack usage bounded, predictable, and cache-friendly. Every function should run safely within Swamp's intentionally small stack size.
 
 ## Comment with purpose
 
@@ -975,7 +960,7 @@ The tag format is `TAG(optional-info)[optional-category]: message`:
 ```swamp
 // FIXME: when more than 64 units are spawned it panics
 // FIXME(#612)[correctness]: `ZII` violated - zero `SpellId` triggers effect
-// FIXME(@piot,2025-09-12)[safety]: negative health possible after multi-hit; assert pre/post
+// FIXME(@piot,2025-09-12)[safety]: negative health possible after multi-hit
 ```
 
 ### Package Doc Comments
@@ -1002,8 +987,6 @@ The tag format is `TAG(optional-info)[optional-category]: message`:
 - Functions should be meaningful -> function calls are expensive; avoid tiny single-use helpers. Use scopes for structure, and keep functions for reusable, **non-trivial** work. (functions should often be larger than you might be used to)
 
 - Associated functions -> put behavior with the type it belongs to.
-
-- No recursion -> use loops, or manage your own stack/queue explicitly; Swamp stacks are small by design and function calls are costly.
 
 - No defensive coding -> fail fast with asserts instead of silently fixing bad state.
 
@@ -1055,6 +1038,74 @@ This guarantees determinism across platforms and avoids the cost and inconsisten
 #### Single-Threaded
 
 This guarantees deterministic execution order. Threads may be used for background I/O or asset loading at the host (engine) level, but game code runs on a single tick loop.
+
+#### Single-Pass, Acyclic Modules --- No Recursion by Design
+
+Swamp modules are evaluated top-to-bottom in a single pass, and the module graph is acyclic (no cyclic dependencies). A function can only call symbols defined above it or in earlier modules.
+
+What this means
+
+- No self-calls / no forward calls: a function can't call itself inside its own body (it isn't defined yet), and it can't call functions defined below.
+
+- No mutual recursion: with an acyclic module graph, A -> B and B -> A can't both hold.
+
+- Together, the call graph is a DAG --- recursion isn't expressible. Use loops (or explicit stacks/queues) instead.
+
+Why this is good (beyond speed)
+
+- Predictable initialization order: definitions flow one way; no "who runs first?" puzzles.
+
+- Improved code organization: modules naturally layer from low-level -> high-level; no spaghetti cycles.
+
+- Simpler tooling: single pass resolution makes builds and analysis more straightforward.
+
+- Determinism by default: no hidden call cycles; easier to reason about cost and control flow.
+
+#### What Is Recursion?
+
+Recursion is when a function calls itself as part of its own definition.
+Each call pushes a new frame on the stack, and the function won't finish until all recursive calls return.
+
+A classic example is computing factorial:
+
+```swamp
+fn factorial(n: Int) -> Int {
+    if n == 0 {
+        1
+    } else {
+        n * factorial(n - 1) // the function calls itself
+    }
+}
+```
+
+#### Why avoid it?
+
+On both retro and modern CPUs, a function call is expensive:
+
+- Arguments must be shuffled into ABI registers. With nested calls, intermediate results usually can't go straight into the right registers; they're stored in temporaries first, then moved again for the next call.
+
+- Callee-saved registers may need to be spilled and restored.
+
+- The link register is saved and restored.
+
+- The CPU pipeline must branch out and back.
+
+With recursion, you pay this overhead again for every level, and most recursive functions are small --- meaning the call overhead dominates the actual work.
+
+On top of that, each recursive call consumes additional stack memory.
+Swamp stacks are by design deliberately small --- for both speed and predictability. This guarantees bounded memory use and keeps stack data hot in cache. But it also means deep or unbounded recursion can overflow the stack quickly. The only workaround is to reserve a very large stack up front --- which wastes memory and hurts cache performance.
+
+#### Why Swamp Disallows Function Pointers
+
+First-class function pointers (or arbitrary indirect calls) would re-open doors Swamp deliberately keeps shut:
+
+- They can reintroduce recursion indirectly (cycles through tables/dispatch).
+
+- They hide call targets, blocking inlining and making call cost unpredictable.
+
+- They complicate determinism, profiling, and cache behavior (unpredictable I-cache, worse branch prediction).
+
+Swamp keeps call targets **static and visible** so the compiler (and you) can reason about cost, layout, and determinism. If indirection is ever needed, prefer explicit enums + match or tables of data, not tables of code.
 
 [ZII]:
   https://youtu.be/lzdKgeovBN0?t=1744
