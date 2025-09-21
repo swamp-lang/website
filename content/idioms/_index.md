@@ -49,10 +49,9 @@ direction = match input {
 
 {% note(type="principle") %} One assignment tells the whole story — mutation muddies it. {% end %}
 
-## ZII = Zero Is Initialization
+## ZII - Zero Is Initialization
 
 > Zero should always be safe. Zero means nothing, and nothing is safe.
-
 
 Embrace zero and [ZII]. The value `0`, `none`, or the _first_ variant of an enum (discriminant is zero for the first) should always be safe and well-defined.
 This makes it easy to check for "empty" or "non-existent" without introducing optional types.
@@ -108,16 +107,22 @@ The first variant of an enum is always the zero value --- and it should always b
 ```swamp
 enum Action {
     Idle,
-    DrinkingPotion,
+    DrinkPotion,
 }
 
 fn avatar_do_action(avatar: Avatar, action: Action) {
     match action {
         Idle -> {} // nothing "unsafe" happens
-        DrinkingPotion -> avatar.health += 100,
+        DrinkPotion -> avatar.health += 100,
     }
 }
 ```
+
+### IDs and ZII
+
+When using `0` to mean "not found" or "empty," make sure your ID generators never produce **0**.
+Always start IDs at `1` and count upward.
+This keeps the zero value reserved as the safe default.
 
 ### When Zero Can't Mean "Nothing"
 
@@ -125,7 +130,7 @@ Sometimes zero is a valid value: coordinates, vectors, matrices, and other numer
 
 For these types, use an optional (`T?`) instead.
 
-## Rest `..` Operator
+## Rest Operator
 
 > Fill in what matters, zero the rest.
 
@@ -227,7 +232,7 @@ draw_avatar(DrawParams {
 }, Avatar {..})
 ```
 
-## Use Anonymous Structs for Rare Cases
+## Anonymous Structs for Rare Cases
 
 > Don't name what you only use once.
 
@@ -261,7 +266,7 @@ struct Avatar {
 }
 ```
 
-## Scopes or `with` Blocks Over Single-Use Functions
+## No Single-Use Functions
 
 > Functions are for reuse. Scopes are for structure (and speed).
 
@@ -316,7 +321,7 @@ fn draw_main_menu() {
 }
 ```
 
-Note: Another upside with scopes is that variables defined in the scope are not taking up registers outside the scope. The variable name can therefor be reused in other scopes.
+Note: Another upside with scopes is that variables defined in the scope are not taking up registers outside the scope. The variable name can therefore be reused in other scopes.
 
 ## Associated Functions
 
@@ -683,6 +688,29 @@ fn classify(a: Int, b: Int) -> Int {
 }
 ```
 
+## Branch Ordering
+
+> Branches are not equal --- put the common one first.
+
+A **hot branch** is the case that happens most often at runtime.
+A **cold branch** is rare --- the fallback, error, or unusual case.
+
+Write the hot branch first in an `if`, `match`, or guard (`|`).
+Put the uncommon cases later, and the default (`else`, `_`) last.
+This makes the code read naturally --- **common** -> **less common** -> **rare** -> **default** --- and helps both the compiler and the CPU keep the hot path fast.
+
+It also helps future readers, since the most common path becomes immediately clear.
+
+```swamp
+fn classify(a: Int, b: Int) -> Int {
+    | a > 3          -> 4     // hot
+    | b < 9 && a > 4 -> 99
+    | _              -> 0     // cold
+}
+```
+
+The same principle applies to if/else chains and match arms: put the common case first, the default last.
+
 ## Use power-of-two sizes
 
 Whenever possible, design data structures and sizes to be a power of two:
@@ -749,6 +777,76 @@ In practice, most gameplay uses of division/modulo fall into just a handful of p
 - **Scaling by constants** -> use multiplication by a reciprocal (often precomputed as fixed-point).
 
 For the rare cases where you really need "true division," Swamp requires an explicit `.div()` intrinsic. That way, you know you're paying the cost, and you can consciously keep it out of inner loops.
+
+## SoA Future-Proofing
+
+Swamp will support SoA natively in the future, but you can design today so you benefit now. The idea: keep your high-level game state ergonomic (AoS), but process performance-critical paths over parallel slices (SoA shape).
+
+### When to use SoA
+
+- You operate on **many elements per frame**.
+
+- The loop is hot (runs every tick) and does the **same operation** across elements.
+
+- You only need a **subset of fields** (e.g., position/velocity), not full structs.
+
+- Memory access should be sequential and predictable (good for caches).
+
+```swamp
+
+const TIME_PER_TICK: Int = 1 << 16 // 1.0
+
+// caller fans out of AoS, in the future there will be real SoA buffers.
+fn integrate_positions(
+    position_xs: [Int],
+    position_ys: [Int],
+    velocity_xs: [Int],
+    velocity_ys: [Int],
+) {
+    n = position_xs.len
+    // assert(len equality across slices)
+    for i in 0..n {
+        position_xs[i] += (velocity_xs[i] * TIME_PER_TICK) >> 16
+        position_ys[i] += (velocity_ys[i] * TIME_PER_TICK) >> 16
+    }
+}
+```
+
+## No Recursion
+
+**What Is Recursion?**
+
+Recursion is when a function calls itself as part of its own definition.
+Each call pushes a new frame on the stack, and the function won't finish until all recursive calls return.
+
+A classic example is computing factorial:
+
+```swamp
+fn factorial(n: Int) -> Int {
+    if n == 0 {
+        1
+    } else {
+        n * factorial(n - 1) // the function calls itself
+    }
+}
+```
+
+**Why avoid it?**
+
+On both retro and modern CPUs, a function call is expensive:
+
+- Arguments must be shuffled into ABI registers. With nested calls, intermediate results usually can't go straight into the right registers; they're stored in temporaries first, then moved again for the next call.
+
+- Callee-saved registers may need to be spilled and restored.
+
+- The link register is saved and restored.
+
+- The CPU pipeline must branch out and back.
+
+With recursion, you pay this overhead again for every level, and most recursive functions are small --- meaning the call overhead dominates the actual work.
+
+On top of that, each recursive call consumes additional stack memory.
+Swamp stacks are by design deliberately small --- for both speed and predictability. This guarantees bounded memory use and keeps stack data hot in cache. But it also means deep or unbounded recursion can overflow the stack quickly. The only workaround is to reserve a very large stack up front — which wastes memory and hurts cache performance.
 
 ## Comment with purpose
 
@@ -888,6 +986,75 @@ The tag format is `TAG(optional-info)[optional-category]: message`:
 ```
 
 ---
+
+## TL;DR --- The Swamp Way
+
+### Bullet points
+
+- Single assignment -> prefer expressions (`if`, `match`, guards `|`) over mutation.
+
+- ZII (Zero Is Initialization) -> zero means "nothing" and is always safe; reserve `0` for empty/none, start IDs at `1`.
+
+- Rest operator (`..`) -> fill only what matters, zero the rest.
+
+- Max four parameters -> group extra arguments into a struct.
+
+- Functions should be meaningful -> function calls are expensive; avoid tiny single-use helpers. Use scopes for structure, and keep functions for reusable, **non-trivial** work. (functions should often be larger than you might be used to)
+
+- Associated functions -> put behavior with the type it belongs to.
+
+- No recursion -> use loops, or manage your own stack/queue explicitly; Swamp stacks are small by design and function calls are costly.
+
+- No defensive coding -> fail fast with asserts instead of silently fixing bad state.
+
+- Compile time over runtime -> bake in constants; runtime is for unknowns.
+
+- Code is data -> bake known data as constants instead of loading at runtime.
+
+- Return values instead of mutating parameters -> builders should build, not patch.
+
+- No strings in game code -> use enums, IDs, or numbers; use strings only at the **very last edges** (UI, logging).
+
+- Type inference -> infer the obvious; only very rarely annotate when it clarifies intent.
+
+- Tuples for small, obvious groups -> otherwise use a struct with names.
+
+- Guards `|` over if-else ladders -> flat, top-to-bottom logic with a clear default.
+
+- Branch ordering -> put the common case first, default last.
+
+- Use power-of-two sizes -> enables masks and shifts instead of modulo.
+
+- Avoid division -> use masks, shifts, or reciprocal multiply; keep `.div()`/`.rem()` out of hot loops.
+
+- SoA in hot loops -> for large, uniform per-frame work, process parallel slices; keep AoS at the edges.
+
+- Comment with purpose -> explain why, not what.
+
+### Solved by the Design of Swamp
+
+Some performance pitfalls are so common that Swamp eliminates them entirely by design.
+You don't need to work around these issues --- the language guarantees they can't happen.
+
+#### Natural Alignment
+
+All fields are naturally aligned. Packed or misaligned layouts are not allowed.
+You always get fast, single-instruction loads/stores.
+
+#### Fixed Capacity
+
+All collections in Swamp are fixed capacity.
+There are no hidden allocations, no reallocation churn, and no unpredictable memory growth in the middle of a frame.
+You allocate once up front, then reuse forever.
+
+#### No Floats
+
+Swamp uses fixed-point type and arithmetic only.
+This guarantees determinism across platforms and avoids the cost and inconsistency of floating-point math (especially on older ARM CPUs without hardware FPU).
+
+#### Single-Threaded
+
+This guarantees deterministic execution order. Threads may be used for background I/O or asset loading at the host (engine) level, but game code runs on a single tick loop.
 
 [ZII]:
   https://youtu.be/lzdKgeovBN0?t=1744

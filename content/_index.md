@@ -4,8 +4,6 @@ description = "Official documentation for the Swamp programming language"
 sort_by = "weight"
 +++
 
-# Welcome to Swamp
-
 **Swamp** is a modern programming language designed for seamless embedding and rapid development cycles.
 
 ## Key Features
