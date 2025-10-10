@@ -138,7 +138,7 @@ When creating struct literals, the `..` operator automatically sets all unspecif
 
 Instead of manually filling in every field, you can focus only on the values that matter --- the rest are guaranteed safe because zero is safe.
 
-If a the type being constructed has a `default()` associated member function, that will be used, if not if a field that is initialized has a `default()` member function, that will be used for each field initialized.
+If the type being constructed has a `default()` associated function, it's used for unspecified fields; otherwise each unspecified field falls back to its own `default()` if present; if neither applies, the unspecified field is zero-initialized.
 
 Avoid (explicit zeroes):
 
@@ -242,18 +242,18 @@ If a group of fields is only used in one or a few places, there's no need to def
 Anonymous structs are perfect for bundling values together for a single call site or a temporary grouping.
 
 ```swamp
-fn draw_special_button(special_params: {
+fn draw_special_button( special_params: {
     width: Int,
     color: Color,
     tab_count: Int,
-} )
+} ) { ... }
 
 
 draw_special_button( {
     width: 10,
     color: Color::new(1.0, 0.8, 0.8),
     tab_count: 1,
-} )
+} ) { ... }
 ```
 
 ### Use in sub structs inside a struct
@@ -598,7 +598,7 @@ Optionals and other cases where a value has multiple meanings may need explicit 
 maybe_score: Int? = 0
 ```
 
-Here, zero is wrapped in `Some`, making the type explicit.
+Here, `0` is lifted into `Some(0)`, by the `Int?` annotation.
 
 {% note(type="principle") %} Infer the obvious, state the meaningful. {% end %}
 
@@ -693,6 +693,8 @@ fn classify(a: Int, b: Int) -> Int {
 }
 ```
 
+Only the first matching guard runs.
+
 ## Branch Ordering
 
 > Branches are not equal --- put the common one first.
@@ -753,7 +755,7 @@ Whenever possible, design data structures and sizes to be a power of two:
 
 ## Rarely use division
 
-This might seem like a strange suggestion, but surprisingly division is still one of the slowest basic operations in a CPU. On modern x86, a multiplication may take ~3 cycles, while a division can be 20–30 cycles (7-10x slower). On M1 the ballpark for multiplication is 3 cycles, and integer division is 9-14 cycles (about 3x slower). On retro CPUs like the GBA's ARM7TDMI, integer division has no hardware instruction at all and must be emulated in software --- which means about **50–100x slower** than a multiply.
+This might seem like a strange suggestion, but surprisingly division is still one of the slowest basic operations in a CPU. On modern **x86**, a multiplication may take ~3 cycles, while a division can be 20–30 cycles (**7-10x slower**). On **M1** the ballpark for multiplication is 3 cycles, and integer division is 9-14 cycles (about **3x slower**). On retro CPUs like the GBA's ARM7TDMI, integer division has no hardware instruction at all and must be emulated in software --- which means about **50–100x slower** than a multiply.
 
 That difference is huge in gameplay code, where tight loops run thousands of times per frame.
 
@@ -1106,6 +1108,10 @@ First-class function pointers (or arbitrary indirect calls) would re-open doors 
 - They complicate determinism, profiling, and cache behavior (unpredictable I-cache, worse branch prediction).
 
 Swamp keeps call targets **static and visible** so the compiler (and you) can reason about cost, layout, and determinism. If indirection is ever needed, prefer explicit enums + match or tables of data, not tables of code.
+
+#### No Global Mutable State
+
+Swamp provides constants only; there is no global mutable memory in language code. This guarantees determinism and eliminates hidden aliasing.
 
 [ZII]:
   https://youtu.be/lzdKgeovBN0?t=1744
