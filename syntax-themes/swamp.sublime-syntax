@@ -29,7 +29,7 @@ contexts:
       scope: keyword.control
       push: match_expression
 
-    - match: '\b(struct|enum|trait|impl|type|external|fn)\b'
+    - match: '\b(struct|bits|enum|trait|impl|type|external|fn)\b'
       scope: keyword.declaration
 
     - match: '\bmut\b'
@@ -51,7 +51,7 @@ contexts:
       scope: constant.language.none, support.constant
 
     # Types
-    - match: '\b(Int|Float|String|Bool)\b'
+    - match: '\b(Int|Float|String|Bool|U1|U2|U3|U4|U5|U6|U7|U8|U16|U32)\b'
       scope: support.type.primitive
 
     # Enum instantiation
