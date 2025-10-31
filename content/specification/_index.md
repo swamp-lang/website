@@ -1174,6 +1174,80 @@ use another_package::some_module::{ThatType, OtherType} // you only need to writ
 use second_package::module_name // you don't need to write `second_package::`
 ```
 
+### Bits
+
+
+```swamp
+bits Something {
+    is_attacking: Bool, // 1 bit
+    small_id: U4, // 0-15 can be here
+    is_flying: U1,
+}
+```
+
+| bits         | field |
+| ---------    | --------
+| `00000001`   | is_attacking 
+| `00011110`   | small_id
+| `00100000`   | is_flying
+
+
+### Example 
+
+```swamp
+mut a = Something { small_id = 3 }
+// a = 0b00000110
+a.is_flying = 1
+// a = a | 0b00100000
+```
+
+
+// bitwise OR
+
+```
+00000110 
+00010000
+--------
+00010110 // is_flying and small_id == 3
+```
+
+```swamp
+if a.is_flying {  // if (a & 0b00100000) != 0 {
+
+}
+```
+
+```swamp
+found_id: Int = a.small_id // (a & 0b00000110) >> 1
+found_id = a.small_id.int() // (a & 0b00000110) >> 1
+```
+
+
+```swamp
+fn needs_small_id(id: U4) {
+
+}
+
+needs_small_id(a.found_id)
+
+```
+
+### Example
+
+```swamp
+
+mut a = Something { small_id: 4 } // All are zeroed
+
+a.is_flying = 1 // can use false/true as well?
+a.is_attacking = true
+a.small_id = 14
+
+b: Something = 0b001
+
+
+```
+
+
 ## Type Inference
 
 **Swamp** automatically determines types from context, so you rarely need to write them explicitly.
