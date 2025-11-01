@@ -22,7 +22,7 @@ contexts:
 
 
     # Keywords
-    - match: '\b(if|else|for|in|while|return|break|continue|match|use|mod|with|when)\b'
+    - match: '\b(if|else|for|in|while|return|break|continue|match|use|mod|with|when|embed)\b'
       scope: keyword.control
 
     - match: '\b(match)\b'

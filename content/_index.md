@@ -4,31 +4,29 @@ description = "Official documentation for the Swamp programming language"
 sort_by = "weight"
 +++
 
-**Swamp** is a modern programming language designed for seamless embedding and rapid development cycles.
+**Swamp** is a compact, deterministic systems language for **games and real-time servers**.
 
-## Key Features
+It uses short, clear syntax, explicit memory with **compile-time allocation**, and fully predictable execution.
 
-- Strong static typing with type inference
-- First-class functions and closures
-- Advanced pattern matching
-- Algebraic data types (Enums and Structs)
-- Built-in string interpolation
-- Clear and consistent syntax
-- Module system with explicit imports
+Swamp code compiles to **Marsh VM** bytecode and, in the future, directly to **native machine code**.
 
-## Key Goals
+## Key ideas
 
-- **Type Safety**: Ensure robust and error-free code through strong static typing and basic type inference.
+- **Explicit control.** Nothing is hidden --- memory, lifetimes, and layout are defined by the code, not by a runtime.
 
-- **Embeddable**: Easily embed Swamp into existing applications, such as game engines.
+- **Compile-time allocation.** All memory sizes are fixed at build time, giving total predictability and eliminating runtime allocation and fragmentation.
 
-- **Hot Reloading**: Support rapid development cycles with an interpreter and bytecode executor, allowing for real-time code updates and testing.
+- **Strong static typing.** No garbage collection --- safety through structure and compile-time validation, ensuring consistent behavior and memory integrity.
 
-- **Rust-like syntax**: Maintain a syntax similar to Rust, facilitating easy context switching between Rust and Swamp for developers familiar with both languages.
+- **Scoped borrowing.** Simple, explicit ownership rules for safe, compile-time memory management.
 
-- **Transpilation to Rust**: Enable straightforward transpilation to Rust code, allowing Swamp to be compiled alongside Rust for performance-critical applications.
+- **Zero-cost data types.** Built-in aggregates such as enums with payloads, optionals, and collections like `Sparse<T; N>` or `Map<T; N>` map directly to memory layouts with no runtime overhead.
 
-- **Future Native Compilation**: Explore the potential to develop a frontend for [CraneLift](https://cranelift.dev), enabling Swamp to compile directly to native code and WebAssembly for broader platform support.
+- **Deterministic by design.** Every instruction and branch is reproducible — ideal for lockstep, rollback, and replay-based systems.
+
+- **Hot reloading.** Designed for fast iteration --- Swamp compiles quickly to compact **Marsh VM** opcodes that can be reloaded in-place without losing state, enabling rapid gameplay and logic experimentation.
+
+- **Compact syntax.** Minimal, explicit, and readable at the instruction level.
 
 ## Quick Examples
 
