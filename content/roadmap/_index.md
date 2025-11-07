@@ -12,6 +12,44 @@ toc = true
 - Shared memory pools (maybe?)
 - SoA support
 
+## Resource IDs
+
+- Resource Ids. `@8fad1938` or `path/something/else` that looks up the id during compile time.
+- When working in a bigger team, those ids can be randomly generated if needed.
+
+## Named function arguments
+
+Be able to specify function arguments by name. Evaluation order: for ordered arguments it is left to right, but for named arguments I guess it is also left to right?
+
+```swamp
+fn my_function(health: Int, damage: Int, modifier: Int) {}
+
+my_function(health: 10, modifier: 10, damage: 5) //don't need to remember the order
+my_function(10, 5, 10) //if not using the field names, need to be correct order
+```
+
+Suggested by @catnipped
+
+## ZII arguments
+
+can use rest `..` operator in function arguments, both for named and normal arguments
+
+```swamp
+my_function(health: 10 ..)
+```
+
+```swamp
+my_function(10, ..)
+```
+
+will be desugared into zero for each argument:
+
+```swamp
+my_function(health: 10, modifier: 0, damage: 0)
+```
+
+Suggested by @catnipped
+
 ## Implicit projection (Desugar Embedded) Types
 
 you don't have to type the name of the contained types, when it can be inferred from the type. There is no overhead at all:
@@ -66,8 +104,8 @@ As long as the referenced data is laid out contiguously, locality stays good and
 ```swamp
 
 struct Monster {
-    attack_position: &Position, // Pointer to a position. can only be set if compiler can verify that it is secure
-    target_position: &Position, // Pointer to a position. can only be set if compiler can verify that it is secure
+    attack_position: &Position, // inserts lookup information (id) to a position. can only be set if compiler can verify that it is secure
+    target_position: &Position, // inserts lookup information (id). can only be set if compiler can verify that it is secure
 }
 
 struct World {

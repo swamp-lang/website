@@ -140,6 +140,9 @@ Instead of manually filling in every field, you can focus only on the values tha
 
 If the type being constructed has a `default()` associated function, it's used for unspecified fields; otherwise each unspecified field falls back to its own `default()` if present; if neither applies, the unspecified field is zero-initialized.
 
+todo: new sentence:
+If struct has `default()`, use it first; else each field’s `default()`; else zero-init.
+
 Avoid (explicit zeroes):
 
 ```swamp
@@ -356,6 +359,9 @@ impl Avatar {
         self.base_range + self.boosted_range
     }
 }
+
+range = avatar.target_range()
+
 ```
 
 ## No Strings
@@ -532,7 +538,7 @@ fn update_physics() {
 **Prefer (compile-time constant):**
 
 ```swamp
-const GRAVITY_PER_TICK = 9 * 1000 / 60 // this will only be calculated _once_ when the game starts up.
+const GRAVITY_PER_TICK = 9 * 1000 / 60 // computed once at load time
 
 fn update_physics() {
     velocity += GRAVITY_PER_TICK
@@ -834,6 +840,8 @@ Swamp stacks are deliberately small for speed and predictability. That means you
 - Think capacity, not just type -> a collection with capacity 256 is heavy even if it's empty at runtime.
 
 The goal is to make stack usage bounded, predictable, and cache-friendly. Every function should run safely within Swamp's intentionally small stack size.
+
+Large scratch buffers belong in arena/state, not the stack.
 
 ## Comment with purpose
 
