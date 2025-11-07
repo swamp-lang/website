@@ -11,7 +11,7 @@ Comments help you explain your code. **Swamp** has three types: regular line com
 
 ```swamp
 // Regular line comments - for implementation notes
-player_health = 100      // Start health value
+player_health := 100      // Start health value
 
 /* Block comments - for longer explanations
    that span multiple lines and can contain
@@ -41,7 +41,7 @@ struct Player {
 Defining a variable in Swamp is simple:
 
 ```swamp
-player_name = "Hero"
+player_name := "Hero"
 ```
 
 You don't need to declare type, it is implied.
@@ -50,9 +50,9 @@ Use `snake_case`[^snakecase] for variable names.
 When you create a variable, it's immutable by default. This means once you set its value, it can't be changed. If you need to change it later, mark it as mutable with `mut` as you declare it.
 
 ```swamp
-player_name = "Hero"    // Immutable - cannot be changed
-mut health = 100        // Mutable - can be reassigned
-health = 101
+player_name := "Hero"    // Immutable - cannot be changed
+mut health := 100        // Mutable - can be reassigned
+health := 101
 ```
 
 ### Variable Reassignment
@@ -61,7 +61,7 @@ Only mutable variables can be given new values. This helps prevent accidental ch
 
 ```swamp
 // Mutable variables can be reassigned
-mut score = 0
+mut score := 0
 score = score + 100
 score = score * 2
 ```
@@ -73,14 +73,14 @@ When the scope ends, the variable is automatically cleaned up.
 
 ```swamp
 {
-    power_up = spawn_powerup()    // Power-up exists in this scope
+    power_up := spawn_powerup()    // Power-up exists in this scope
     if player.collides_with(power_up) {
-        mut bonus = 100
+        mut bonus := 100
         bonus *= 2  // Local multiplication
         player.score += bonus
         {
             {
-                mut new bonus cool thing = power_up
+                mut new bonus cool thing := power_up
             }
         }
     }
@@ -152,8 +152,8 @@ fn apply_damage(mut target: Entity, damage: Int) {
 
 // Immutable parameter example
 fn calculate_squared_distance(player: Point, target: Point) -> Float {
-    dx = target.x - player.x
-    dy = target.y - player.y
+    dx := target.x - player.x
+    dy := target.y - player.y
     (dx * dx + dy * dy)
 }
 ```
@@ -178,15 +178,15 @@ impl Player {
 
     /// Calculates distance to target
     fn squared_distance_to(self, target: Point) -> Float {
-        dx = target.x - self.position.x
-        dy = target.y - self.position.y
+        dx := target.x - self.position.x
+        dy := target.y - self.position.y
         dx * dx + dy * dy
     }
 }
 
 // Usage:
 player.take_damage(10)
-distance = player.distance_to(enemy.position)
+distance := player.distance_to(enemy.position)
 ```
 
 #### Associated Function Calls
@@ -206,7 +206,7 @@ impl Weapon {
     }
 }
 
-sword = Weapon::create_sword()
+sword := Weapon::create_sword()
 ```
 
 #### Standalone Functions
@@ -227,7 +227,7 @@ fn log(message: String) {
 ### Integers
 
 ```swamp
-health = 100
+health := 100
 ```
 
 #### Integer Operations
@@ -251,7 +251,7 @@ health = 100
 Floats are always written with one decimal, to keep them apart from Ints.
 
 ```swamp
-speed = 5.5
+speed := 5.5
 ```
 
 #### Float Operations
@@ -273,7 +273,7 @@ speed = 5.5
 ### Booleans
 
 ```swamp
-is_jumping = true
+is_jumping := true
 ```
 
 A Boolean can only have two different values,  `true` or `false`.
@@ -287,19 +287,19 @@ A Boolean can only have two different values,  `true` or `false`.
 ### Strings
 
 ```swamp
-player_name = "Hero"
+player_name := "Hero"
 ```
 
 Strings are written in quotation marks `""`. If you need to use quotation marks within the string, you can use backslashes like this `\"`.
 
 ```swamp
-dialog = "Guard: \"Stop right there!\""
+dialog := "Guard: \"Stop right there!\""
 ```
 
 #### String Access
 
 ```swamp
-player_name = "Hero"
+player_name := "Hero"
 player_name[1..3] // returns "er"
 player_name[1..=3] // returns "ero"
 ```
@@ -307,7 +307,7 @@ player_name[1..=3] // returns "ero"
 #### String Assignment
 
 ```swamp
-mut player_name = "Hero"
+mut player_name := "Hero"
 player_name[0..2] = "Ze"
 player_name[0..=1] = "Ze"
 ```
@@ -333,15 +333,15 @@ String interpolation lets you embed values and expressions directly in your text
 
 ```swamp
 // Basic interpolation
-name = "Hero"
-message = 'Welcome, {name}!'
+name := "Hero"
+message := 'Welcome, {name}!'
 ```
 
 Anything within the curly brackets will be handled like regular code: you can include simple variables, complex expressions, and even format them with special modifiers for precise control over how they appear.
 
 ```swamp
 // Expression interpolation
-status = 'HP: {health * 100 / max_health}'
+status := 'HP: {health * 100 / max_health}'
 ```
 
 ##### String Interpolation Formatting
@@ -356,18 +356,18 @@ You can specify how the interpolation formats itself using by adding `:` after a
 
 ```swamp
 // Format specifiers
-number = 255
-hex_lower = 'Item ID: {number:x}'        // "Item ID: ff"
-hex_upper = 'Item ID: {number:X}'        // "Item ID: FF"
-binary = 'Flags: {number:b}'             // "Flags: 11111111"
+number := 255
+hex_lower := 'Item ID: {number:x}'        // "Item ID: ff"
+hex_upper := 'Item ID: {number:X}'        // "Item ID: FF"
+binary := 'Flags: {number:b}'             // "Flags: 11111111"
 
 // Floating point precision
-pi = 3.1415
-coords = 'Position: {pi:.2f}'            // "Position: 3.14"
+pi := 3.1415
+coords := 'Position: {pi:.2f}'            // "Position: 3.14"
 
 // String padding
-score = 12
-padded_score = 'Score: {score:.5s}'      // "Score: 00012"
+score := 12
+padded_score := 'Score: {score:.5s}'      // "Score: 00012"
 ```
 
 ## Composite Types
@@ -395,7 +395,7 @@ When declaring a list as a parameter, add square brackets `[]` surrounding the T
 
 ```swamp
 // Initialize positions
-spawn_points = [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 }, Point { x: -10, y: 5 } ]
+spawn_points := [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 }, Point { x: -10, y: 5 } ]
 ```
 
 {% note(type="nerdy") %}
@@ -405,8 +405,8 @@ Internally they are converted from a [initializer_list](/internal/#initializer-l
 #### Vec Access
 
 ```swamp
-waypoints = [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 } ]
-next_pos = waypoints[1]
+waypoints := [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 } ]
+next_pos := waypoints[1]
 
 waypoints[0..2] // returns first two items
 waypoints[0..=1] // also returns the first two items
@@ -415,7 +415,7 @@ waypoints[0..=1] // also returns the first two items
 #### Vec Assignment
 
 ```swamp
-mut high_scores = [ 100, 95, 90, 85, 80 ]
+mut high_scores := [ 100, 95, 90, 85, 80 ]
 high_scores[0] = 105
 high_scores[0..2] = [32, 44]
 ```
@@ -443,7 +443,7 @@ enum SpawnPoint {
 }
 
 // Spawn points for different level names
-spawn_points = [
+spawn_points := [
     SpawnPoint::StartingLevel : Point { x: 0, y: 0 },
     SpawnPoint::SecondLevel : Point { x: 100, y: 50 },
     SpawnPoint::SecretArea : Point { x: -50, y: 75 },
@@ -455,7 +455,7 @@ Remember that each following Key/Value pair must have the same types as the last
 An empty Map is specified as:
 
 ```swamp
-empty_map = [:]
+empty_map := [:]
 ```
 
 {% note(type="nerdy") %}
@@ -465,21 +465,21 @@ Internally they are converted from a [initializer pair-list](/internal/#initiali
 #### Map Access
 
 ```swamp
-spawn_points = [
+spawn_points := [
     SpawnPoint::StartingLevel : Point { x: 0, y: 0 },
     SpawnPoint::SecretArea : Point { x: 100, y: 50 },
 ]
 
-start_pos = spawn_points[StartingLevel]     // Get starting position
+start_pos := spawn_points[StartingLevel]     // Get starting position
 ```
 
 #### Map Assignment
 
 ```swamp
-mut spawn_points = [ SpawnPoint::StartingLevel: Point { x: 0, y: 0 } ]
+mut spawn_points := [ SpawnPoint::StartingLevel: Point { x: 0, y: 0 } ]
 
 // Update spawn point
-spawn_points[SpawnPoint::StartingLevel] = Point { x: 10, y: 10 }
+spawn_points[SpawnPoint::StartingLevel] := Point { x: 10, y: 10 }
 ```
 
 ### Structs
@@ -504,7 +504,7 @@ struct Player {
 Once a Struct is defined, you can create a an instance of it. When you do, you have to set **each field** of the Struct to a value.
 
 ```swamp
-player = Player {
+player := Player {
     position: Point { x: 0.0, y: 0.0 },
     health: 100,
     mana: 50,
@@ -541,7 +541,7 @@ When using `..` for partial initialization, Swamp follows a structured process t
        }
    }
 
-   player = Player {
+   player := Player {
        name: "Hero",
        mana: 75,
        ..
@@ -571,7 +571,7 @@ When using `..` for partial initialization, Swamp follows a structured process t
        speed: Float
    }
 
-   enemy = Enemy {
+   enemy := Enemy {
        damage: 200,
        ..
    }
@@ -584,8 +584,8 @@ You can access fields like variables, using a period (`struct.field`).
 
 ```swamp
 // Read field values
-current_health = player.health
-can_cast = player.mana >= 20
+current_health := player.health
+can_cast := player.mana >= 20
 ```
 
 #### Struct Field Assignment
@@ -593,7 +593,7 @@ can_cast = player.mana >= 20
 Using `mut`, you can assign new values to fields, just like variables.
 
 ```swamp
-mut player = Player {
+mut player := Player {
     position: Point { x: 0.0, y: 0.0 },
     health: 100,
     mana: 50,
@@ -644,7 +644,7 @@ impl Player {
 Tuples are similar to structs, but they are not constructed as you use them, and do not have Type names or field names. To use a Tuple, write one or more values inside regular parentheses `()`.
 
 ```swamp
-player_position = (2,1)
+player_position := (2,1)
 ```
 
 ```swamp
@@ -652,7 +652,7 @@ fn get_position() -> (Int, Int) {
     (10, 20)
 }
 
-x, y = get_position()
+x, y := get_position()
 ```
 
 ### Enums
@@ -686,7 +686,7 @@ enum Item {
 #### Enum Instantiation
 
 ```swamp
-item = Item::Armor { defense: 3, weight: 3.8, durability: 99 }
+item := Item::Armor { defense: 3, weight: 3.8, durability: 99 }
 ```
 
 #### Enum Pattern Matching
@@ -742,15 +742,15 @@ The `?` suffix indicates that these variables might not have a value.
 Used so a "chain" of lookups can be made without having to check for `none` in each step. Is only valid in `when` or with the default value operator `??`.
 
 ```swamp
-guild_name = player.guild?.get_name() ?? "No Guild"
+guild_name := player.guild?.get_name() ?? "No Guild"
 
-leader_rank = when rank = player.guild?.get_leader()?.get_rank() {
+leader_rank := when rank = player.guild?.get_leader()?.get_rank() {
     rank
 } else {
     "No Rank"
 }
 
-spell_power = equipped_weapon?.get_enchantment()?.calculate_power() ?? 0
+spell_power := equipped_weapon?.get_enchantment()?.calculate_power() ?? 0
 ```
 
 #### Default Value operator `??`
@@ -759,9 +759,9 @@ You use `??` to provide a default value. If the value is none, then the value to
 
 ```swamp
 // Using ?? to provide default values
-damage = equipped_weapon?.damage ?? 1     // Default to 1 if no weapon
-name = target?.name ?? "No Target"        // Default to "No Target" if no target
-x = spawn_point?.x ?? 0.0                 // Default to 0.0 if no spawn point
+damage := equipped_weapon?.damage ?? 1     // Default to 1 if no weapon
+name := target?.name ?? "No Target"        // Default to "No Target" if no target
+x := spawn_point?.x ?? 0.0                 // Default to 0.0 if no spawn point
 ```
 
 ### Type alias
@@ -817,7 +817,7 @@ bits Something : U16 { // will take up 16 bits no matter what
 #### Example
 
 ```swamp
-mut a = Something { small_id = 3 }
+mut a := Something { small_id = 3 }
 // a = 0b00000110
 a.is_flying = 1
 // a = a | 0b00100000
@@ -856,7 +856,7 @@ needs_small_id(a.found_id)
 #### Example 2
 
 ```swamp
-mut a = Something { small_id: 4 } // All are zeroed
+mut a := Something { small_id: 4 } // All are zeroed
 
 a.is_flying = 1 // can use false/true as well?
 a.is_attacking = true
@@ -878,7 +878,7 @@ In **Swamp**, every block is an expression that returns a value. This means you 
 
 ```swamp
 // Both paths return Int
-damage = if is_critical_hit {
+damage := if is_critical_hit {
     base_damage * 2    // Returns Int
 } else {
     base_damage       // Returns Int
@@ -889,7 +889,7 @@ damage = if is_critical_hit {
 
 ```swamp
 // Type mismatch example
-value = if has_powerup {
+value := if has_powerup {
     100              // Returns Int
 }                   // Implicit else returns ()
 // 'value' type is unclear: Int or ()
@@ -900,7 +900,7 @@ value = if has_powerup {
 While loops keep running their code block as long as a condition is true.
 
 ```swamp
-mut projectile = spawn_projectile()
+mut projectile := spawn_projectile()
 while projectile.is_active {
     projectile.update()
     projectile.check_collisions()
@@ -1131,10 +1131,10 @@ match player_state {
 
 ```swamp
 // Arithmetic: +, -, *, /, %
-remaining_health = health - damage
+remaining_health := health - damage
 
 // Logical: &&, ||
-can_attack = in_range && has_ammo
+can_attack := in_range && has_ammo
 
 // Comparison: ==, !=, <, <=, >, >=
 if player.mana >= spell.cost {
@@ -1167,7 +1167,7 @@ if equipped_weapon?.can_fire {
     fire_weapon()
 }
 
-current_target = find_nearest_enemy()?
+current_target := find_nearest_enemy()?
 ```
 
 ## Iterable Sequences
