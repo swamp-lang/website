@@ -644,6 +644,63 @@ a = Avatar {
 }
 ```
 
+## Use Direct Construction
+
+> Construct in place --- not in a temporary.
+
+When returning aggregate types from functions, the way you construct the return value can significantly impact performance. For example:
+
+```swamp
+struct Logic {
+    i: Int,
+}
+
+fn new() -> Logic {
+    logic := Logic {
+        i: 10
+    }
+
+    logic  // ❌ This creates a local variable, then copies it to the return value
+}
+```
+
+**What happens under the hood:**
+
+1. A local variable `logic` is allocated on the stack (4 bytes in this example)
+2. The struct is initialized in that local variable
+3. The entire struct is **copied** from the local to the return location (`MemCpy` operation)
+
+For a 4-byte struct this is negligible, but for larger structs, this becomes a significant performance cost.
+
+### The Solution
+
+Instead, construct the aggregate **directly** as the return expression:
+
+```swamp
+fn new() -> Logic {
+    Logic {
+        i: 10
+    }  // ✅ Constructed directly in the return location (no copy!)
+}
+```
+
+**What happens under the hood:**
+
+1. The struct is initialized **directly** in the caller's return location (no intermediate variable)
+2. No `MemCpy` operation needed
+3. Zero overhead!
+
+### Real-World Impact
+
+For small structs (4-16 bytes), the copy overhead is usually acceptable.
+But as structs grow larger, the cost increases linearly:
+
+| Struct Size  | Copy Overhead       |
+| ------------ | ------------------- |
+| 4 bytes      | ~1-2 instructions   |
+| 256 bytes    | ~64 instructions    |
+| 10 000 bytes | ~2,500 instructions |
+
 ## Tuples for Small, Self-Explanatory Groups
 
 For small, short-lived groups where order is obvious, prefer a tuple. Tuples avoid boilerplate and keep code concise.
