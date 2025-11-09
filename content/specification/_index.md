@@ -374,6 +374,38 @@ padded_score := 'Score: {score:.5s}'      // "Score: 00012"
 
 These are more complex types that let you group data together in different ways.
 
+### Fixed-Capacity Collections
+
+**Swamp** takes a compile-time approach to memory management.
+Collections have a fixed maximum capacity known at compile time --- no runtime growth, no surprises.
+
+This design provides:
+
+- **Zero runtime allocation cost** --- all memory is preallocated.
+
+- **Predictable memory usage** --- the compiler knows exactly how much you need.
+
+- **No GC or pauses**  --- no runtime allocations, no stutters.
+
+- **No leaks or fragmentation**  --- static allocation prevents heap issues.
+
+- **Clearer constraints**  --- forces upfront memory budgeting.
+
+- **Better cache locality**  --- contiguous memory improves performance.
+
+- **Trivial serialization**  --- data can be saved or restored as-is.
+
+- **Simpler debugging & tooling**  --- fixed layouts make inspection easy.
+
+- **Networking-ready**  --- structs can be sent directly as binary chunks.
+
+When you create a collection, you specify its capacity using angle brackets with a semicolon `<Type; N>`:
+
+```swamp
+// Create a Vec that can hold up to 64 integers
+enemies: Vec<Int; 64> = []
+```
+
 ### Vec
 
 A `Vec` is an ordered lists of items of the **same type**. You can create them, access their elements by position (starting at 0), and modify them if they're mutable.
