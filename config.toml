@@ -7,7 +7,7 @@ build_search_index = false
 
 [markdown]
 highlight_code = true
-highlight_theme = "ayu-dark"
+highlight_theme = "lily-dark"
 # extra_syntaxes = ["syntax-themes"]  # Not sure if this is needed?
 extra_syntaxes_and_themes = ["syntax-themes"]
 smart_punctuation = true
