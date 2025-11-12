@@ -374,197 +374,6 @@ padded_score := 'Score: {score:.5s}'      // "Score: 00012"
 
 These are more complex types that let you group data together in different ways.
 
-### Collections
-
-| Collection | Order       | Use cases                                                                                                                                                |
-| ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Array      | ✅           | Fixed len. You have other ways to know if an element is used, or that all are always used.                                                               |
-| Grid       | ✅ (spatial) | Fixed len. `2D` grid, all elements exists.                                                                                                               |
-| Vec        | ✅           | You need to retain a specific order. add to tail is fast, remove is usually slow.                                                                        |
-| Stack      | ✅ (LIFO)    |                                                                                                                                                          |
-| Queue      | ✅ (FIFO)    |                                                                                                                                                          |
-| Bag        | ❌           | When order is irrelevant. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase.                                                     |
-| Pool       | ❌           | When order is irrelevant, but you want to have an ID to reference an element. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase. |
-| Map        | ❌           | Lookup a value from a key. Relatively slow to add and remove --- depending on the key size. Slower to iterate, since it has "gaps".                      |
-
-#### Swap Remove
-
-A neat trick where you take the last element in the collection and overwrites the element that should be removed. In this case only one copy is needed.
-
-- Swap remove. At worst a single copy is done:
-
-```text
-// Before:
-| a | b | c | d | e | f | g | h | i |
-// Operation: 'i' overwrites 'b', len -= 1 (to 'remove' the old i)
-// After:
-| a | i | c | d | e | f | g | h |
-```
-
-- Vec remove. you have to copy *all* elements after the one that is removed:
-
-```text
-// Before:
-| a | b | c | d | e | f | g | h | i |
-// Operation: 'c' through 'i' are copied to the left. len -= 1.
-// After:
-| a | c | d | e | f | g | h | i |
-```
-
-#### Collections under consideration
-
-{% note(type="unimplemented") %}
-Collections are not decided on yet
-{% end %}
-
-| Collection | Sequential Order | Description                                                                      |
-| ---------- | ---------------- | -------------------------------------------------------------------------------- |
-| Sparse     | ❌                | Has ID to reference elements. removing leaves gap in sequence. slower to iterate |
-| Set        | ❌                | key: K (key-only). Only to check if a Key exists or not.                         |
-| Arena      | ❌ (append-only)  | handle or offset. Can only clear all elements, not individual elements.          |
-| RingBuffer | ✅ (cyclic)       | index: u16                                                                       |
-| BitSet     | ❌                | bit index: u16                                                                   |
-
-### Fixed-Capacity Collections
-
-**Swamp** takes a compile-time approach to memory management.
-Collections have a fixed maximum capacity known at compile time --- no runtime growth, no surprises.
-
-This design provides:
-
-- **Zero runtime allocation cost** --- all memory is preallocated.
-
-- **Predictable memory usage** --- the compiler knows exactly how much you need.
-
-- **No GC or pauses**  --- no runtime allocations, no stutters.
-
-- **No leaks or fragmentation**  --- static allocation prevents heap issues.
-
-- **Clearer constraints**  --- forces upfront memory budgeting.
-
-- **Better cache locality**  --- contiguous memory improves performance.
-
-- **Trivial serialization**  --- data can be saved or restored as-is.
-
-- **Simpler debugging & tooling**  --- fixed layouts make inspection easy.
-
-- **Networking-ready**  --- structs can be sent directly as binary chunks.
-
-When you create a collection, you specify its capacity using angle brackets with a semicolon `<Type; N>`:
-
-```swamp
-// Create a Vec that can hold up to 64 integers
-enemies: Vec<Int; 64> = []
-```
-
-### Vec
-
-A `Vec` is an ordered lists of items of the **same type**. You can create them, access their elements by position (starting at 0), and modify them if they're mutable.
-
-#### Vec Type Declaration
-
-```swamp
-fn my_function (my_list: [Int]) {}
-```
-
-When declaring a list as a parameter, add square brackets `[]` surrounding the Type that the list will take.
-
-#### Vec Member Functions
-
-- Add item to end of list (must have same Type) `.add(item)`
-- Remove the item and index `.remove(index)`
-
-#### Vec Instantiation
-
-```swamp
-// Initialize positions
-spawn_points := [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 }, Point { x: -10, y: 5 } ]
-```
-
-{% note(type="nerdy") %}
-Internally they are converted from a [initializer_list](/internal/#initializer-list).
-{% end %}
-
-#### Vec Access
-
-```swamp
-waypoints := [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 } ]
-next_pos := waypoints[1]
-
-waypoints[0..2] // returns first two items
-waypoints[0..=1] // also returns the first two items
-```
-
-#### Vec Assignment
-
-```swamp
-mut high_scores := [ 100, 95, 90, 85, 80 ]
-high_scores[0] = 105
-high_scores[0..2] = [32, 44]
-```
-
-### Maps
-
-Maps are collections that store pairs of values, where you use one value (the key) to look up another (the value). The key can be a primitive (Int, Byte), and enum and a struct. Strings are not supported as key.
-
-#### Map Declaration
-
-```swamp
-fn my_function(my_map: [Key: Value]) {}
-```
-
-A map looks similar to a list, but has two types within the square brackets `[]`. The first type is used as the lookup key.
-
-#### Map Instantiation
-
-```swamp
-
-enum SpawnPoint {
-    StartingLevel,
-    SecondLevel,
-    SecretArea,
-}
-
-// Spawn points for different level names
-spawn_points := [
-    SpawnPoint::StartingLevel : Point { x: 0, y: 0 },
-    SpawnPoint::SecondLevel : Point { x: 100, y: 50 },
-    SpawnPoint::SecretArea : Point { x: -50, y: 75 },
-]
-```
-
-Remember that each following Key/Value pair must have the same types as the last.
-
-An empty Map is specified as:
-
-```swamp
-empty_map := [:]
-```
-
-{% note(type="nerdy") %}
-Internally they are converted from a [initializer pair-list](/internal/#initializer-pair-list).
-{% end %}
-
-#### Map Access
-
-```swamp
-spawn_points := [
-    SpawnPoint::StartingLevel : Point { x: 0, y: 0 },
-    SpawnPoint::SecretArea : Point { x: 100, y: 50 },
-]
-
-start_pos := spawn_points[StartingLevel]     // Get starting position
-```
-
-#### Map Assignment
-
-```swamp
-mut spawn_points := [ SpawnPoint::StartingLevel: Point { x: 0, y: 0 } ]
-
-// Update spawn point
-spawn_points[SpawnPoint::StartingLevel] := Point { x: 10, y: 10 }
-```
-
 ### Structs
 
 Structs let you create your own data types by grouping related values together.
@@ -946,6 +755,199 @@ a.is_attacking = true
 a.small_id = 14
 
 b: Something = 0b001
+```
+
+## Collection Types
+
+### Introduction
+
+| Collection | Order       | Use cases                                                                                                                                                |
+| ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Array      | ✅           | Fixed len. You have other ways to know if an element is used, or that all are always used.                                                               |
+| Grid       | ✅ (spatial) | Fixed len. `2D` grid, all elements exists.                                                                                                               |
+| Vec        | ✅           | You need to retain a specific order. add to tail is fast, remove is usually slow.                                                                        |
+| Stack      | ✅ (LIFO)    |                                                                                                                                                          |
+| Queue      | ✅ (FIFO)    |                                                                                                                                                          |
+| Bag        | ❌           | When order is irrelevant. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase.                                                     |
+| Pool       | ❌           | When order is irrelevant, but you want to have an ID to reference an element. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase. |
+| Map        | ❌           | Lookup a value from a key. Relatively slow to add and remove --- depending on the key size. Slower to iterate, since it has "gaps".                      |
+
+#### Swap Remove
+
+A neat trick where you take the last element in the collection and overwrites the element that should be removed. In this case only one copy is needed.
+
+- Swap remove. At worst a single copy is done:
+
+```text
+// Before:
+| a | b | c | d | e | f | g | h | i |
+// Operation: 'i' overwrites 'b', len -= 1 (to 'remove' the old i)
+// After:
+| a | i | c | d | e | f | g | h |
+```
+
+- Vec remove. you have to copy *all* elements after the one that is removed:
+
+```text
+// Before:
+| a | b | c | d | e | f | g | h | i |
+// Operation: 'c' through 'i' are copied to the left. len -= 1.
+// After:
+| a | c | d | e | f | g | h | i |
+```
+
+#### Collections under consideration
+
+{% note(type="unimplemented") %}
+Collections are not decided on yet
+{% end %}
+
+| Collection | Sequential Order | Description                                                                      |
+| ---------- | ---------------- | -------------------------------------------------------------------------------- |
+| Sparse     | ❌                | Has ID to reference elements. removing leaves gap in sequence. slower to iterate |
+| Set        | ❌                | key: K (key-only). Only to check if a Key exists or not.                         |
+| Arena      | ❌ (append-only)  | handle or offset. Can only clear all elements, not individual elements.          |
+| RingBuffer | ✅ (cyclic)       | index: u16                                                                       |
+| BitSet     | ❌                | bit index: u16                                                                   |
+
+#### Fixed-Capacity Collections
+
+**Swamp** takes a compile-time approach to memory management.
+Collections have a fixed maximum capacity known at compile time --- no runtime growth, no surprises.
+
+This design provides:
+
+- **Zero runtime allocation cost** --- all memory is preallocated.
+
+- **Predictable memory usage** --- the compiler knows exactly how much you need.
+
+- **No GC or pauses**  --- no runtime allocations, no stutters.
+
+- **No leaks or fragmentation**  --- static allocation prevents heap issues.
+
+- **Clearer constraints**  --- forces upfront memory budgeting.
+
+- **Better cache locality**  --- contiguous memory improves performance.
+
+- **Trivial serialization**  --- data can be saved or restored as-is.
+
+- **Simpler debugging & tooling**  --- fixed layouts make inspection easy.
+
+- **Networking-ready**  --- structs can be sent directly as binary chunks.
+
+When you create a collection, you specify its capacity using angle brackets with a semicolon `<Type; N>`:
+
+```swamp
+// Create a Vec that can hold up to 64 integers
+enemies: Vec<Int; 64> = []
+```
+
+### Vec
+
+A `Vec` is an ordered lists of items of the **same type**. You can create them, access their elements by position (starting at 0), and modify them if they're mutable.
+
+#### Vec Type Declaration
+
+```swamp
+fn my_function (my_list: [Int]) {}
+```
+
+When declaring a list as a parameter, add square brackets `[]` surrounding the Type that the list will take.
+
+#### Vec Member Functions
+
+- Add item to end of list (must have same Type) `.add(item)`
+- Remove the item and index `.remove(index)`
+
+#### Vec Instantiation
+
+```swamp
+// Initialize positions
+spawn_points := [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 }, Point { x: -10, y: 5 } ]
+```
+
+{% note(type="nerdy") %}
+Internally they are converted from a [initializer_list](/internal/#initializer-list).
+{% end %}
+
+#### Vec Access
+
+```swamp
+waypoints := [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 } ]
+next_pos := waypoints[1]
+
+waypoints[0..2] // returns first two items
+waypoints[0..=1] // also returns the first two items
+```
+
+#### Vec Assignment
+
+```swamp
+mut high_scores := [ 100, 95, 90, 85, 80 ]
+high_scores[0] = 105
+high_scores[0..2] = [32, 44]
+```
+
+### Maps
+
+Maps are collections that store pairs of values, where you use one value (the key) to look up another (the value). The key can be a primitive (Int, Byte), and enum and a struct. Strings are not supported as key.
+
+#### Map Declaration
+
+```swamp
+fn my_function(my_map: [Key: Value]) {}
+```
+
+A map looks similar to a list, but has two types within the square brackets `[]`. The first type is used as the lookup key.
+
+#### Map Instantiation
+
+```swamp
+
+enum SpawnPoint {
+    StartingLevel,
+    SecondLevel,
+    SecretArea,
+}
+
+// Spawn points for different level names
+spawn_points := [
+    SpawnPoint::StartingLevel : Point { x: 0, y: 0 },
+    SpawnPoint::SecondLevel : Point { x: 100, y: 50 },
+    SpawnPoint::SecretArea : Point { x: -50, y: 75 },
+]
+```
+
+Remember that each following Key/Value pair must have the same types as the last.
+
+An empty Map is specified as:
+
+```swamp
+empty_map := [:]
+```
+
+{% note(type="nerdy") %}
+Internally they are converted from a [initializer pair-list](/internal/#initializer-pair-list).
+{% end %}
+
+#### Map Access
+
+```swamp
+spawn_points := [
+    SpawnPoint::StartingLevel : Point { x: 0, y: 0 },
+    SpawnPoint::SecretArea : Point { x: 100, y: 50 },
+]
+
+start_pos := spawn_points[StartingLevel]     // Get starting position
+```
+
+#### Map Assignment
+
+```swamp
+mut spawn_points := [ SpawnPoint::StartingLevel: Point { x: 0, y: 0 } ]
+
+// Update spawn point
+spawn_points[SpawnPoint::StartingLevel] := Point { x: 10, y: 10 }
 ```
 
 ## Control Flow
