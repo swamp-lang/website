@@ -376,16 +376,40 @@ These are more complex types that let you group data together in different ways.
 
 ### Collections
 
-| Collection | Sequential Order | Indexing    | Add Elements                           | Remove Elements                          | Description                                    |
-| ---------- | ---------------- | ----------- | -------------------------------------- | ---------------------------------------- | ---------------------------------------------- |
-| Array      | ✅                | index: u16  | assign `arr[i] = v` (fixed size)       | N/A (fixed size)                         |                                                |
-| Grid       | ✅ (spatial)      | x, y        | assign `arr[x, y] = v`                 | `clear(x, y)`                            |                                                |
-| Vec        | ✅                | index: u16  | `push()` (tail)                        | `pop()`, `remove(i)` or `swap_remove(i)` |                                                |
-| Stack      | ✅ (LIFO)         | top         | `push()`                               | `pop()`                                  |                                                |
-| Queue      | ✅ (FIFO)         | index: u16  | `enqueue()`                            | `dequeue()`                              |                                                |
-| Bag        | ❌                | index: u16  | `add()` (unordered, last)              | `erase(i)` (swap-remove)                 |                                                |
-| Pool       | ❌                | handle: u32 | `add(x) -> handle`                     | `erase(handle)` (swap-remove)            | handle is combined index: u16, generation: u16 |
-| Map        | ❌                | key: K      | assign `[key]=val`, `insert(key, val)` | `remove(key)`                            |                                                |
+| Collection | Order       | Use cases                                                                                                                                                |
+| ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Array      | ✅           | Fixed len. You have other ways to know if an element is used, or that all are always used.                                                               |
+| Grid       | ✅ (spatial) | Fixed len. `2D` grid, all elements exists.                                                                                                               |
+| Vec        | ✅           | You need to retain a specific order. add to tail is fast, remove is usually slow.                                                                        |
+| Stack      | ✅ (LIFO)    |                                                                                                                                                          |
+| Queue      | ✅ (FIFO)    |                                                                                                                                                          |
+| Bag        | ❌           | When order is irrelevant. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase.                                                     |
+| Pool       | ❌           | When order is irrelevant, but you want to have an ID to reference an element. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase. |
+| Map        | ❌           | Lookup a value from a key. Relatively slow to add and remove --- depending on the key size. Slower to iterate, since it has "gaps".                      |
+
+#### Swap Remove
+
+A neat trick where you take the last element in the collection and overwrites the element that should be removed. In this case only one copy is needed.
+
+- Swap remove. At worst a single copy is done:
+
+```text
+// Before:
+| a | b | c | d | e | f | g | h | i |
+// Operation: 'i' overwrites 'b', len -= 1 (to 'remove' the old i)
+// After:
+| a | i | c | d | e | f | g | h |
+```
+
+- Vec remove. you have to copy *all* elements after the one that is removed:
+
+```text
+// Before:
+| a | b | c | d | e | f | g | h | i |
+// Operation: 'c' through 'i' are copied to the left. len -= 1.
+// After:
+| a | c | d | e | f | g | h | i |
+```
 
 #### Collections under consideration
 
@@ -393,13 +417,13 @@ These are more complex types that let you group data together in different ways.
 Collections are not decided on yet
 {% end %}
 
-| Collection | Sequential Order | Indexing          | Add Elements                   | Remove Elements | Description                                        |
-| ---------- | ---------------- | ----------------- | ------------------------------ | --------------- | -------------------------------------------------- |
-| Sparse     | ❌                | id: u16           | `add(id, val)`                 | `erase(id)`     | removing leaves gap in sequence. slower to iterate |
-| Set        | ❌                | key: K (key-only) | `insert(key)`                  | `remove(key)`   |                                                    |
-| Arena      | ❌ (append-only)  | handle or offset  | `add()`                        | `clear()`       | can only clear all elements                        |
-| RingBuffer | ✅ (cyclic)       | index: u16        | `push()` (overwrites or wraps) | `pop()`         |                                                    |
-| BitSet     | ❌                | bit index: u16    | `set(bit)`                     | `unset(bit)`    |                                                    |
+| Collection | Sequential Order | Description                                                                      |
+| ---------- | ---------------- | -------------------------------------------------------------------------------- |
+| Sparse     | ❌                | Has ID to reference elements. removing leaves gap in sequence. slower to iterate |
+| Set        | ❌                | key: K (key-only). Only to check if a Key exists or not.                         |
+| Arena      | ❌ (append-only)  | handle or offset. Can only clear all elements, not individual elements.          |
+| RingBuffer | ✅ (cyclic)       | index: u16                                                                       |
+| BitSet     | ❌                | bit index: u16                                                                   |
 
 ### Fixed-Capacity Collections
 
@@ -1338,3 +1362,4 @@ The compiler will tell you when explicit types are needed.
 [^camelcase]: [CamelCase Wikipedia](https://en.wikipedia.org/wiki/Camel_case)
 [^screaming_snake_case]: [Screaming Snake Case Wikipedia](https://en.wikipedia.org/wiki/Snake_case)
 [^ufcs]: [Uniform Function Call Syntax](https://en.wikipedia.org/wiki/Uniform_function_call_syntax)
+[^swap_remove]: **Swap Remove**. sometimes called 'Swapback' or 'swap and pop' [Vec::swap_remove in Rust](https://doc.rust-lang.org/std/vec/struct.Vec.html#method.swap_remove)
