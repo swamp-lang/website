@@ -218,7 +218,7 @@ blockquote {
 }
 
 blockquote p::before {
-    content: "“ ";
+    content: "\201C ";
     font-size: 2rem;
     line-height: 0;
     vertical-align: -0.4rem;
@@ -226,12 +226,66 @@ blockquote p::before {
 }
 
 blockquote p::after {
-    content: " ”";
+    content: " \201D";
     font-size: 2rem;
     line-height: 0;
     vertical-align: -0.4rem;
     color: #403b9995;
 }
+
+// Table
+// Not sure if this is the best way to do tables in 'modern' CSS, but works for now
+table {
+  width: 100%;
+  border-collapse: collapse; // share borde with the next table, to avoid double lines
+  //margin: 0.5rem 0;
+  background: lighten($bg-dark, 2%); // stand out from the background a little bit
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  overflow: hidden; // mostly to get border-radius to look cool, but isn't really working
+  font-size: 0.5rem;
+}
+
+thead {
+  background: lighten($bg-dark, 5%);
+  border-bottom: 1px solid $border-color;
+}
+
+th {
+  padding: 0.5rem 0.5rem;
+  text-align: left;
+  font-weight: 400;
+  color: $header-color;
+  border-right: 1px solid $border-color;
+  &:last-child {
+    border-right: none;
+  }
+}
+
+tbody tr {
+  border-bottom: 1px solid $border-color;
+  &:last-child {
+    border-bottom: none;
+  }
+  &:hover {
+    background: lighten($bg-dark, 4%);
+  }
+}
+
+td {
+  padding: 0.4rem 0.4rem;
+  color: $text-light;
+  border-right: 1px solid $border-color;
+  vertical-align: top;
+  &:last-child {
+    border-right: none;
+  }
+  code {
+    font-size: 0.45em; // make code `` blocks slightly smaller
+  }
+}
+
+// ===
 
 /* Paragraphs and basic content spacing */
 p, ul, ol {
