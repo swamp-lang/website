@@ -50,8 +50,8 @@ enum Result {
 
 fn process(result: Result) {
     match result {
-        Ok(message) -> print('Success: {message}'),
-        Err(error) -> print('Error: {error}')
+        Ok message -> print('Success: {message}'),
+        Err error -> print('Error: {error}')
     }
 }
 ```
@@ -83,23 +83,24 @@ In Swamp, variables are immutable by default and arguments are passed by value (
 This design encourages immutability for safer, more predictable code. To make a variable mutable, use the `mut` keyword:
 
 ```swamp
-mut x = 10
+mut x := 10
 x = 20  // Now you can change the value of x
 ```
 
- When passing a mutable variable to a function, you must explicitly mark it as mutable at the call site, even if the variable was already declared as mutable:
+ When passing a mutable variable to a function, you must explicitly mark it as a mutable borrow (`&`) at the call site, even if the variable was already declared as mutable:
 
 ```swamp
-fn increment(mut x: Int) {
-    x += 1
+fn increment_x(mut point: Point) {
+    point.x += 1
 }
 
-mut a = 5 // a will be changed in the future
+mut p := Point { x: 10, y: 20 } // `p` will be changed in the future
 
-// even though a is already mutable, we want to make
+// even though p is already mutable, we want to make
 // it explicit that we allow and see the function might change it.
+// So we prepend it with a `&`:
 
-increment(mut a)
+increment_x(&p)
 
-print(a)  // Outputs: 6
+print('{p.x}')  // Outputs: 11
 ```
