@@ -374,6 +374,33 @@ padded_score := 'Score: {score:.5s}'      // "Score: 00012"
 
 These are more complex types that let you group data together in different ways.
 
+### Collections
+
+| Collection | Sequential Order | Indexing    | Add Elements                           | Remove Elements                          | Description                                    |
+| ---------- | ---------------- | ----------- | -------------------------------------- | ---------------------------------------- | ---------------------------------------------- |
+| Array      | ✅                | index: u16  | assign `arr[i] = v` (fixed size)       | N/A (fixed size)                         |                                                |
+| Grid       | ✅ (spatial)      | x, y        | assign `arr[x, y] = v`                 | `clear(x, y)`                            |                                                |
+| Vec        | ✅                | index: u16  | `push()` (tail)                        | `pop()`, `remove(i)` or `swap_remove(i)` |                                                |
+| Stack      | ✅ (LIFO)         | top         | `push()`                               | `pop()`                                  |                                                |
+| Queue      | ✅ (FIFO)         | index: u16  | `enqueue()`                            | `dequeue()`                              |                                                |
+| Bag        | ❌                | index: u16  | `add()` (unordered, last)              | `erase(i)` (swap-remove)                 |                                                |
+| Pool       | ❌                | handle: u32 | `add(x) -> handle`                     | `erase(handle)` (swap-remove)            | handle is combined index: u16, generation: u16 |
+| Map        | ❌                | key: K      | assign `[key]=val`, `insert(key, val)` | `remove(key)`                            |                                                |
+
+#### Collections under consideration
+
+{% note(type="unimplemented") %}
+Collections are not decided on yet
+{% end %}
+
+| Collection | Sequential Order | Indexing          | Add Elements                   | Remove Elements | Description                                        |
+| ---------- | ---------------- | ----------------- | ------------------------------ | --------------- | -------------------------------------------------- |
+| Sparse     | ❌                | id: u16           | `add(id, val)`                 | `erase(id)`     | removing leaves gap in sequence. slower to iterate |
+| Set        | ❌                | key: K (key-only) | `insert(key)`                  | `remove(key)`   |                                                    |
+| Arena      | ❌ (append-only)  | handle or offset  | `add()`                        | `clear()`       | can only clear all elements                        |
+| RingBuffer | ✅ (cyclic)       | index: u16        | `push()` (overwrites or wraps) | `pop()`         |                                                    |
+| BitSet     | ❌                | bit index: u16    | `set(bit)`                     | `unset(bit)`    |                                                    |
+
 ### Fixed-Capacity Collections
 
 **Swamp** takes a compile-time approach to memory management.
