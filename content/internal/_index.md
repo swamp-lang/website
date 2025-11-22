@@ -58,3 +58,28 @@ If a construct has no natural delimiters, you must either:
   2. Wrap the content in a scope `{...}`
 
   3. For fixed-size structures (like struct fields, tuples), trailing comma is optional.
+
+### Memory-Safe Semantic Confusion (Identity confusion)
+
+**Guarantees (Always):**
+
+- ✅ Memory safe --- no buffer overflows, no out-of-bounds writes
+- ✅ No dangling pointers --- references can't outlive their memory
+- ✅ No wild pointers --- references can't point to arbitrary/uninitialized memory
+- ✅ No process corruption --- can't write outside your process space
+- ✅ Correct alignment --- types maintain their alignment requirements
+- ✅ No crashes or panics from memory errors
+
+**Possible Issues (And can *only* happen within a scoped borrow):**
+
+- ⚠️ Logic errors --- reading/writing data that's semantically wrong
+- ⚠️ Identity confusion --- reference points to different logical entity than expected
+- ⚠️ Stale data --- seeing old values after logical deletion
+- ⚠️ But still deterministic --- bugs are reproducible, not random
+
+Every reference in Swamp is constructed through controlled binding expressions (`with`, `when`, `loops`), so you literally cannot create a wild pointer. You can't:
+
+- Cast an integer to a pointer
+- Take an address of arbitrary memory
+- Create uninitialized pointers
+- Have null pointers
