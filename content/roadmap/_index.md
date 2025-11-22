@@ -17,6 +17,18 @@ toc = true
 - Resource Ids. `@8fad1938` or `path/something/else` that looks up the id during compile time.
 - When working in a bigger team, those ids can be randomly generated if needed.
 
+## Remove/erase keywords in collection loops
+
+Be able to safely remove elements from a collection. Compile lowering will know how to change the index to not miss any iterations (if it is swap-removed, stay on the same index)
+
+```swamp
+for space_ship in ships {
+    if ship.x < -10 {
+        remove space_ship // removes the space_ship in a safe way
+    }
+}
+```
+
 ## Named function arguments
 
 Be able to specify function arguments by name. Evaluation order: for ordered arguments it is left to right, but for named arguments I guess it is also left to right?
@@ -28,9 +40,11 @@ my_function(health: 10, modifier: 10, damage: 5) //don't need to remember the or
 my_function(10, 5, 10) //if not using the field names, need to be correct order
 ```
 
+Parser is already handling it and putting it in AST, so it is prepared for later phases.
+
 Suggested by @catnipped
 
-## ZII arguments
+## ZII arguments (rest operator)
 
 can use rest `..` operator in function arguments, both for named and normal arguments
 
@@ -42,7 +56,7 @@ my_function(health: 10 ..)
 my_function(10, ..)
 ```
 
-will be desugared into zero for each argument:
+will be desugared into zero for each argument not specified:
 
 ```swamp
 my_function(health: 10, modifier: 0, damage: 0)
