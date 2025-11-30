@@ -174,3 +174,49 @@ fn despawn_a(mut a: Monster) {
 }
 
 ```
+
+## Static Event Dispatch
+
+### Swamp Event Rules
+
+```swamp
+on user_defined_rule_name(EventStructType) { // the fields of EventStructType are automatically bound to variables.
+// there can be a Context struct as well, but it is optional to include them as a parameter
+
+}
+```
+
+```swamp
+on user_defined_rule_name(EventStructType) | health > 10 && player == Friendly -> { // the fields of EventStructType are automatically bound to variables
+    player.add_score(10)
+}
+```
+
+```swamp
+on user_defined_rule_name(evt: EventStructType) | evt.health > 10 && evt.player == Friendly -> { // explicit name for the event. you access the fields as normal (evt.player, evt.health)
+    evt.player.add_score(10)
+}
+```
+
+### Emit events
+
+```swamp
+event_struct := EventStruct { health: 20, team: Team::Blue }
+
+emit(event_struct) // this will send it out to all rules
+```
+
+### Lowered
+
+The rules are lowered at compile time to a special function:
+
+```swamp
+fn __emit_eventstruct(event_struct: EventStruct, context: Context) {
+    // the guards out side the rules are lowered as an if statement
+    if event_struct.health > 10 && event_struct.player == Friendly {
+        user_defined_rule_name(event_struct) // context wasn't added since it wasn't used in that rule
+    }
+
+    host_call(event_struct, context) // the engine might want to process it as well
+}
+```
