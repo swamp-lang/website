@@ -177,46 +177,110 @@ fn despawn_a(mut a: Monster) {
 
 ## Static Event Dispatch
 
-### Swamp Event Rules
+### Event Rules (Handlers)
+
+Event handlers, rules, are defined using the `on` keyword instead of `fn`. They follow standard function naming conventions, with the addition of optional guard expressions (`|`) that determine whether the rule executes based on the contents of the event data.
 
 ```swamp
-on user_defined_rule_name(EventStructType) { // the fields of EventStructType are automatically bound to variables.
-// there can be a Context struct as well, but it is optional to include them as a parameter
 
+enum Team {
+    Red
+    Blue,
+}
+
+struct PlayerSpawned {
+    health: Int,
+    team: Team,
+}
+
+// fields of PlayerSpawned are automatically bound to variables
+// in almost all cases you need one or more context parameters, but it
+// is optional.
+on player_spawned(PlayerSpawned) {
+    print('a player spawned in with health {health}')
+}
+
+// fields of PlayerSpawned are automatically bound to variables
+on healthy_blue_player_joins(PlayerSpawned) | health > 10 && team == Blue -> {
+    print('a healthy blue player spawned in with health {health}')
+}
+
+// explicit name for the event; access fields
+// normally (evt.team, evt.health)
+on cool_red_player_enters(evt: PlayerSpawned, mut battle: Battle)
+  | evt.health > 45 && evt.team == Red -> {
+    print('a healthy red player spawned in with health {evt.health}')
+    battle.message("strong player joined for team red!")
 }
 ```
 
+### Emit Events
+
+Events are dispatched using the `emit()` macro, which triggers all matching event handlers (rules). The compiler automatically generates the appropriate dispatch function based on the event type.
+The emit macro is replaced at compile time with a call to the generated dispatch function, e.g. `__emit_player_spawned(player_spawned, battle)`
+
 ```swamp
-on user_defined_rule_name(EventStructType) | health > 10 && player == Friendly -> { // the fields of EventStructType are automatically bound to variables
-    player.add_score(10)
-}
+player_spawned := PlayerSpawned { health: 20, team: Blue }
+
+// sends the event to all matching handlers
+// internally this will be replaced with:
+// __emit_player_spawned(player_spawned, battle)
+
+emit(player_spawned, battle)
 ```
 
-```swamp
-on user_defined_rule_name(evt: EventStructType) | evt.health > 10 && evt.player == Friendly -> { // explicit name for the event. you access the fields as normal (evt.player, evt.health)
-    evt.player.add_score(10)
-}
-```
+### Lowered at Compile Time
 
-### Emit events
+At compile time, event handlers are lowered into a specialized dispatch function. Guard expressions become conditional branches, ensuring zero runtime overhead for routing the events --- all dispatch logic is resolved statically.
 
 ```swamp
-event_struct := EventStruct { health: 20, team: Team::Blue }
-
-emit(event_struct) // this will send it out to all rules
-```
-
-### Lowered
-
-The rules are lowered at compile time to a special function:
-
-```swamp
-fn __emit_eventstruct(event_struct: EventStruct, context: Context) {
-    // the guards out side the rules are lowered as an if statement
-    if event_struct.health > 10 && event_struct.player == Friendly {
-        user_defined_rule_name(event_struct) // context wasn't added since it wasn't used in that rule
+fn __emit_player_spawned(evt: PlayerSpawned, mut battle: Battle) {
+    // guards from the rules are lowered to if statements
+    if evt.health > 10 && evt.team == Blue  {
+        // context omitted since this specific rule doesn't use it
+        healthy_blue_player_joins(evt)
     }
 
-    host_call(event_struct, context) // the engine might want to process it as well
+    if evt.health > 45 && evt.team == Red {
+        // this rule required the battle context
+        cool_red_player_enters(evt, &battle)
+    }
+
+    // optional host call for notification
+    host_call(evt, context)
+}
+```
+
+### Intercept any Function
+
+Inspired by @catnipped, this feature enables intercepting *any* function for event dispatch. The function must have a clear first parameter that is a struct (not counting `self`). `self` will serve as an automatic context. A potential issue might be when `mut` is needed by the event catcher but not used by the function itself.
+
+At compile time (or when patching the `.swim` file for Marsh VM), a dispatch code block is inserted before the function body.
+
+Mark functions to intercept as events using a keyword. The syntax is not clear at this time, assume it is an `intercept` keyword for now:
+
+```swamp
+intercept some_game::logic::Battle::spawn_unit
+```
+
+The `spawn_unit()` function is then patched with a dispatch block at the start:
+
+```swamp
+fn spawn_unit(mut self, unit_info: UnitInfo) {
+    // Injected dispatch block
+    {
+        if unit_info.type == SpaceWizard && unit_info.faction == Friendly {
+            // context parameter omitted since this rule doesn't use it
+            user_defined_rule_name(unit_info)
+        }
+
+        if unit_info.starting_health > 45 && unit_info.faction == Enemy {
+            // this rule requires the self context
+            another_user_defined_rule_name(unit_info, self)
+        }
+    }
+
+    // original code:
+    ...
 }
 ```
