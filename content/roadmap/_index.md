@@ -175,11 +175,74 @@ fn despawn_a(mut a: Monster) {
 
 ```
 
+## Call Guard
+
+A call guard is a boolean expression that controls whether a function executes. The guard is checked at each call site *before* the function is invoked. If the condition fails, the call is skipped entirely --- no arguments are evaluated, no registers are saved or restored, and the function body never runs.
+
+### Syntax
+
+Guards are declared using the `|` operator after the function parameters:
+
+```swamp
+// Only cares about Elite Celestial Wizards
+fn enemy_defeated(evt: EnemyDefeated, mut loot: LootTable)
+  | evt.enemy == CelestialWizard && evt.is_elite {
+    loot.spawn_rare(evt.position, ItemId::AstralGate)
+}
+```
+
+### Why Use Call Guards?
+
+**Clarity**: The precondition is declared in the function signature, making it immediately obvious when the function will run. No need to dig through the implementation to understand the entry requirements.
+
+**Performance**: Guards are desugared at compile time into conditional checks at each call site. Failed guards skip the function call entirely, eliminating overhead from argument evaluation and register saving/restoring.
+
+### How It Works
+
+At compile time, each call site is desugared into a guarded invocation:
+
+```swamp
+// Original call
+enemy_defeated(evt, &table)
+
+// Desugared to
+if evt.enemy == CelestialWizard && evt.is_elite {
+    enemy_defeated(evt, &table)
+}
+```
+
+This transformation happens at every call site, ensuring zero runtime dispatch overhead.
+
+## Parameter Field Binding
+
+When a struct parameter is declared without a name, its fields are automatically bound as local variables:
+
+```swamp
+fn check(PlayerSpawned) {
+    // PlayerSpawned fields (health, team, etc.) are directly accessible
+    if health > 25 {
+        print('strong player with health {health}')
+    }
+}
+```
+
+This is purely syntactic sugar. The function still receives the full struct; the compiler simply generates field access code for you. It's equivalent to:
+
+```swamp
+fn check(evt: PlayerSpawned) {
+    if evt.health > 25 {
+        print('strong player with health {evt.health}')
+    }
+}
+```
+
 ## Static Event Dispatch
 
 ### Event Rules (Handlers)
 
-Event handlers, rules, are defined using the `on` keyword instead of `fn`. They follow standard function naming conventions, with the addition of optional guard expressions (`|`) that determine whether the rule executes based on the contents of the event data.
+Event handlers (also called rules) are defined using the `on` keyword instead of `fn`. The compiler tracks all `on` functions that listen to a specific struct type (the first parameter) and generates a dispatch function for each event type. You don't call event handlers directly --- they're invoked through the generated dispatch function.
+
+Event handlers commonly combine [Call Guards](#call-guard) for conditional execution and [Parameter Field Binding](#parameter-field-binding) for concise field access.
 
 ```swamp
 
@@ -193,15 +256,16 @@ struct PlayerSpawned {
     team: Team,
 }
 
-// fields of PlayerSpawned are automatically bound to variables
+// fields of `PlayerSpawned` are automatically bound to variables
 // in almost all cases you need one or more context parameters, but it
 // is optional.
 on player_spawned(PlayerSpawned) {
     print('a player spawned in with health {health}')
 }
 
-// fields of PlayerSpawned are automatically bound to variables
-on healthy_blue_player_joins(PlayerSpawned) | health > 10 && team == Blue -> {
+// fields of PlayerSpawned` are automatically bound to variables
+on healthy_blue_player_joins(PlayerSpawned)
+  | health > 10 && team == Blue -> {
     print('a healthy blue player spawned in with health {health}')
 }
 
@@ -246,6 +310,8 @@ fn __emit_player_spawned(evt: PlayerSpawned, mut battle: Battle) {
         cool_red_player_enters(evt, &battle)
     }
 
+    some_event_handler_with_no_guard(evt)
+
     // optional host call for notification
     host_call(evt, context)
 }
@@ -253,9 +319,9 @@ fn __emit_player_spawned(evt: PlayerSpawned, mut battle: Battle) {
 
 ### Intercept any Function
 
-Inspired by @catnipped, this feature enables intercepting *any* function for event dispatch. The function must have a clear first parameter that is a struct (not counting `self`). `self` will serve as an automatic context. A potential issue might be when `mut` is needed by the event catcher but not used by the function itself.
+Inspired by @catnipped, this feature enables intercepting *any* function for event dispatch. The function must have a clear first parameter that is a struct (not counting `self`). `self` will serve as an automatic context. A potential issue might be when `mut` is needed by the event handler but not used by the function itself.
 
-At compile time (or when patching the `.swim` file for Marsh VM), a dispatch code block is inserted before the function body.
+At compile time (or when patching the `.swim` file for [Marsh VM](https://marshvm.com/)), a dispatch code block is inserted before the function body.
 
 Mark functions to intercept as events using a keyword. The syntax is not clear at this time, assume it is an `intercept` keyword for now:
 
