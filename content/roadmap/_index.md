@@ -350,3 +350,45 @@ fn spawn_unit(mut self, unit_info: UnitInfo) {
     ...
 }
 ```
+
+## Optimization: Optional Aggregates Using Zero Pointer
+
+An optimization for optional aggregate types where the pointer itself serves as the discriminant. Instead of wrapping in a union with a separate tag, a zero pointer represents `none` and a non-zero pointer represents `some`.
+
+```swamp
+// Without optimization (wrapped in union)
+
+// is lowered as: Alloc Position?, then set union tag to 1
+p: Position? = Position { x : 0, y : 0 }
+
+// is lowered as: Alloc Position?, then set union tag to 0
+p: Position? = none
+
+// With optimization (pointer as discriminant)
+
+// is lowered as: Alloc Position, store pointer, no wrapping
+p: Position? = Position { x : 0, y : 0 }
+
+// is lowered as: store null pointer (0), no wrapping
+p: Position? = none
+```
+
+This optimization eliminates wrapping and unwrapping overhead, making `when` expressions and `if` conditionals a lot faster:
+
+```swamp
+p: Position? = none
+
+when p { // lowered as: if p != 0, no unwrapping needed
+
+}
+
+if p { // literal pointer check, zero overhead, no unwrapping
+
+}
+```
+
+## Optimization: Payload-Free Enums as Scalars
+
+Enums without payloads can be lowered directly to integer primitives (`u8`, `u16`, or `u32`) based on the number of variants, eliminating the need for stack frame allocation.
+
+**Trade-off**: These optimized enums cannot be borrowed because the Swamp ABI passes scalars by value, never indirectly.
