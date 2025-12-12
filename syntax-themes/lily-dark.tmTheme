@@ -70,6 +70,62 @@
 			</dict>
 		</dict>
 
+		<!-- Resource Paths -->
+		<dict>
+			<key>name</key>
+			<string>Resource Path</string>
+			<key>scope</key>
+			<string>string.unquoted.resource-path.swamp</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#4da0e9</string>
+			</dict>
+		</dict>
+
+		<!-- Resource Path Marker -->
+		<dict>
+			<key>name</key>
+			<string>Resource Path Marker</string>
+			<key>scope</key>
+			<string>punctuation.definition.resource-path.begin.swamp</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#3a4749</string>
+			</dict>
+		</dict>
+
+		<!-- Anchor Name -->
+		<dict>
+			<key>name</key>
+			<string>Anchor Name</string>
+			<key>scope</key>
+			<string>entity.name.anchor.swamp</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#f0b673</string>
+				<key>fontStyle</key>
+				<string>bold</string>
+			</dict>
+		</dict>
+
+		<!-- Anchor Separator -->
+		<dict>
+			<key>name</key>
+			<string>Anchor Separator</string>
+			<key>scope</key>
+			<string>punctuation.separator.key-value.swamp</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#7f6cc0</string>
+				<key>fontStyle</key>
+				<string></string>
+			</dict>
+		</dict>
+
 		<!-- String Escape Characters -->
 		<dict>
 			<key>name</key>

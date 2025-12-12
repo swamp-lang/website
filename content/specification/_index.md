@@ -220,6 +220,20 @@ fn log(message: String) {
 }
 ```
 
+### Named function arguments
+
+```swamp
+fn my_function(health: Int, damage: Int, modifier: Int) {...}
+
+// don't need to remember the order
+my_function(modifier: 10, damage: 5, health: 10)
+
+// if not using the field names, need to be correct order
+my_function(10, 5, 10)
+```
+
+Suggested by @catnipped
+
 ## Basic Types
 
 **Swamp** provides fundamental types for storing different kinds of data: Integers (Int) for whole numbers, Floating-point numbers (that in reference implementations are Fixed Point numbers) for decimal values, Booleans (Bool) for true/false conditions, and Strings (String) for text, and Codepoint (u32) for characters. There is also Byte (8-bit) and Short (16-bit), but those are rarely used.
@@ -1072,6 +1086,94 @@ const HALF_MAX_HEALTH = MAX_HEALTH / 2
 const STATS = StatsStruct::calculate_stats(42)
 ```
 
+### Resource IDs
+
+Resource IDs are a way to reference external files like images, sounds, shaders, etc.
+Think of them as compile-time checked file paths that ensure your assets exist both at compile time, and just before the program runs.
+
+#### What are Resource IDs?
+
+In other programming languages, you reference game assets using strings like `"explosion.wav"` or `"player.png"`. The problem with that approach is if you misspell the filename or delete/rename the file, you won't know until you run the game and it crashes. Resource IDs solve this by checking at compile time that your files exist.
+
+```swamp
+// Traditional string-based approach (bad)
+// If "explosion.wav" doesn't exist, you won't know until runtime
+audio := load_sound("audio/explosion.wav")
+
+// Resource ID approach (compile-time verified)
+// The compiler verifies that the file exists when you build
+audio : Res<Audio> = @audio/explosion
+```
+
+#### Why Use Resource IDs?
+
+- **Catch typos early**: If you write `@audio/explosoin` instead of `@audio/explosion`, the compiler will tell you immediately.
+
+- **Never ship broken references**: Your game won't compile if asset files are missing, preventing bugs where images or sounds don't load.
+
+- **Better performance**: Resource IDs are converted to a small integer number (`u32`) at compile time, making lookups extremely fast.
+
+- **Refactoring safety**: If you reorganize your asset folders, the compiler will show you both missing files, and files that are not used in your application.
+
+#### Resource ID Syntax
+
+Resource IDs always start with the `@` symbol followed by a path to your asset file (without the file extension). The reason for not specifying extension is that you should be able to change the actual file type without breaking anything (e.g. from `.jpg` to `.png`).
+
+##### Basic Path-Based Resource IDs
+
+```swamp
+// Reference a single asset
+// The compiler looks for "explosion.wav" (or similar) in assets/audio/sub_dir/
+explosion_sound : Res<Audio> = @audio/sub_dir/explosion
+
+// Reference an image
+// The compiler looks for "player.png" (or similar) in assets/gfx/
+player_sprite : Res<Image> = @gfx/player
+```
+
+The path is relative to your project's asset directory, and you omit the file extension (`.wav`, `.png`, etc.). The compiler will find the correct file automatically.
+
+##### Indexed Resource IDs
+
+{% note(type="unimplemented") %}
+Indexed Resource IDs is not implemented yet
+{% end %}
+
+For collections of related assets where you have a lot of "variants" for a single resource, you can use indexed resource IDs:
+
+```swamp
+// Reference a specific card by index
+// The compiler expects files like cards_00.png, cards_01.png, etc.
+card : Res<Image> = @gfx/cards[42]
+
+// Loop through numbered assets
+for i in 0..100 {
+    card := @gfx/cards[i]
+    render_card(card)
+}
+
+// Use an expression as the index
+current_level := 5
+level_music : Res<Audio> = @music/level[current_level]
+
+pseudo_random_index := pseudo_random(player_position.x)
+play_sound(@sfx/footsteps[pseudo_random_index])
+```
+
+#### Type Safety
+
+Resource IDs are typed, so you can't accidentally use an audio file where an image is expected:
+
+```swamp
+player_sprite : Res<Image> = @gfx/player      // OK
+
+// OK. @audio/footstep bound to type Res<Audio>
+player_sound : Res<Audio> = @audio/footstep
+
+// Compile error: Audio file cannot be used as Image
+wrong : Res<Image> = @audio/footstep
+```
+
 ### With
 
 The `with` keyword creates a new scope with bound variables. It's useful for temporarily binding values or creating local aliases. It is almost like mini-functions. Can be useful if you have a longer function that does not make sense to split into smaller separate functions.
@@ -1291,6 +1393,19 @@ for item in inventory {
 for player_id, score in high_scores {
     display_score(player_id, score)
 }
+```
+
+## Others
+
+### Anchor
+
+Creates a compile time allocation with a specific name. The allocation and name is only available for Host (the game engine). Those identifiers can not be referenced in Swamp code.
+
+The Host typically searches for the identifiers using the name. The Host use these anchor allocations to be mutated by calling member functions for those types, like `update(self)` and `render(self)`.
+
+```swamp
+anchor render = RenderState::new()
+anchor simulation = Simulation { mode: WaitingForPlayers, .. }
 ```
 
 ## Modules and Imports

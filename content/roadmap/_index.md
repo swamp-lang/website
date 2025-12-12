@@ -7,58 +7,32 @@ toc = true
 
 ## Roadmap
 
-- Truly Random Resource Ids. `@8fad1938` or `path/something/else` that looks up the id during compile time.
-- Implicit projection (Desugar Embedded) Types
-- Shared memory pools (maybe?)
-- SoA support
-
-## Resource IDs
-
-- Resource Ids. `@8fad1938` or `path/something/else` that looks up the id during compile time.
-- When working in a bigger team, those ids can be randomly generated if needed.
-
-## Remove/erase keywords in collection loops
+## erase keywords in collection loops
 
 Be able to safely remove elements from a collection. Compile lowering will know how to change the index to not miss any iterations (if it is swap-removed, stay on the same index)
 
 ```swamp
 for space_ship in ships {
     if ship.x < -10 {
-        remove space_ship // removes the space_ship in a safe way
+        erase space_ship // removes the space_ship in a safe way
     }
 }
 ```
-
-## Named function arguments
-
-Be able to specify function arguments by name. Evaluation order: for ordered arguments it is left to right, but for named arguments I guess it is also left to right?
-
-```swamp
-fn my_function(health: Int, damage: Int, modifier: Int) {}
-
-my_function(health: 10, modifier: 10, damage: 5) //don't need to remember the order
-my_function(10, 5, 10) //if not using the field names, need to be correct order
-```
-
-Parser is already handling it and putting it in AST, so it is prepared for later phases.
-
-Suggested by @catnipped
 
 ## ZII arguments (rest operator)
 
 can use rest `..` operator in function arguments, both for named and normal arguments
 
 ```swamp
-my_function(health: 10 ..)
-```
+fn my_function(health: Int, damage: Int, modifier: Int) {...}
 
-```swamp
+my_function(damage: 24 ..)
+// will be desugared into zero for each argument not specified:
+my_function(health: 0, modifier: 0, damage: 24)
+
+
 my_function(10, ..)
-```
-
-will be desugared into zero for each argument not specified:
-
-```swamp
+// will be desugared into zero for each argument not specified:
 my_function(health: 10, modifier: 0, damage: 0)
 ```
 
