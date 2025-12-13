@@ -643,31 +643,13 @@ target: Entity?            // Current target
 
 The `?` suffix indicates that these variables might not have a value.
 
-#### Unwrap `?` operator
-
-Used so a "chain" of lookups can be made without having to check for `none` in each step. Is only valid in `when` or with the default value operator `??`.
-
-```swamp
-guild_name := player.guild?.get_name() ?? "No Guild"
-
-leader_rank := when rank = player.guild?.get_leader()?.get_rank() {
-    rank
-} else {
-    "No Rank"
-}
-
-spell_power := equipped_weapon?.get_enchantment()?.calculate_power() ?? 0
-```
-
 #### Default Value operator `??`
 
 You use `??` to provide a default value. If the value is none, then the value to the right of `??` is used, otherwise the unwrapped value.
 
 ```swamp
 // Using ?? to provide default values
-damage := equipped_weapon?.damage ?? 1     // Default to 1 if no weapon
-name := target?.name ?? "No Target"        // Default to "No Target" if no target
-x := spawn_point?.x ?? 0.0                 // Default to 0.0 if no spawn point
+x := spawn_point ?? (0.0, 0.0)                 // Default to 0.0 if no spawn point
 ```
 
 ### Type alias
@@ -684,7 +666,7 @@ type My2dPosition = (Int, Int)
 
 ### Bits
 
-{% note(type="coming_soon") %}
+{% note(type="unimplemented") %}
 coming soon
 {% end %}
 

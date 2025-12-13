@@ -38,6 +38,22 @@ my_function(health: 10, modifier: 0, damage: 0)
 
 Suggested by @catnipped
 
+## Optional Chaining `?` operator
+
+Used so a "chain" of lookups can be made without having to check for `none` in each step. Is only valid in `when` or with the default value operator `??`.
+
+```swamp
+guild_name := player.guild?.get_name() ?? "No Guild"
+
+leader_rank := when rank = player.guild?.get_leader()?.get_rank() {
+    rank
+} else {
+    "No Rank"
+}
+
+spell_power := equipped_weapon?.get_enchantment()?.calculate_power() ?? 0
+```
+
 ## Implicit projection (Desugar Embedded) Types
 
 you don't have to type the name of the contained types, when it can be inferred from the type. There is no overhead at all:
