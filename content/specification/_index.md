@@ -1156,6 +1156,29 @@ player_sound : Res<Audio> = @audio/footstep
 wrong : Res<Image> = @audio/footstep
 ```
 
+#### Extension-Based Type Inference and Type Checking
+
+{% note(type="unimplemented") %}
+Extension-based type checking for Resource IDs is not implemented yet
+{% end %}
+
+You can use the `#[extensions()]` attribute on struct definitions to provide an improved verification. Then the compiler will either check the extension/type directly the first time that specific resource id is used, or as an extra optional analyzer end step (goes through all resource ids and matches with file extensions).
+
+```swamp
+// Define types with their associated file extensions
+#[extensions("png", "jpeg", "jpg")]
+struct Image {
+    width: Int,
+    height: Int,
+}
+
+#[extensions("wav")]
+struct Audio {
+    sample_rate: Int,
+    channels: Int,
+}
+```
+
 ### With
 
 The `with` keyword creates a new scope with bound variables. It's useful for temporarily binding values or creating local aliases. It is almost like mini-functions. Can be useful if you have a longer function that does not make sense to split into smaller separate functions.
