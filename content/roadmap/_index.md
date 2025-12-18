@@ -341,6 +341,97 @@ fn spawn_unit(mut self, unit_info: UnitInfo) {
 }
 ```
 
+## Implicit Receiver
+
+The leading dot `.` operator provides syntactic sugar for accessing fields on an implicit receiver. It can be used when an obvious receiver is known from the current scope (such as `self` in member functions).
+
+### Implicit Receiver Syntax
+
+```swamp
+impl Position {
+    fn set_x_and_y(mut self, i: Float) {
+        .x = i  // desugars to: self.x = i
+        .y = i  // desugars to: self.y = i
+    }
+}
+```
+
+### Compile-time Desugar
+
+At compile time, leading-dot expressions are desugared to explicit  receiver access. The compiler changes `.field` to `receiver.field`:
+
+- In member function bodies: `self`
+- In [init expression mutability](#init-expression-mutability): the bound variable to be initialized
+
+This is purely syntactic sugar with zero runtime cost --- all receiver resolution happens at compile time.
+
+## Init Expression Mutability
+
+Allows variables to be mutable during initialization (within loop or block expressions) but immutable after the initializer completes. The variable is zero initialized before the expression is evaluated.
+
+### Motivation
+
+Without init-mutability, accumulator patterns force variables to remain mutable for their entire scope, even when mutation is only needed during initialization:
+
+```swamp
+mut a : Int = 0
+mut x := 0
+
+while x < 10 {
+    a += 2
+    x += 1
+}
+// a is still mutable here, even though we're done mutating it
+```
+
+### Init Expression Syntax
+
+By binding an immutable variable to a loop expression, the variable is mutable within the loop body but becomes immutable once the expression is done:
+
+```swamp
+mut x := 0
+
+a : Int = while x < 10 {
+    a += 2  // a is mutable only within this block
+    x += 1
+}
+// a is immutable here
+```
+
+This works with all loops:
+
+```swamp
+a : Int = for i in 0..20 {
+    a += calculate(i)
+}
+
+// Collections are also supported:
+positions: Vec<Position; 32> = for i in 0..32 {
+    positions.push( { x: i, y: i * 2 } )
+}
+// positions is immutable after initialization
+
+// Using implicit receiver syntax (`.`):
+positions: Vec<Position; 32> = for i in 0..32 {
+    .push( { x: i, y: i * 2 } )
+}
+```
+
+### Init keyword?
+
+Maybe extend the functionality to work with any expression/block:
+
+```swamp
+positions: Vec<Position; 32> = init {
+    // we can mutate it directly since we are in an "init"-block
+    add_positions(& positions)
+}
+```
+
+### Compile-time Semantics
+
+The compiler treats the variable as mutable during the initializer expression (loop body), but immutable after the initializer completes.
+
 ## Optimization: Optional Aggregates Using Zero Pointer
 
 An optimization for optional aggregate types where the pointer itself serves as the discriminant. Instead of wrapping in a union with a separate tag, a zero pointer represents `none` and a non-zero pointer represents `some`.
