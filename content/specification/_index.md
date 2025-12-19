@@ -715,7 +715,7 @@ a.is_flying = 1
 
 For each bit it does an OR. if any of the bits is set, the result is 1, otherwise 0:
 
-```text
+```
 00000110
 00010000
 --------
@@ -774,7 +774,7 @@ A neat trick where you take the last element in the collection and overwrites th
 
 - Swap remove. At worst a single copy is done:
 
-```text
+```
 // Before:
 | a | b | c | d | e | f | g | h | i |
 // Operation: 'i' overwrites 'b', len -= 1 (to 'remove' the old i)
@@ -784,7 +784,7 @@ A neat trick where you take the last element in the collection and overwrites th
 
 - Vec remove. you have to copy *all* elements after the one that is removed:
 
-```text
+```
 // Before:
 | a | b | c | d | e | f | g | h | i |
 // Operation: 'c' through 'i' are copied to the left. len -= 1.
