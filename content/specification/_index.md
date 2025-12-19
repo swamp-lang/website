@@ -1468,6 +1468,80 @@ use another_package::some_module::{ThatType, OtherType} // you only need to writ
 use second_package::module_name // you don't need to write `second_package::`
 ```
 
+## No `return`, `continue` and `break`
+
+**Swamp** intentionally has no support for goto keywords like `return`, `continue`, and `break`.
+
+### The Problem with Gotos
+
+Edsger Dijkstra wrote, even before I was born, that ["Go To Statement Considered Harmful"](https://doi.org/10.1145/362929.362947), arguing that unrestricted jumps make code difficult to reason about. When code can jump anywhere at any time, it becomes hard to:
+
+- Trace how execution arrived at a specific line
+- Predict what will execute next
+- Debug and maintain the codebase
+
+While explicit `goto` statements are rare in modern programming languages, the same problems persist in its **disguised** forms:  `return`, `continue`, and `break` are all jump/goto statements that bypass the natural flow.
+
+### Swamp's Structural Approach
+
+In **Swamp**, the block structure directly reflects execution flow. You will always reach the end of a block, no matter what logic is inside it. This design provides several upsides:
+
+- **No hidden jumps**: There are no jumps to loop headers, loop exits, or function ends.
+
+- **Predictable iteration**: Loop bounds are easy to reason about. A `for i in 0..10` loop executes exactly 10 times, always. No early exits, no skipped iterations.
+
+- **Single exit point**: Functions return only at their natural end, making it trivial to see what the function ultimately returns. No need to search for scattered `return` statements.
+
+- **Reasoning simplicity**: Control flow is determined entirely by block nesting and structured constructs (`if`/`while`/`match`), not by hunting for jump statements scattered throughout your code.
+
+This means when you see a block, you can trust that:
+
+```swamp
+fn process_items(items: [Item]) -> Int {
+    mut total := 0
+    for item in items {
+
+        // We know that *all* items are considered,
+        // there is no early break or continue
+        total += item.value
+    }
+
+    // You know execution reaches here
+    total  // Clear, single return point
+}
+```
+
+Rather than worrying about code like this:
+
+```rust
+fn process_items(items: [Item]) -> Int {
+    mut total := 0
+    for item in items {
+        if item.is_invalid {
+            return -1  // Jump out here?
+        }
+        if item.skip {
+            continue   // Jump to next iteration?
+        }
+        total += item.value
+        if total > 1000 {
+            break      // Jump out of loop?
+        }
+    }
+    total  // Or does it return here?
+}
+```
+
+### Optimization Benefits
+
+This structured approach also makes it easier for optimization :
+
+- **Simpler control flow graphs**: Without jump statements, the compiler generates cleaner control flow graphs with fewer basic blocks, where each block has a single entry and exit point.
+
+- **Better optimizations**: Predictable execution paths enable more aggressive loop optimizations, more efficient register allocation, and better instruction scheduling (a larger window of sequential instructions that can be reordered).
+
+- **Predictable performance**: The execution path matches what you see in the source code, avoiding unpredictable instruction cache misses or branch mispredictions from hidden jumps.
+
 ## Type Inference
 
 **Swamp** automatically determines types from context, so you rarely need to write them explicitly.
