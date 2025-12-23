@@ -1206,6 +1206,30 @@ reward =
     | _ -> "No Reward"
 ```
 
+### AND Block Expression
+
+Syntactic sugar for chaining multiple boolean expressions with short-circuit `AND` semantics. The `&>` operator desugars to a sequence of `&&` operations at compile time.
+
+```swamp
+a := &> {
+    function_that_returns_bool() // short-circuits if false
+
+    // Easier to add comments for each step
+    number_of_items > 3 // short-circuits if false
+
+    // And the last check
+    {
+        print("we reached the last check")
+        another_function_with_bool()
+    }
+}
+
+// Desugars to:
+a := function_that_returns_bool() && number_of_items > 3 && another_function_with_bool()
+```
+
+Each expression in the block must evaluate to `Bool`. Evaluation stops at the first `false` (short-circuit evaluation). The block syntax makes it easier to add spacing and comments between conditions, avoiding awkward inline constructions like `&& /* comment */ condition &&`.
+
 ### Non-Capturing Lambda
 
 {% note(type="to_review") %}
