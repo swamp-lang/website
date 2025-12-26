@@ -1230,6 +1230,48 @@ a := function_that_returns_bool() && number_of_items > 3 && another_function_wit
 
 Each expression in the block must evaluate to `Bool`. Evaluation stops at the first `false` (short-circuit evaluation). The block syntax makes it easier to add spacing and comments between conditions, avoiding awkward inline constructions like `&& /* comment */ condition &&`.
 
+### Implicit Receiver
+
+The leading dot (bare dot / lonely dot) `.` operator provides syntactic sugar for accessing fields an member functions on an implicit receiver. It can be used when an "obvious" receiver is known from the current scope. Currently it only supports `self` inside member functions.
+
+#### Implicit Receiver Syntax
+
+```swamp
+impl Position {
+    fn set_x_and_y(mut self, i: Float) {
+        .x = i  // desugars to: self.x = i
+        .y = i  // desugars to: self.y = i
+    }
+}
+```
+
+#### Compile-time Desugar
+
+At compile time, leading-dot expressions are desugared to explicit  receiver access. The compiler changes `.field` to `receiver.field`:
+
+- In member function bodies: `self`
+
+This is purely syntactic sugar with zero runtime cost --- all receiver resolution happens at compile time.
+
+### ZII arguments (rest operator)
+
+can use rest `..` operator in function arguments, both for named and normal arguments. It will automatically call default, otherwise keep it ZII.
+
+```swamp
+fn my_function(health: Int, damage: Int, modifier: Int) {...}
+
+my_function(damage: 24 ..)
+// will be desugared into zero for each argument not specified:
+my_function(health: 0, modifier: 0, damage: 24)
+
+
+my_function(10, ..)
+// will be desugared into zero for each argument not specified:
+my_function(health: 10, modifier: 0, damage: 0)
+```
+
+Suggested by @catnipped
+
 ### Non-Capturing Lambda
 
 {% note(type="to_review") %}
