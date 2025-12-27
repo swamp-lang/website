@@ -187,8 +187,8 @@ contexts:
       push: anchor_declaration
     - match: '\b(struct|bits|enum|trait|impl|type|external|fn|on)\b'
       scope: keyword.declaration.swamp
-    - match: '\bmut\b'
-      scope: storage.modifier.mut.swamp
+    - match: '\b(mut|out)\b'
+      scope: storage.modifier.swamp
     - match: '\bconst\b'
       scope: keyword.declaration.const.swamp
       push: const_declaration
