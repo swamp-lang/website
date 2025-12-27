@@ -1272,6 +1272,88 @@ my_function(health: 10, modifier: 0, damage: 0)
 
 Suggested by @catnipped
 
+### Out Parameters
+
+#### Overview
+
+The `out` keyword designates a parameter intended for initialization rather than incremental modification. The parameter type must an aggregate. The `out` implicitly marks it as mutable.
+
+`out` is a semantic "flag", that you are going to initialize it, but it behaves in almost all respects as a normal `mut` parameter.
+
+There is a cool difference though: functions with `out` parameters can be called using return-value syntax, and the compiler automatically provides the structured return (sret) value.
+
+#### Out Parameter Syntax
+
+##### Explicit Name
+
+```swamp
+fn create_vector(out result: Vec2, x: Int, y: Int) {
+    result.x = x
+    result.y = y
+}
+
+fn main() {
+    // Call as if it returns Vec2
+    vec := create_vector(10, 20)
+}
+```
+
+##### Implicit Name (Shorthand)
+
+You can omit the variable name after `out` --- in that case the parameter will be named `out`.
+
+```swamp
+fn create_vector(out: Vec2, x: Int, y: Int) {
+    out.x = x
+    out.y = y
+}
+
+fn main() {
+    // Same call syntax - looks like a regular function
+    vec := create_vector(10, 20)
+}
+```
+
+#### How It Works
+
+1. **Function Definition**: The function takes an `out` parameter (must be first parameter) and returns `()` (Unit / nothing)
+
+2. **Call Site**: The caller can omit the out parameter and use the function as if it returns the out parameter's type
+
+#### Comparison with Regular Returns
+
+```swamp
+// Regular sret function. the Vec2 will materialize into the destination
+// implicitly passed in by the compiler.
+// Downside is you can not get the actual sret parameter passed in behind the scenes.
+fn create_vector_return(x: Int, y: Int) -> Vec2 {
+    Vec2 { x: x, y: y }
+}
+
+// Out parameter, explicit sret parameter
+fn create_vector_out(out: Vec2, x: Int, y: Int) {
+    out.x = x
+    out.y = y
+}
+
+// Both are called the same way!
+v1 := create_vector_return(10, 20)
+v2 := create_vector_out(10, 20)
+```
+
+#### Explicit Out Parameter Passing
+
+You can still explicitly pass the destination if needed:
+
+```swamp
+fn main() {
+    mut my_vec: Vec2
+
+    // Explicit: pass the destination yourself
+    create_vector(&my_vec, 10, 20)
+}
+```
+
 ### Non-Capturing Lambda
 
 {% note(type="to_review") %}
