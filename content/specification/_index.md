@@ -1561,6 +1561,51 @@ anchor render = RenderState::new()
 anchor simulation = Simulation { mode: WaitingForPlayers, .. }
 ```
 
+### Compiler Directives
+
+Compiler directives provide metadata and instructions to the compiler rather than being part of your program's runtime logic. They follow the general form:
+
+`#(keyword)(arguments)`
+
+Where:
+
+- `#` --- directive prefix (required)
+- `(keyword)` --- optional keyword that specifies the directive type (e.g., `include`)
+- `(arguments)` --- arguments enclosed in either `[...]` or `(...)` depending on the directive
+
+Examples:
+
+- Attribute (no keyword): `#[extensions("png", "jpg")]`
+- Include directive: `#include[assets/file.png]`
+- Future function-style: `#some_feature(-1.0, 42, "hello")`
+
+#### Attributes
+
+Attributes annotate types, functions, or other declarations with metadata that influences compilation behavior. They use the form `#[attribute_name]` without a keyword:
+
+```swamp
+// Extension-based type verification for resource IDs
+#[extensions("png", "jpeg", "jpg")]
+struct Image {
+    width: Int,
+    height: Int,
+}
+```
+
+#### Include Directives
+
+The `include` directive embeds external files directly into your program at codegen/link/assembly time. The file's contents become part of your compilation artifact (e.g. Swim file or executable), allowing you to bundle assets, configuration files, or data without file loading at runtime.
+
+```swamp
+// Embed a PNG image as a byte array
+const EMBEDDED_PNG = #include[assets/textures/player.png]
+
+// The type is an array of bytes [U8; N]
+// where N is the file size in bytes
+```
+
+The codegen/linker/assembler reads the file at the specified path (relative to your project root) and includes its raw bytes in the compilation artifact (e.g. Swim file). Similar to `.incbin` in ARM assembly.
+
 ## Modules and Imports
 
 ### The `mod` Keyword
