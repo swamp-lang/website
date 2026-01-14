@@ -19,6 +19,12 @@ for space_ship in ships {
 }
 ```
 
+## Do not use memset for clear
+
+- clear fields by generated store operations
+- ignore padding (not worth it to clear for memory hashing)
+- generate `hash()` functions
+
 ## Optional Chaining `?` operator
 
 Used so a "chain" of lookups can be made without having to check for `none` in each step. Is only valid in `when` or with the default value operator `??`.
