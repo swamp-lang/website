@@ -19,11 +19,22 @@ for space_ship in ships {
 }
 ```
 
-## Do not use memset for clear
+## Strata ABI: Do not use clear (memclr, memset)
 
 - clear fields by generated store operations
-- ignore padding (not worth it to clear for memory hashing)
-- generate `hash()` functions
+- ignore padding (not worth it to clear for stable memory hashing of padding fields)
+
+## Strata ABI: Restrict HashMap Keys to Integer Types
+
+At the ABI level, HashMap implementations only accept `u32` or `u64` keys. This requirement must be satisfied either by compiler lowering (for trivial conversions) or by explicit user code (for complex types requiring hashing).
+
+**Compiler behavior:**
+
+- Does not auto-generate hashing implementations for user-defined types
+- Only trivial conversions are supported: integer-like types (`Int`, `Bool`, `Fixed32`) and enums whose discriminants and payloads can be merged into a single `u32` (e.g., `enum AlsoSimple { X, Y, Z }` or `enum Something { A, B(AlsoSimple), C }`)
+- Emits a compile-time error when types requiring non-trivial conversion are used directly as HashMap keys
+
+**Rationale:** Hashing logic belongs in user space. The compiler's responsibility is type checking and lowering, not synthesizing domain-specific hash algorithms.
 
 ## Optional Chaining `?` operator
 
@@ -395,7 +406,7 @@ positions: Vec<Position; 32> = init {
 
 The compiler treats the variable as mutable during the initializer expression (loop body), but immutable after the initializer completes.
 
-## ABI: Optimization: Optional Aggregates Using Zero Pointer
+## Strata ABI: Optimization: Optional Aggregates Using Zero Pointer
 
 An optimization for optional aggregate types where the pointer itself serves as the discriminant. Instead of wrapping in a union with a separate tag, a zero pointer represents `none` and a non-zero pointer represents `some`.
 
@@ -431,7 +442,7 @@ if p { // literal pointer check, zero overhead, no unwrapping
 }
 ```
 
-## ABI: Optimization: Payload-Free Enums as Scalars
+## Strata ABI: Optimization: Payload-Free Enums as Scalars
 
 Enums without payloads can be lowered directly to integer primitives (`u8`, `u16`, or `u32`) based on the number of variants, eliminating the need for stack frame allocation.
 
