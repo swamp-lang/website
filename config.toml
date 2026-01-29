@@ -23,9 +23,9 @@ navbar_items = [
   { code = "en", nav_items = [
     { url = "/", name = "Home" },
     { url = "/specification/", name = "Specification" },
+    { url = "/install/", name = "Install" },
     { url = "/roadmap/", name = "Roadmap" },
 		{ url = "/idioms/", name = "Idioms" },
-    { url = "/internal/", name = "Internal" },
   ]}
 ]
 

@@ -83,6 +83,19 @@
 			</dict>
 		</dict>
 
+		<!-- Shell Paths -->
+		<dict>
+			<key>name</key>
+			<string>Shell Path</string>
+			<key>scope</key>
+			<string>string.unquoted.path.shell</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#9b7bc7</string>
+			</dict>
+		</dict>
+
 		<!-- Resource Path Marker -->
 		<dict>
 			<key>name</key>
@@ -479,6 +492,19 @@
 				<string>#c47b7b</string>
 				<key>fontStyle</key>
 				<string>bold</string>
+			</dict>
+		</dict>
+
+		<!-- URL/Link -->
+		<dict>
+			<key>name</key>
+			<string>URL/Link</string>
+			<key>scope</key>
+			<string>markup.underline.link</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#7d7089</string>
 			</dict>
 		</dict>
 	</array>

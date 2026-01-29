@@ -10,6 +10,8 @@ It uses short, clear syntax, explicit memory with **compile-time allocation**, a
 
 Swamp code compiles to **Marsh VM** bytecode and, in the future, directly to **native machine code**.
 
+👉 [Install it now!](install/)
+
 ## Key ideas
 
 - **Explicit control.** Nothing is hidden --- memory, lifetimes, and layout are defined by the code, not by a runtime.

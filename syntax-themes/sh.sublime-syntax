@@ -1,0 +1,101 @@
+%YAML 1.2
+---
+# Fun and Cool Shell Script Syntax Highlighting
+# Highlights commands, flags, options, paths, and URLs
+name: Shell
+file_extensions: [sh, bash, zsh]
+scope: source.shell
+
+contexts:
+  main:
+    - include: comments
+    - include: command-line
+
+  comments:
+    - match: '#'
+      scope: punctuation.definition.comment.shell
+      push:
+        - meta_scope: comment.line.number-sign.shell
+        - match: $
+          pop: true
+
+  command-line:
+    - match: ^\s*
+      push: command-first # maybe the command is first
+
+  command-first:
+    - match: '\b([a-zA-Z_][-a-zA-Z0-9_./]*)\b'
+      scope: entity.name.function.shell
+      set: maybe-subcommand
+    - include: pop-on-newline
+
+  maybe-subcommand:
+    - match: '\b([a-zA-Z][-a-zA-Z0-9_]*)\b(?!\.[a-zA-Z])'
+      scope: keyword.other.subcommand.shell
+      set: arguments
+    - include: arguments
+
+  arguments:
+    - include: comments
+    - include: strings
+    - include: urls
+    - include: flags
+    - include: paths
+    - include: variables
+    - include: operators # maybe piping to something
+    - include: pop-on-newline
+
+  flags:
+    - match: '(?<=\s)--[a-zA-Z][-a-zA-Z0-9]*'
+      scope: constant.language.flag.long.shell
+    - match: '(?<=\s)-[a-zA-Z0-9]+'
+      scope: constant.language.flag.short.shell
+
+  paths:
+    - match: '(?<=\s)\.{1,2}/[-a-zA-Z0-9_./]+'
+      scope: string.unquoted.path.shell
+    - match: '(?<=\s)/[-a-zA-Z0-9_./]+'
+      scope: string.unquoted.path.shell
+    - match: '(?<=\s)~/?[-a-zA-Z0-9_./]*'
+      scope: string.unquoted.path.shell
+    - match: '(?<=\s)[a-zA-Z0-9_][-a-zA-Z0-9_]*\.[a-zA-Z0-9]+'
+      scope: string.unquoted.path.shell
+
+  urls:
+    - match: 'https?://[^\s]+'
+      scope: markup.underline.link.shell
+
+  strings:
+    - match: '"'
+      scope: punctuation.definition.string.begin.shell
+      push: inside-double-quotes
+    - match: "'"
+      scope: punctuation.definition.string.begin.shell # not sure if single quotes are needed...
+      push: inside-single-quotes
+
+  inside-double-quotes:
+    - meta_scope: string.quoted.double.shell
+    - match: '\\.'
+      scope: constant.character.escape.shell
+    - match: '"'
+      scope: punctuation.definition.string.end.shell
+      pop: true
+    - include: variables
+
+  inside-single-quotes:
+    - meta_scope: string.quoted.single.shell
+    - match: "'"
+      scope: punctuation.definition.string.end.shell
+      pop: true
+
+  variables:
+    - match: '\$\{?[a-zA-Z_][a-zA-Z0-9_]*\}?'
+      scope: variable.other.shell
+
+  operators:
+    - match: '[|&;><]'
+      scope: keyword.operator.shell
+
+  pop-on-newline:
+    - match: $
+      pop: true
