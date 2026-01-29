@@ -447,3 +447,40 @@ if p { // literal pointer check, zero overhead, no unwrapping
 Enums without payloads can be lowered directly to integer primitives (`u8`, `u16`, or `u32`) based on the number of variants, eliminating the need for stack frame allocation.
 
 **Trade-off**: These optimized enums cannot be borrowed because the Swamp ABI passes scalars by value, never indirectly.
+
+## String Interpolation Formatting
+
+You can specify how the interpolation formats itself using by adding `:` after a variable within the brackets.
+
+- Lowercase hexadecimal `:x`
+- Uppercase hexadecimal `:X`
+- Binary `:b`
+- Floating point precision `:.1f` (number indicates how many decimals to show)
+- String padding `:.1s` (number indicates how many digits to show)
+
+```swamp
+// Format specifiers
+number := 255
+hex_lower := 'Item ID: {number:x}'        // "Item ID: ff"
+hex_upper := 'Item ID: {number:X}'        // "Item ID: FF"
+binary := 'Flags: {number:b}'             // "Flags: 11111111"
+
+// Floating point precision
+pi := 3.1415
+coords := 'Position: {pi:.2f}'            // "Position: 3.14"
+
+// String padding
+score := 12
+padded_score := 'Score: {score:.5s}'      // "Score: 00012"
+```
+
+## Vec Range
+
+```swamp
+waypoints[0..2] // returns first two items
+waypoints[0..=1] // also returns the first two items
+```
+
+```swamp
+high_scores[0..2] = [32, 44]
+```

@@ -96,15 +96,15 @@ Swamp uses a unique approach to managing mutability that prioritizes safety and 
 
 - Mutability (write access) is explicitly declared with mut. When you need a variable that can change, you must declare this intention clearly.
 
-- Mutable references are requested with &. The & operator is used when you need to temporarily give write access to a function or a specific scope. This is called "borrowing" - you're lending out the ability to modify your data for a short period.
+- References are requested with `&`. The & operator is used when you need to temporarily give a reference to a function or a specific scope. This is called "borrowing". The most common case is when you want to pass something to a function parameter that is `mut`.
 
-- References can only be used in specific contexts and cannot be stored. This prevents many common memory safety issues found in other languages.
+- References can only be used in specific contexts and cannot be stored. This prevents memory safety issues.
 
 Swamp encourages an "immutability-first" approach to software design. We recommend keeping variables immutable by default and only introducing mutability when needed.
 
 ### Variable Type Annotation
 
-Swamp supports type inference by automatically deducing a variable's type from its assigned value. However, there are times when the variable's type is not obvious—especially when initializing a variable with a optional type value like `none`, an empty vector `[]`, or an empty map `[:]`. In those cases, you can explicitly specify the variable's type using type annotation.
+Swamp supports type inference by automatically deducing a variable's type from its assigned value. However, there are times when the variable's type is not obvious --- especially when initializing a variable with a optional type value like `none`, an empty vector `[]`, or an empty map `[:]`. In those cases, you can explicitly specify the variable's type using type annotation.
 
 ```swamp
 a : Int? = none
@@ -138,8 +138,6 @@ If the function will return a value, the parameters are followed by a `->`and a 
 ### Parameter Mutability
 
 Functions can choose whether they want to modify their parameters by using `mut`.This helps make it clear which functions will change the values passed to them and which will just read them.
-
-It is generally recommended to use immutable parameters and return the result, unless there are big types that can cause performance issues.
 
 ```swamp
 // Mutable parameter example
@@ -236,7 +234,7 @@ Suggested by @catnipped
 
 ## Basic Types
 
-**Swamp** provides fundamental types for storing different kinds of data: Integers (Int) for whole numbers, Floating-point numbers (that in reference implementations are Fixed Point numbers) for decimal values, Booleans (Bool) for true/false conditions, and Strings (String) for text, and Codepoint (u32) for characters. There is also Byte (8-bit) and Short (16-bit), but those are rarely used.
+**Swamp** provides fundamental types for storing different kinds of data: Integers (`Int`) for whole numbers, Floating-point numbers (`Float`) (technically Fixed Point numbers) for decimal values, Booleans (`Bool`) for true/false conditions, and Strings (`String`) for text, and Codepoint (`Char`) for characters. There is also an `U8` (8-bit unsigned), but is rarely used in "logic" code.
 
 ### Integers
 
@@ -250,6 +248,7 @@ health := 100
 - Subtract `-`
 - Multiply `*`
 - Divide `/` (only for constant divisors, use `.div()` for non-constants --- a lot slower)
+- Modulo `%` (only for constant divisors, use `.mod()` for non-constants --- a lot slower)
 
 #### Integer Comparisons
 
@@ -262,7 +261,7 @@ health := 100
 
 ### Floats
 
-Floats are always written with one decimal, to keep them apart from Ints.
+Floats are always written with at least one decimal, to keep them apart from Ints.
 
 ```swamp
 speed := 5.5
@@ -274,6 +273,7 @@ speed := 5.5
 - Subtract `-`
 - Multiply `*`
 - Divide `/` (only for constant divisors, use `.div()` for non-constants --- a lot slower)
+- Modulo `%` (only for constant divisors, use `.mod()` for non-constants --- a lot slower)
 
 #### Float Comparisons
 
@@ -290,7 +290,7 @@ speed := 5.5
 is_jumping := true
 ```
 
-A Boolean can only have two different values,  `true` or `false`.
+A Boolean can only have two different values, `true` or `false`.
 
 #### Boolean Operations
 
@@ -339,7 +339,6 @@ player_name[0..=1] = "Ze"
 #### String Operations & Member Functions
 
 - `.len()` Returns length (in characters).
-- `+` Concatenate two strings into one.
 
 #### String Interpolation
 
@@ -356,32 +355,6 @@ Anything within the curly brackets will be handled like regular code: you can in
 ```swamp
 // Expression interpolation
 status := 'HP: {health * 100 / max_health}'
-```
-
-##### String Interpolation Formatting
-
-You can specify how the interpolation formats itself using by adding `:` after a variable within the brackets.
-
-- Lowercase hexadecimal `:x`
-- Uppercase hexadecimal `:X`
-- Binary `:b`
-- Floating point precision `:.1f` (number indicates how many decimals to show)
-- String padding `:.1s` (number indicates how many digits to show)
-
-```swamp
-// Format specifiers
-number := 255
-hex_lower := 'Item ID: {number:x}'        // "Item ID: ff"
-hex_upper := 'Item ID: {number:X}'        // "Item ID: FF"
-binary := 'Flags: {number:b}'             // "Flags: 11111111"
-
-// Floating point precision
-pi := 3.1415
-coords := 'Position: {pi:.2f}'            // "Position: 3.14"
-
-// String padding
-score := 12
-padded_score := 'Score: {score:.5s}'      // "Score: 00012"
 ```
 
 ## Composite Types
@@ -862,18 +835,12 @@ When declaring a list as a parameter, add square brackets `[]` surrounding the T
 spawn_points := [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 }, Point { x: -10, y: 5 } ]
 ```
 
-{% note(type="nerdy") %}
-Internally they are converted from a [initializer_list](/internal/#initializer-list).
-{% end %}
-
 #### Vec Access
 
 ```swamp
 waypoints := [ Point { x: 0, y: 0 }, Point { x: 10, y: 10 } ]
 next_pos := waypoints[1]
 
-waypoints[0..2] // returns first two items
-waypoints[0..=1] // also returns the first two items
 ```
 
 #### Vec Assignment
@@ -881,17 +848,16 @@ waypoints[0..=1] // also returns the first two items
 ```swamp
 mut high_scores := [ 100, 95, 90, 85, 80 ]
 high_scores[0] = 105
-high_scores[0..2] = [32, 44]
 ```
 
 ### Maps
 
-Maps are collections that store pairs of values, where you use one value (the key) to look up another (the value). The key can be a primitive (Int, Byte), and enum and a struct. Strings are not supported as key.
+Maps are collections that store pairs of values, where you use one value (the key) to look up another (the value). The key can be a primitive that can be automatically converted to an Int: (Simple Enums, Int, Byte, Char)
 
 #### Map Declaration
 
 ```swamp
-fn my_function(my_map: [Key: Value]) {}
+fn my_function(my_map: [Key: Value]) {...}
 ```
 
 A map looks similar to a list, but has two types within the square brackets `[]`. The first type is used as the lookup key.
@@ -921,10 +887,6 @@ An empty Map is specified as:
 ```swamp
 empty_map := [:]
 ```
-
-{% note(type="nerdy") %}
-Internally they are converted from a [initializer pair-list](/internal/#initializer-pair-list).
-{% end %}
 
 #### Map Access
 
@@ -1181,7 +1143,7 @@ struct Audio {
 
 ### With
 
-The `with` keyword creates a new scope with bound variables. It's useful for temporarily binding values or creating local aliases. It is almost like mini-functions. Can be useful if you have a longer function that does not make sense to split into smaller separate functions.
+The `with` keyword creates a new scope with bound variables. It's useful for temporarily binding values or creating local references. It is almost like mini-functions. Can be useful if you have a longer function that does not make sense to split into smaller separate functions.
 If you only name the binding, it will create an alias variable. e.g. `a=a`, `a=something_else`, `mut a=b`.
 
 Only the specified variables are available inside the expression (block).
@@ -1592,7 +1554,7 @@ struct Image {
 }
 ```
 
-#### Include Directives
+#### Include Directive
 
 The `include` directive embeds external files directly into your program at codegen/link/assembly time. The file's contents become part of your compilation artifact (e.g. Swim file or executable), allowing you to bundle assets, configuration files, or data without file loading at runtime.
 
@@ -1661,9 +1623,9 @@ use another_package::some_module::{ThatType, OtherType} // you only need to writ
 use second_package::module_name // you don't need to write `second_package::`
 ```
 
-## No `return`, `continue` and `break`
+## No `return` keyword
 
-**Swamp** intentionally has no support for goto keywords like `return`, `continue`, and `break`.
+**Swamp** intentionally has no support for goto keywords that can exit a function early without reaching the end of a function, like `return`.
 
 ### The Problem with Gotos
 
@@ -1673,15 +1635,13 @@ Edsger Dijkstra wrote, even before I was born, that ["Go To Statement Considered
 - Predict what will execute next
 - Debug and maintain the codebase
 
-While explicit `goto` statements are rare in modern programming languages, the same problems persist in its **disguised** forms:  `return`, `continue`, and `break` are all jump/goto statements that bypass the natural flow.
+While explicit `goto` statements are rare in modern programming languages, the same problems persist in its **disguised** form:  `return` are jump/goto statements that bypass the natural flow. Especially since it is idiomatic in Swamp to have long functions with several scopes.
 
 ### Swamp's Structural Approach
 
 In **Swamp**, the block structure directly reflects execution flow. You will always reach the end of a block, no matter what logic is inside it. This design provides several upsides:
 
-- **No hidden jumps**: There are no jumps to loop headers, loop exits, or function ends.
-
-- **Predictable iteration**: Loop bounds are easy to reason about. A `for i in 0..10` loop executes exactly 10 times, always. No early exits, no skipped iterations.
+- **No hidden jumps**: There are no jumps to function ends.
 
 - **Single exit point**: Functions return only at their natural end, making it trivial to see what the function ultimately returns. No need to search for scattered `return` statements.
 
@@ -1713,27 +1673,11 @@ fn process_items(items: [Item]) -> Int {
         if item.is_invalid {
             return -1  // Jump out here?
         }
-        if item.skip {
-            continue   // Jump to next iteration?
-        }
         total += item.value
-        if total > 1000 {
-            break      // Jump out of loop?
-        }
     }
     total  // Or does it return here?
 }
 ```
-
-### Optimization Benefits
-
-This structured approach also makes it easier for optimization :
-
-- **Simpler control flow graphs**: Without jump statements, the compiler generates cleaner control flow graphs with fewer basic blocks, where each block has a single entry and exit point.
-
-- **Better optimizations**: Predictable execution paths enable more aggressive loop optimizations, more efficient register allocation, and better instruction scheduling (a larger window of sequential instructions that can be reordered).
-
-- **Predictable performance**: The execution path matches what you see in the source code, avoiding unpredictable instruction cache misses or branch mispredictions from hidden jumps.
 
 ## Type Inference
 
