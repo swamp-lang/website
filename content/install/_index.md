@@ -10,14 +10,13 @@ The Visual Studio Code extension includes the Swamp compiler, but it's highly re
 
 The VS Code extension includes the Swamp compiler and provides syntax highlighting and error checking.
 
-To install:
+Since Microsoft is not a nice company, we prefer that you download the vsix manually. But otherwise search in your vscode fork or alternative extension marketplace if the "Swamp (beta)" is available.
 
-1. Open VS Code
-2. Press `Cmd+Shift+X` (macOS) or `Ctrl+Shift+X` (Windows/Linux) to open Extensions
-3. Search for "Swamp beta"
-4. Click Install on "Swamp (beta)" by swamp
+Download the VSIX extension, then run `Extensions: Install from VSIX...` in the command palette.
 
-Or install directly from the [marketplace](https://marketplace.visualstudio.com/items?itemName=swamp.swamp-beta).
+<img src="install_from_vsix.png" width=512 alt="install from vsix">
+
+[swamp-beta-0.0.24.vsix](/downloads/swamp-beta-0.0.24.vsix)
 
 ### Brew
 

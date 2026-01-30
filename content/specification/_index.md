@@ -728,18 +728,27 @@ b: Something = 0b001
 
 ## Collection Types
 
-### Introduction
+### Array Types
 
-| Collection | Order       | Use cases                                                                                                                                                |
-| ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Array      | ✅           | Fixed len. You have other ways to know if an element is used, or that all are always used.                                                               |
-| Grid       | ✅ (spatial) | Fixed len. `2D` grid, all elements exists.                                                                                                               |
-| Vec        | ✅           | You need to retain a specific order. add to tail is fast, remove is usually slow.                                                                        |
-| Stack      | ✅ (LIFO)    |                                                                                                                                                          |
-| Queue      | ✅ (FIFO)    |                                                                                                                                                          |
-| Bag        | ❌           | When order is irrelevant. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase.                                                     |
-| Pool       | ❌           | When order is irrelevant, but you want to have an ID to reference an element. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase. |
-| Map        | ❌           | Lookup a value from a key. Relatively slow to add and remove --- depending on the key size. Slower to iterate, since it has "gaps".                      |
+Array types store elements sequentially in memory. While they look similar and all support iteration, the operations have different semantic meanings for each type. For example, adding to a `Stack` means "push onto top" while adding to a `Vec` means "append to end" and adding to a `Queue` means "enqueue at back".
+
+Generic Array Type: `[T]` represents any sequential array type. Use it in function parameters when your function works with any kind of array-like collection. For example, a function that sums numbers can accept `[Int]` and work with a `Vec`, `Array`, or `Stack` --- you don't need to write separate functions for each type.
+
+| Collection               | Order       | Use cases                                                                                                          |
+| ------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------ |
+| Fixed Size Array `[T;N]` | ✅           | Fixed len. len() always returns N. You have other ways to know if an element is used, or that all are always used. |
+| Vec                      | ✅           | You need to retain a specific order. add to tail is fast, remove is usually slow.                                  |
+| Stack                    | ✅ (LIFO)    |                                                                                                                    |
+| Queue                    | ✅ (FIFO)    |                                                                                                                    |
+| Bag                      | ❌           | When order is irrelevant. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase.               |
+| Grid                     | ✅ (spatial) | Fixed len. `2D` grid, all elements exists.                                                                         |
+| Pool                     | ❌           | When order is irrelevant, but you want to have an ID to reference an element. Fast to add, erase, and iterate.     | Uses swap-remove[^swap_remove] for erase. |
+
+### Lookup Types
+
+| Collection | Order | Use cases                                                                                                                           |
+| ---------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Map        | ❌     | Lookup a value from a key. Relatively slow to add and remove --- depending on the key size. Slower to iterate, since it has "gaps". |
 
 #### Swap Remove
 
