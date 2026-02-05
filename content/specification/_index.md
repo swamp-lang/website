@@ -1152,14 +1152,47 @@ struct Audio {
 
 ### With
 
-The `with` keyword creates a new scope with bound variables. It's useful for temporarily binding values or creating local references. It is almost like mini-functions. Can be useful if you have a longer function that does not make sense to split into smaller separate functions.
+The `with` keyword creates a temporary binding to a specific location in memory. It is borrowed only inside the scope `{}`. This is useful when you want to work with a value that's nested deep in your data structures without repeatedly typing the full path.
+
+#### Immutable Binding
+
+Use `with` to create a shorter name for accessing deeply nested data:
+
+```swamp
+// Instead of writing game.players[2] repeatedly
+with player = &game.players[2] {
+    print('player x is: {player.x}')
+    print('player y is: {player.y}')
+    print('player health is: {player.health}')
+}
+```
+
+#### Mutable Binding
+
+Add `mut` to modify the data at the borrowed location:
+
+```swamp
+with mut player = &game.players[2] {
+    player.x = 3
+    player.health -= 10
+
+    // You still have access to outside variables
+    game.something_else = 3
+
+    print('player is now: {player}')
+}
+```
+
+### Only
+
+The `only` keyword creates a new restricted scope with bound variables. It's useful for temporarily binding values or creating local references. It is almost like mini-functions. Can be useful if you have a longer function that does not make sense to split into smaller separate functions.
 If you only name the binding, it will create an alias variable. e.g. `a=a`, `a=something_else`, `mut a=b`.
 
 Only the specified variables are available inside the expression (block).
 
 ```swamp
 // defaults to something=something, another=another
-with something, another {
+only something, another {
     something + another
     x + 3 // Fails, x is not a bound variable in the `with` block
 }
@@ -1687,6 +1720,18 @@ fn process_items(items: [Item]) -> Int {
     total  // Or does it return here?
 }
 ```
+
+### Why `=` instead of `:=` when binding variables?
+
+You use `=` (not `:=`) because you're not creating a new variable with a new type. Instead, you're **binding** a name to an existing memory location. The type must match exactly what's already there --- you're just creating a convenient "alias" to work with that location.
+
+## What is a "Place"?
+
+A place is any expression that refers to a specific location in memory that holds a value.
+
+## What is "Borrowing"?
+
+Borrowing means temporarily accessing a value at its memory location without making a copy (or taking ownership). The `&` symbol indicates you want to borrow (get a reference to) a place.
 
 ## Type Inference
 
