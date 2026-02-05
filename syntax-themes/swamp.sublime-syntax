@@ -177,7 +177,7 @@ contexts:
       push: block_comment
 
   keywords:
-    - match: '\b(if|else|for|in|while|return|break|continue|match|use|mod|with|when|embed|intercept)\b'
+    - match: '\b(if|else|for|in|while|return|break|continue|match|use|mod|with|when|only|embed|intercept)\b'
       scope: keyword.control.swamp
     - match: '\b(match)\b'
       scope: keyword.control.swamp
