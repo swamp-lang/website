@@ -639,56 +639,111 @@ type My2dPosition = (Int, Int)
 
 ### Bits
 
-{% note(type="unimplemented") %}
-coming soon
-{% end %}
+`bits` defines a packed value type stored inside a single unsigned integer. Each field occupies a fixed number of `bits` instead of a full 32 bit integer.
 
-Upcoming feature where it is possible to create a struct with bit fields. One idea is to have it as a normal `struct` and detect if the types are `U*`, or maybe also be able to annotate the struct with the overall storage size (e.g. `: U16`)
+#### Motivation
+
+Normally:
+
+```swamp
+Bool  // at least 1 byte
+Int   // 4 bytes
+```
+
+So a structure like:
+
+```swamp
+struct Data {
+    is_attacking: Bool,
+    is_flying: Bool,
+    small_id: Int,
+}
+
+// may use 6–12 bytes depending on alignment.
+```
+
+With `bits`, the same data can fit inside 1 byte.
+
+The compiler packs the fields and accesses them using bit masks and shifts.
+
+It is also useful for mapping directly to hardware registers (e.g., Game Boy Advance sprite control) or network protocols.
 
 #### Syntax
 
 ```swamp
 bits Something {
-    is_attacking: Bool, // 1 bit
-    small_id: U4, // 0-15 can be here
-    is_flying: U1,
+    is_attacking: 1,
+    small_id: 4, // can store values 0–15
+    is_flying: 1,
 }
+
+// will be represented as an U8 (byte)
 ```
 
-without annotation it rounds up to the following bit sizes: `U8`, `U16` or `U32`.
+#### Storage Size
 
-with annotation:
+If no storage size is specified, the compiler selects the smallest unsigned integer that fits all bits:
+
+| total bits  | type         |
+| ----------: | ------------ |
+|  1–8        | `U8`         |
+|  9–16       | `U16`        |
+| 17–32       | `U32`        |
+
+#### Explicit size
+
+You may force a storage type:
 
 ```swamp
-bits Something : U16 { // will take up 16 bits no matter what
-    is_attacking: Bool, // 1 bit
-    small_id: U4, // 0-15 can be here
-    is_flying: U1,
+bits Something : U16 {
+    is_attacking: 1,
+    small_id: 4,
+    is_flying: 1,
 }
 ```
 
-#### Bit example
+Now it always occupies 16 bits, even though only 6 are used.
 
-| bits       | field        |
+#### Memory Layout
+
+```less
+bit index: 7 6 5 4 3 2 1 0
+           - - F I I I I A
+```
+
+| mask       | field        |
 | ---------- | ------------ |
 | `00000001` | is_attacking |
 | `00011110` | small_id     |
 | `00100000` | is_flying    |
 
-#### Example
+#### Creating bits
 
 ```swamp
-mut a := Something { small_id = 3 }
-// a = 0b00000110
+mut a := Something { small_id: 3 }
+// desugared to: a = 0b00000110
+```
+
+#### Writing to a bit field
+
+```swamp
 a.is_flying = 1
-// a = a | 0b00100000
+// desugared to: a = a | 0b00100000
+```
+
+#### Reading from a bit field
+
+```swamp
+found_id: Int = a.small_id
+
+// desugared to: found_id = (a & 0b00011110) >> 1
 ```
 
 #### bitwise OR
 
 For each bit it does an OR. if any of the bits is set, the result is 1, otherwise 0:
 
-```
+```swamp
 00000110
 00010000
 --------
@@ -696,7 +751,7 @@ For each bit it does an OR. if any of the bits is set, the result is 1, otherwis
 ```
 
 ```swamp
-if a.is_flying {  // will be lowered to: if (a & 0b00100000) != 0 {
+if a.is_flying {  // will be desugared to: if (a & 0b00100000) != 0 {
 
 }
 ```
@@ -704,26 +759,6 @@ if a.is_flying {  // will be lowered to: if (a & 0b00100000) != 0 {
 ```swamp
 found_id: Int = a.small_id // (a & 0b00000110) >> 1
 found_id = a.small_id.int() // (a & 0b00000110) >> 1
-```
-
-```swamp
-fn needs_small_id(id: U4) {
-
-}
-
-needs_small_id(a.found_id)
-```
-
-#### Example 2
-
-```swamp
-mut a := Something { small_id: 4 } // All are zeroed
-
-a.is_flying = 1 // can use false/true as well?
-a.is_attacking = true
-a.small_id = 14
-
-b: Something = 0b001
 ```
 
 ## Collection Types
