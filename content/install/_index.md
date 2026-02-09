@@ -16,7 +16,7 @@ Download the VSIX extension, then run `Extensions: Install from VSIX...` in the 
 
 <img src="install_from_vsix.png" width=512 alt="install from vsix">
 
-[swamp-beta-0.0.30.vsix](/downloads/swamp-beta-0.0.30.vsix)
+[swamp-beta-0.0.31.vsix](/downloads/swamp-beta-0.0.31.vsix)
 
 ### Brew
 
