@@ -684,11 +684,11 @@ bits Something {
 
 If no storage size is specified, the compiler selects the smallest unsigned integer that fits all bits:
 
-| total bits  | type         |
-| ----------: | ------------ |
-|  1–8        | `U8`         |
-|  9–16       | `U16`        |
-| 17–32       | `U32`        |
+| total bits | type  |
+| ---------: | ----- |
+|        1–8 | `U8`  |
+|       9–16 | `U16` |
+|      17–32 | `U32` |
 
 #### Explicit size
 
@@ -1185,9 +1185,23 @@ struct Audio {
 }
 ```
 
+### Borrow binding
+
+Binds a *named borrow* to an [`identity borrow`](#identity-borrow). This is for identity-stable places only, so the alias keeps pointing to the same logical value for its entire lifetime.
+
+The binding uses `=` (not `:=`) because you are creating an alias to an existing place, not introducing a new owned value. The alias is valid only within its scope.
+
+```swamp
+a = &game.some_other_thing.another
+
+mut b = &game.some_other_thing.another
+```
+
+If you need a [`location borrow`](#location-borrow), use [`with`](#with).
+
 ### With
 
-The `with` keyword creates a temporary binding to a specific location in memory. It is borrowed only inside the scope `{}`. This is useful when you want to work with a value that's nested deep in your data structures without repeatedly typing the full path.
+The `with` keyword creates a temporary binding to a specific location in memory ([`location borrow`](#location-borrow)). It is borrowed only inside the scope `{}`. This is useful when you want to work with a value that's nested deep in your data structures without repeatedly typing the full path. The location is not identity safe, so the scope should normally be short.
 
 #### Immutable Binding
 
@@ -1699,6 +1713,58 @@ use another_package::some_module::ThatType // you only need to write `ThatType`
 use another_package::some_module::{ThatType, OtherType} // you only need to write `ThatType` or `OtherType`
 use second_package::module_name // you don't need to write `second_package::`
 ```
+
+## Borrow
+
+Swamp distinguishes between **values** (rvalues) and **places** (lvalues).
+A value is data, and a place is the memory location for that data.
+
+A borrow gives temporary access to a place without moving or copying it.
+
+There are two classes of places:
+
+- **Identity-stable place**
+
+    The memory location is *stable*: while it is borrowed, the compiler guarantees that the same logical value stays in that location. The address is stable and cannot implicitly swap or replace the element.
+
+- **Location-only place**
+
+    The memory location is *unstable*: the container may reuse or overwrite that slot during valid operations. The only guarantee is that the slot always contains a valid value of the right type.
+
+**Guarantees (Always):**
+
+- ✅ Memory safe --- no buffer overflows, no out-of-bounds writes
+- ✅ No dangling pointers --- references can't outlive their memory
+- ✅ No wild pointers --- references can't point to arbitrary/uninitialized memory
+- ✅ No process corruption --- can't write outside your process space
+- ✅ Correct alignment --- types maintain their alignment requirements
+- ✅ No crashes or panics from memory errors
+
+### Identity borrow
+
+This is the traditional *aliasing borrow* of an identity-stable place. The compiler guarantees that the borrowed reference continues to refer to the same logical value for the duration of the borrow.
+
+Think of it as you are holding a reference for a specific person. The person can change their "properties" without you being involved, but it is still the same person to you.
+
+**Possible Issues (Within the borrow scope):**
+
+- ⚠️ Aliasing surprises --- another alias may mutate the same value between reads
+- ⚠️ But still deterministic --- bugs are reproducible, not random
+
+### Location borrow
+
+This is a borrow of a *location-only place*. The compiler only guarantees that the location always contains a valid value of type `T`. The location is not stable, the identity stored there may change at any time due to valid container operations.
+
+Think of it as you are holding a note that says "the book in shelf slot 12". Slot 12 will always hold *a book* of the same physical size, but it might be a different book after the shelf gets reorganized.
+
+Because this can cause identity confusion, Swamp only allows location borrows inside a `with` scope, making the "identity may change"-window explicit, visible and local.
+
+**Possible Issues (Within the `with` borrow scope):**
+
+- ⚠️ Logic errors --- reading/writing data that's semantically wrong
+- ⚠️ Identity confusion --- reference points to different logical entity than expected
+- ⚠️ Stale data --- seeing old values after logical deletion
+- ⚠️ But still deterministic --- bugs are reproducible, not random
 
 ## No `return` keyword
 
