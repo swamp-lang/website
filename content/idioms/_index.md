@@ -1037,6 +1037,10 @@ The tag format is `TAG(optional-info)[optional-category]: message`:
 //! Handles movement and actions for the Avatar
 ```
 
+### TODO: use ids to reference other structs
+
+If it can vary how many elements something uses (or if it is an enum where a payload is big), use an ID to reference a flattened array instead.
+
 ---
 
 ## TL;DR --- The Swamp Way
