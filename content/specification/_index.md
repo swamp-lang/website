@@ -603,6 +603,10 @@ match item {
 }
 ```
 
+#### Tag Type
+
+When all enum variants are defined without payloads, the enum becomes a `Tag` type. Tag types represent simple categorical values as small integers (`U8`, `U16`, or `U32`), making them particularly efficient as Map keys.
+
 ### Optional Types
 
 Optional types handle values that might or might not exist. They are represented by adding `?` after any type.
@@ -905,6 +909,10 @@ fn my_function(my_map: [Key: Value]) {...}
 ```
 
 A map looks similar to a list, but has two types within the square brackets `[]`. The first type is used as the lookup key.
+
+##### Key Type Restrictions
+
+Map keys in **Swamp** are restricted to **Int** or **Tag types** (simple enums without payloads). For enums with simple payloads, you can implement a `hash()` associated function that converts the enum to an Int, allowing it to act as a key.
 
 #### Map Instantiation
 
