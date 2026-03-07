@@ -983,51 +983,29 @@ fn tick(mut self, game_grid: Grid) {
 
 ### Tracking Tags
 
-Use tags for actionable work items --- short, imperative, and easy to grep.
+Use simple tags for work items --- easy to type and easy to grep.
 
-**Semantics**:
+Tags are sorted by urgency:
 
-- **TODO**: planned work that's safe to defer for later (feature, improvement, refactor, docs, tests).
+- **NOCHECKIN** / **NOCOMMIT**: Must be handled before commit/push. **Pre-commit hooks and CI should fail** if present. Use for temporary test code, WIP experiments, or local hacks that should be fixed before commit. Message is optional since context is often obvious.
 
-- **HACK**: Intentional workaround that violates the ideal solution for a specific reason (deadline, demo, dependency). Should include a removal plan.
+- **FIXME**: Something is wrong **now**. Wrong behavior, crash, broken invariant. Ideally, fix it immediately when you find it. But if short on time, mark it with FIXME so it's tracked and visible. Optionally add **HACK** or **BUG** in the message to clarify the type of issue.
 
-- **FIXME**: something is wrong **now** (bug, correctness/safety issue, crash, broken invariant). Bugs should generally be fixed _right away_, but it is decided to be temporarily deferred (e.g., lower priority, blocked, or awaiting info).
+- **TODO**: Nice-to-have cleanup. It sort of works, but could be better and more robust. Defer for later when you have time.
 
-- **BUG**: known defect/limitation with unique id, often cross-cutting and almost always tracked in external bug tracker.
-
-- **NOCHECKIN**: temporary commit/merge blocker. Any change containing it **must not be** committed, pushed, or merged; **pre-commit** hooks and **CI** should fail when it's present. Use it to fence off local test code, WIP refactors, or temporary hacks that aren't meant to ship.
-
-The tag format is `TAG(optional-info)[optional-category]: message`:
-
-- `TAG` is `TODO`, `FIXME`, `HACK` or `BUG`. for local use: `NOCHECKIN`.
-
-- `optional-info` (in **parens**) can include issue IDs, owners, dates:
-  `(#233,@piot,2025-08-12)`
-
-- `optional-category` (in **brackets**) is a short bucket like:
-  `[perf] [safety] [refactor] [docs] [test]`
-
-- Prefer **one** category; add more only if it truly helps.
-
-**Good message style**:
-
-- Imperative: _"avoid...", "add...", "split...", "bounds-check..."_
-
-- Specific condition: _"when count == 0"_
-
-- One concern per tag.
+Keep messages short and imperative!
 
 ```swamp
-// TODO: improve jump feel by decreasing gravity
-// TODO(#233,@piot): maybe get achievement if watching the credits
-// TODO(#501,@catnipped)[docs]: add `# Example` for `Position::create_spawn_from_id`
-// TODO(#612)[perf]: fuse the two passes in damage calculation loop
-```
+// NOCOMMIT: remove debug print
+// NOCHECKIN: remove my hacky test spawn position
+avatar.health = 99999 // NOCOMMIT
 
-```swamp
-// FIXME: when more than 64 units are spawned it panics
-// FIXME(#612)[correctness]: `ZII` violated - zero `SpellId` triggers effect
-// FIXME(@piot,2025-09-12)[safety]: negative health possible after multi-hit
+// FIXME: panics when more than 64 units spawn
+// FIXME: HACK: uses modulo here, replace with power-of-two size
+// FIXME: BUG: #612 negative health possible when two monsters attack
+
+// TODO: improve jump feel
+// TODO: add doc example for Position::create_spawn_from_id
 ```
 
 ### Package Doc Comments
@@ -1037,7 +1015,7 @@ The tag format is `TAG(optional-info)[optional-category]: message`:
 //! Handles movement and actions for the Avatar
 ```
 
-### TODO: use ids to reference other structs
+### Use ids to reference other structs
 
 If it can vary how many elements something uses (or if it is an enum where a payload is big), use an ID to reference a flattened array instead.
 
