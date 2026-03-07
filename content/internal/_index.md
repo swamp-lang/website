@@ -7,7 +7,7 @@ toc = true
 
 ## Initializer List
 
-A continous area of elements of the same type.
+A continous area of elements
 
 ```swamp
 [10, -4, 20]
@@ -53,7 +53,7 @@ match x {
 
 If a construct has no natural delimiters, you must either:
 
-  1. Add a comma after EVERY item (including the last one, even if it is only one item), or
+  1. Add a comma after EVERY item (including the last one, even if it is only one item), or use newline as a comma.
 
   2. Wrap the content in a scope `{...}`
 
