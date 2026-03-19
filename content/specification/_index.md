@@ -7,15 +7,11 @@ toc = true
 
 ## Comments
 
-Comments help you explain your code. **Swamp** has three types: regular line comments (`//`) for quick notes, block comments (`/* */`) for longer explanations, and documentation comments (`///`) that automatically generate readable documentation for your code. Documentation comments are special because they help others understand how to use your code and appear in tooltips in your editor.
+Comments help you explain your code. **Swamp** has three types: regular line comments (`//`), and documentation comments (`///`) that automatically generate readable documentation for your code. Documentation comments are special because they help others understand how to use your code and appear in tooltips in your editor.
 
 ```swamp
 // Regular line comments - for implementation notes
 player_health := 100      // Start health value
-
-/* Block comments - for longer explanations
-   that span multiple lines and can contain
-   lists, examples, etc. **Markdown** will be supported in the future. */
 
 /// Documentation comments - generate external documentation
 /// These comments should explain the purpose and usage
@@ -133,7 +129,7 @@ fn add(a: Int, b: Int) -> Int {
 }
 ```
 
-If the function will return a value, the parameters are followed by a `->`and a Type declaration for the return value. By default, the function will return the *last expression* of its definition.
+If the function will return a value, the parameters are followed by a `->`and a Type declaration for the return value. By default, the function will return the _last expression_ of its definition.
 
 ### Parameter Mutability
 
@@ -396,7 +392,6 @@ player := Player {
 When using `..` for partial initialization, Swamp follows a structured process to ensure all fields are correctly filled:
 
 1. Check for a Default Trait Implementation on the Struct:
-
    - If the struct type being instantiated has an `impl Default` block, Swamp:
      1. Initializes the struct using the values returned by `default()` function.
      2. Overwrites any fields that are explicitly set during instantiation.
@@ -430,7 +425,6 @@ When using `..` for partial initialization, Swamp follows a structured process t
    ```
 
 2. If no `Default` implementation is found for the struct type:
-
    - Swamp iterates through each field that is not explicitly set during instantiation and fills them individually by:
      - Calling `Default::default()` on the field type.
      - Using built-in defaults for primitive types:
@@ -773,21 +767,29 @@ Array types store elements sequentially in memory. While they look similar and a
 
 Generic Array Type: `[T]` represents any sequential array type. Use it in function parameters when your function works with any kind of array-like collection. For example, a function that sums numbers can accept `[Int]` and work with a `Vec`, `Array`, or `Stack` --- you don't need to write separate functions for each type.
 
-| Collection               | Order       | Use cases                                                                                                          |
-| ------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| Fixed Size Array `[T;N]` | ✅           | Fixed len. len() always returns N. You have other ways to know if an element is used, or that all are always used. |
-| Vec                      | ✅           | You need to retain a specific order. add to tail is fast, remove is usually slow.                                  |
-| Stack                    | ✅ (LIFO)    |                                                                                                                    |
-| Queue                    | ✅ (FIFO)    |                                                                                                                    |
-| Bag                      | ❌           | When order is irrelevant. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase.               |
-| Grid                     | ✅ (spatial) | Fixed len. `2D` grid, all elements exists.                                                                         |
-| Pool                     | ❌           | When order is irrelevant, but you want to have an ID to reference an element. Fast to add, erase, and iterate.     | Uses swap-remove[^swap_remove] for erase. |
+| Collection               | Order        | Description                                                                                                                                              |
+| ------------------------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fixed Size Array `[T;N]` | ✅           | Fixed len. len() always returns N. You have other ways to know if an element is used, or that all are always used.                                       |
+| Vec                      | ✅           | You need to retain a specific order. add to tail is fast, remove is usually slow.                                                                        |
+| Stack                    | ✅ (LIFO)    |                                                                                                                                                          |
+| Queue                    | ✅ (FIFO)    |                                                                                                                                                          |
+| Bag                      | ❌           | When order is irrelevant. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase.                                                     |
+| Grid                     | ✅ (spatial) | Fixed len. `2D` grid, all elements exists.                                                                                                               |
+| Pool                     | ❌           | When order is irrelevant, but you want to have an ID to reference an element. Fast to add, erase, and iterate. Uses swap-remove[^swap_remove] for erase. |
+
+### Circular Collections
+
+| Collection   | Description                                                                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Ring `<T;N>` | [Circular buffer](https://en.wikipedia.org/wiki/Circular_buffer). Elements never move in memory, a cursor tracks the logical start and wraps around.   |
+| Wheel`<T;N>` | Overwriting circular buffer. Similar to `Ring`, but automatically replaces the oldest elements when capacity is exceeded.                              |
+| Wrap `<T>`   | Generic view over circular collections. Useful for APIs that accept both `Ring` and `Wheel`. Assumes non-overwriting (Ring-like) semantics for safety. |
 
 ### Lookup Types
 
 | Collection | Order | Use cases                                                                                                                           |
 | ---------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Map        | ❌     | Lookup a value from a key. Relatively slow to add and remove --- depending on the key size. Slower to iterate, since it has "gaps". |
+| Map        | ❌    | Lookup a value from a key. Relatively slow to add and remove --- depending on the key size. Slower to iterate, since it has "gaps". |
 
 #### Swap Remove
 
@@ -803,7 +805,7 @@ A neat trick where you take the last element in the collection and overwrites th
 | a | i | c | d | e | f | g | h |
 ```
 
-- Vec remove. you have to copy *all* elements after the one that is removed:
+- Vec remove. you have to copy _all_ elements after the one that is removed:
 
 ```
 // Before:
@@ -821,11 +823,10 @@ Collections are not decided on yet
 
 | Collection | Sequential Order | Description                                                                      |
 | ---------- | ---------------- | -------------------------------------------------------------------------------- |
-| Sparse     | ❌                | Has ID to reference elements. removing leaves gap in sequence. slower to iterate |
-| Set        | ❌                | key: K (key-only). Only to check if a Key exists or not.                         |
-| Arena      | ❌ (append-only)  | handle or offset. Can only clear all elements, not individual elements.          |
-| RingBuffer | ✅ (cyclic)       | index: u16                                                                       |
-| BitSet     | ❌                | bit index: u16                                                                   |
+| Sparse     | ❌               | Has ID to reference elements. removing leaves gap in sequence. slower to iterate |
+| Set        | ❌               | key: K (key-only). Only to check if a Key exists or not.                         |
+| Arena      | ❌ (append-only) | handle or offset. Can only clear all elements, not individual elements.          |
+| BitSet     | ❌               | bit index: u16                                                                   |
 
 #### Fixed-Capacity Collections
 
@@ -838,19 +839,19 @@ This design provides:
 
 - **Predictable memory usage** --- the compiler knows exactly how much you need.
 
-- **No GC or pauses**  --- no runtime allocations, no stutters.
+- **No GC or pauses** --- no runtime allocations, no stutters.
 
-- **No leaks or fragmentation**  --- static allocation prevents heap issues.
+- **No leaks or fragmentation** --- static allocation prevents heap issues.
 
-- **Clearer constraints**  --- forces upfront memory budgeting.
+- **Clearer constraints** --- forces upfront memory budgeting.
 
-- **Better cache locality**  --- contiguous memory improves performance.
+- **Better cache locality** --- contiguous memory improves performance.
 
-- **Trivial serialization**  --- data can be saved or restored as-is.
+- **Trivial serialization** --- data can be saved or restored as-is.
 
-- **Simpler debugging & tooling**  --- fixed layouts make inspection easy.
+- **Simpler debugging & tooling** --- fixed layouts make inspection easy.
 
-- **Networking-ready**  --- structs can be sent directly as binary chunks.
+- **Networking-ready** --- structs can be sent directly as binary chunks.
 
 When you create a collection, you specify its capacity using angle brackets with a semicolon `<Type; N>`:
 
@@ -963,7 +964,7 @@ spawn_points[SpawnPoint::StartingLevel] := Point { x: 10, y: 10 }
 ## Control Flow
 
 Control flow determines how your program runs. Swamp provides several ways
- to control the flow of your game.
+to control the flow of your game.
 
 ### If Expressions
 
@@ -1195,7 +1196,7 @@ struct Audio {
 
 ### Borrow binding
 
-Binds a *named borrow* to an [`identity borrow`](#identity-borrow). This is for identity-stable places only, so the alias keeps pointing to the same logical value for its entire lifetime.
+Binds a _named borrow_ to an [`identity borrow`](#identity-borrow). This is for identity-stable places only, so the alias keeps pointing to the same logical value for its entire lifetime.
 
 The binding uses `=` (not `:=`) because you are creating an alias to an existing place, not introducing a new owned value. The alias is valid only within its scope.
 
@@ -1257,7 +1258,7 @@ only something, another {
 
 ### Guard Expressions
 
-Guard expressions in Swamp provide a concise and powerful way to evaluate multiple conditions and return a single result (or execute a block of code) based on the first matching guard. They are similar to if-else chains in other languages, but with a more pattern-like syntax. Each guard (`| condition -> result`) is checked in order. As soon as one guard condition is true, its associated expression is evaluated and returned. If no guard condition matches, a wildcard guard (_) can handle the remaining cases.
+Guard expressions in Swamp provide a concise and powerful way to evaluate multiple conditions and return a single result (or execute a block of code) based on the first matching guard. They are similar to if-else chains in other languages, but with a more pattern-like syntax. Each guard (`| condition -> result`) is checked in order. As soon as one guard condition is true, its associated expression is evaluated and returned. If no guard condition matches, a wildcard guard (\_) can handle the remaining cases.
 
 ```swamp
 reward =
@@ -1289,7 +1290,7 @@ a := &> {
 a := function_that_returns_bool() && number_of_items > 3 && another_function_with_bool()
 ```
 
-Each expression in the block must evaluate to `Bool`. Evaluation stops at the first `false` (short-circuit evaluation). The block syntax makes it easier to add spacing and comments between conditions, avoiding awkward inline constructions like `&& /* comment */ condition &&`.
+Each expression in the block must evaluate to `Bool`. Evaluation stops at the first `false` (short-circuit evaluation). The block syntax makes it easier to add spacing and comments between conditions.
 
 ### Implicit Receiver
 
@@ -1308,7 +1309,7 @@ impl Position {
 
 #### Compile-time Desugar
 
-At compile time, leading-dot expressions are desugared to explicit  receiver access. The compiler changes `.field` to `receiver.field`:
+At compile time, leading-dot expressions are desugared to explicit receiver access. The compiler changes `.field` to `receiver.field`:
 
 - In member function bodies: `self`
 
@@ -1733,11 +1734,11 @@ There are two classes of places:
 
 - **Identity-stable place**
 
-    The memory location is *stable*: while it is borrowed, the compiler guarantees that the same logical value stays in that location. The address is stable and cannot implicitly swap or replace the element.
+  The memory location is _stable_: while it is borrowed, the compiler guarantees that the same logical value stays in that location. The address is stable and cannot implicitly swap or replace the element.
 
 - **Location-only place**
 
-    The memory location is *unstable*: the container may reuse or overwrite that slot during valid operations. The only guarantee is that the slot always contains a valid value of the right type.
+  The memory location is _unstable_: the container may reuse or overwrite that slot during valid operations. The only guarantee is that the slot always contains a valid value of the right type.
 
 **Guarantees (Always):**
 
@@ -1750,7 +1751,7 @@ There are two classes of places:
 
 ### Identity borrow
 
-This is the traditional *aliasing borrow* of an identity-stable place. The compiler guarantees that the borrowed reference continues to refer to the same logical value for the duration of the borrow.
+This is the traditional _aliasing borrow_ of an identity-stable place. The compiler guarantees that the borrowed reference continues to refer to the same logical value for the duration of the borrow.
 
 Think of it as you are holding a reference for a specific person. The person can change their "properties" without you being involved, but it is still the same person to you.
 
@@ -1761,9 +1762,9 @@ Think of it as you are holding a reference for a specific person. The person can
 
 ### Location borrow
 
-This is a borrow of a *location-only place*. The compiler only guarantees that the location always contains a valid value of type `T`. The location is not stable, the identity stored there may change at any time due to valid container operations.
+This is a borrow of a _location-only place_. The compiler only guarantees that the location always contains a valid value of type `T`. The location is not stable, the identity stored there may change at any time due to valid container operations.
 
-Think of it as you are holding a note that says "the book in shelf slot 12". Slot 12 will always hold *a book* of the same physical size, but it might be a different book after the shelf gets reorganized.
+Think of it as you are holding a note that says "the book in shelf slot 12". Slot 12 will always hold _a book_ of the same physical size, but it might be a different book after the shelf gets reorganized.
 
 Because this can cause identity confusion, Swamp only allows location borrows inside a `with` scope, making the "identity may change"-window explicit, visible and local.
 
@@ -1786,7 +1787,7 @@ Edsger Dijkstra wrote, even before I was born, that ["Go To Statement Considered
 - Predict what will execute next
 - Debug and maintain the codebase
 
-While explicit `goto` statements are rare in modern programming languages, the same problems persist in its **disguised** form:  `return` are jump/goto statements that bypass the natural flow. Especially since it is idiomatic in Swamp to have long functions with several scopes.
+While explicit `goto` statements are rare in modern programming languages, the same problems persist in its **disguised** form: `return` are jump/goto statements that bypass the natural flow. Especially since it is idiomatic in Swamp to have long functions with several scopes.
 
 ### Swamp's Structural Approach
 
@@ -1855,7 +1856,11 @@ You only need to declare types explicitly when:
 The compiler will tell you when explicit types are needed.
 
 [^snakecase]: [Snake_case Wikipedia](https://en.wikipedia.org/wiki/Snake_case)
+
 [^camelcase]: [CamelCase Wikipedia](https://en.wikipedia.org/wiki/Camel_case)
+
 [^screaming_snake_case]: [Screaming Snake Case Wikipedia](https://en.wikipedia.org/wiki/Snake_case)
+
 [^ufcs]: [Uniform Function Call Syntax](https://en.wikipedia.org/wiki/Uniform_function_call_syntax)
+
 [^swap_remove]: **Swap Remove**. sometimes called 'Swapback' or 'swap and pop' [Vec::swap_remove in Rust](https://doc.rust-lang.org/std/vec/struct.Vec.html#method.swap_remove)
