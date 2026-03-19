@@ -1099,7 +1099,7 @@ audio := load_sound("audio/explosion.wav")
 
 // Resource ID approach (compile-time verified)
 // The compiler verifies that the file exists when you build
-audio : Res<Audio> = @audio/explosion
+audio : Res<Audio> = @audio/explosion.wav
 ```
 
 #### Why Use Resource IDs?
@@ -1114,21 +1114,21 @@ audio : Res<Audio> = @audio/explosion
 
 #### Resource ID Syntax
 
-Resource IDs always start with the `@` symbol followed by a path to your asset file (without the file extension). The reason for not specifying extension is that you should be able to change the actual file type without breaking anything (e.g. from `.jpg` to `.png`).
+Resource IDs always start with the `@` symbol followed by a path to your asset file (including the file extension).
 
 ##### Basic Path-Based Resource IDs
 
 ```swamp
 // Reference a single asset
 // The compiler looks for "explosion.wav" (or similar) in assets/audio/sub_dir/
-explosion_sound : Res<Audio> = @audio/sub_dir/explosion
+explosion_sound : Res<Audio> = @audio/sub_dir/explosion.wav
 
 // Reference an image
 // The compiler looks for "player.png" (or similar) in assets/gfx/
-player_sprite : Res<Image> = @gfx/player
+player_sprite : Res<Image> = @gfx/player.png
 ```
 
-The path is relative to your project's asset directory, and you omit the file extension (`.wav`, `.png`, etc.). The compiler will find the correct file automatically.
+The path is relative to your project's asset directory.
 
 ##### Indexed Resource IDs
 
@@ -1141,7 +1141,7 @@ For collections of related assets where you have a lot of "variants" for a singl
 ```swamp
 // Reference a specific card by index
 // The compiler expects files like cards_00.png, cards_01.png, etc.
-card : Res<Image> = @gfx/cards[42]
+card : Res<Image> = @gfx/cards.png[42]
 
 // Loop through numbered assets
 for i in 0..100 {
@@ -1162,13 +1162,13 @@ play_sound(@sfx/footsteps[pseudo_random_index])
 Resource IDs are typed, so you can't accidentally use an audio file where an image is expected:
 
 ```swamp
-player_sprite : Res<Image> = @gfx/player      // OK
+player_sprite : Res<Image> = @gfx/player.png      // OK
 
 // OK. @audio/footstep bound to type Res<Audio>
-player_sound : Res<Audio> = @audio/footstep
+player_sound : Res<Audio> = @audio/footstep.wav
 
 // Compile error: Audio file cannot be used as Image
-wrong : Res<Image> = @audio/footstep
+wrong : Res<Image> = @audio/footstep.wav
 ```
 
 #### Extension-Based Type Inference and Type Checking
@@ -1177,7 +1177,7 @@ wrong : Res<Image> = @audio/footstep
 Extension-based type checking for Resource IDs is not implemented yet
 {% end %}
 
-You can use the `#[extensions()]` attribute on struct definitions to provide an improved verification. Then the compiler will either check the extension/type directly the first time that specific resource id is used, or as an extra optional analyzer end step (goes through all resource ids and matches with file extensions).
+You can use the `#[extensions()]` attribute on struct definitions to provide an improved verification. Then the compiler will either check the extension/type directly the first time that specific resource id is used, or as an extra optional analyzer end step.
 
 ```swamp
 // Define types with their associated file extensions
